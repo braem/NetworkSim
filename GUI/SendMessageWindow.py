@@ -22,7 +22,12 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+
 class SendMessage_Window(object):
+
+    def __init__(self, MainWindow):
+        self.setupUi(MainWindow)
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(200, 200)
@@ -50,7 +55,7 @@ class SendMessage_Window(object):
         font.setPointSize(10)
         self.sendButton.setFont(font)
         self.sendButton.setObjectName(_fromUtf8("sendButton"))
-        self.sendButton.clicked.connect(self.send_message())
+        self.sendButton.clicked.connect(self.send_message)
         self.gridLayout.addWidget(self.sendButton, 5, 2, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 1, 1, 1)
@@ -80,6 +85,8 @@ class SendMessage_Window(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        MainWindow.show()
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Send Message", None))
