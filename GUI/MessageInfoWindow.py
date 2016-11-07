@@ -24,6 +24,7 @@ except AttributeError:
 
 class MessageInfo_Window(object):
     protocol_stack = {}
+
     def __init__(self, MainWindow, protocol_stack_list):
         self.protocol_stack = protocol_stack_list
         self.setupUi(MainWindow)
