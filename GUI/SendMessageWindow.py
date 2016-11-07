@@ -22,7 +22,7 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_MainWindow(object):
+class SendMessage_Window(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(200, 200)
@@ -50,7 +50,7 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         self.sendButton.setFont(font)
         self.sendButton.setObjectName(_fromUtf8("sendButton"))
-        self.sendButton.clicked.connect(send_message)
+        self.sendButton.clicked.connect(self.send_message())
         self.gridLayout.addWidget(self.sendButton, 5, 2, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 1, 1, 1)
@@ -97,20 +97,20 @@ class Ui_MainWindow(object):
     def validate_combobox_text(self):
         print "Validating combobox text"
 
-
-def send_message(toComboBox, fromComboBox):
-    toNode = toComboBox.itemData(toComboBox.currentIndex())
-    fromNode = fromComboBox.itemData(fromComboBox.currentIndex())
-    # Send message to the toNode.
-
+    def send_message(self):
+        self.toComboBox.itemData(self.toComboBox.currentIndex())
+        self.fromComboBox.itemData(self.fromComboBox.currentIndex())
+        # Send message to the toNode.
 
 
+# Disabled so this class/object can only be initialized from its interface.
+"""
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
     MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = SendMessage_Window()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())"""
 
