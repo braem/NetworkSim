@@ -53,8 +53,7 @@ class MessageInfo_Window(object):
         self.messageInfoTable.setHorizontalHeaderLabels(QtCore.QStringList() << "Protocol Stack")
         self.fillTable(self.protocol_stack)
         self.verticalLayout_3.addWidget(self.messageInfoTable)
-        self.selectedItemView = QtGui.QTextBrowser(self.centralwidget)
-        self.selectedItemView.setOpenLinks(False)
+        self.selectedItemView = QtGui.QLabel(self.centralwidget)
         self.selectedItemView.setObjectName(_fromUtf8("selectedItemView"))
         self.verticalLayout_3.addWidget(self.selectedItemView)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -81,6 +80,9 @@ class MessageInfo_Window(object):
 
     def addItem(self, row_index, item_text):
         self.messageInfoTable.setItem(row_index, 0, QtGui.QTableWidgetItem(QtCore.QString(item_text)))
+
+    def setInfoText(self, text):
+        self.selectedItemView.setText(QtCore.QString(text))
 
 
 # Commented as this is used if you execute this file directly which we don't want.
