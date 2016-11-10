@@ -1,9 +1,19 @@
+graph = {
+        '1': ['2','4'],
+        '2': ['1','3'],
+        '3': ['2','5'],
+        '4': ['1','2'],
+        '5': ['2','3']
+    }
+
+
 def bfs(graph, start, end):
-    routerqueue = [[start]]
+    # type: (object, object, object) -> object
+    queue = [[start]]
     visited = set()
 
-    while routerqueue:
-        path = routerqueue.pop(0)
+    while queue:
+        path = queue.pop(0)
         node = path[-1]
         if node == end:
             return path
@@ -12,13 +22,10 @@ def bfs(graph, start, end):
             for adjacent in graph.get(node, []):
                 new_path = list(path)
                 new_path.append(adjacent)
-                routerqueue.append(new_path)
+                queue.append(new_path)
+                if adjacent == end:
+                    return new_path
 
-    graph = {
-        '1': ['2','4'],
-        '2': ['3'],
-        '3': ['2','4'],
-        '4': ['1','3']
-    }
+        visited.add(node)
 
-    print bfs(graph, '1', '3')
+print bfs(graph, '1', '5')
