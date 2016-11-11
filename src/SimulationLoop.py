@@ -156,8 +156,7 @@ def sim_step(network):
 
     How does a message move around?
 
-        A message must be associated with a node somehow. Either it is stored in a way that indicates which node or
-        connection it is at, or the message itself contains an explicit reference to the node or connection it is at.
+        A message must be associated with a node somehow. I have created a Packet class to accomplish this.
 
         Given this, we proceed as follows:
 
