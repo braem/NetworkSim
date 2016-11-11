@@ -99,6 +99,11 @@ def sim_step(network):
 
         if packet.current_node != packet.destination:
             packet.current_node = packet.current_connection.other_end(packet.current_node)
+            packet.currnet_node.deliver(packet)
+
+            #My guess is that node.deliver(packet) will begin the process of dealing
+            #with a packet at a given node, but I have no idea how that will actually work.
+
         else: #I have no idea right now.
 
 
