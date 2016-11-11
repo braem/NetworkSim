@@ -1,3 +1,8 @@
+"""This file contains classes and functions for running the network simulation"""
+__author__ = "Rhys Beck"
+__version__ = "1.0.0"
+
+
 import threading
 
 
