@@ -130,7 +130,7 @@ def sim_step(network):
     How is a message created?
 
         I'm currently assuming that the simulation thread doesn't create messages, the GUI thread does.
-        This would simply mean setting the stop flag, the accessing the (thread-safe) network object
+        This would simply mean setting the stop flag, then accessing the (thread-safe) network object
         and adding new messages at the nodes they are starting from.  Easy-peasy.
 
     What is a message?
@@ -145,8 +145,8 @@ def sim_step(network):
 
         For the first sprint, however, it is reasonable to ignore some of the complexity of this picture
         and instead collapse this three layer addressing scheme to a single layer.  So going forward I will
-        assume we are only dealing with host level communication, and so I only need to deal with port numbers.
-        (This is good, since this seems to be all Ryan has included in his initial work)
+        assume we are only dealing with host level communication, and so I only need to deal with port numbers
+        (basically pretending they are IP addresses).
 
         Thus, I shall deal with messages of the form
 
