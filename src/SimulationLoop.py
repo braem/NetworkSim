@@ -39,7 +39,7 @@ class SimThread(threading.Thread):
             time += 1
 
     def access_flag(self, write=False, value=False):
-        """Provides read or write access to exactly one thread at a time.
+        """Provides single read or write access to no more than one thread at a time.
 
         if write is true, value indicates what boolean value to set the run flag to.
         :type write: boolean
