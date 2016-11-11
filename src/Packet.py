@@ -19,6 +19,11 @@ class Packet:
 
     def __init__(self, node):
         self.current_node = node
+        self.connection = None
 
-    def set_connection(self,connection):
+    def set_connection(self, connection):
         self.connection = connection
+
+    def deliver(self):
+        self.current_node = self.connection.other_node(self.current_node)
+        self.connection = None
