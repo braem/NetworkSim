@@ -53,6 +53,7 @@ class SimThread(threading.Thread):
             return flag
 
     def end(self):
+        """Sets the runFlag to False, causing this SimThread to terminate once the current simulation cycle ends."""
         self.access_flag(write=True, value=False)
 
 
