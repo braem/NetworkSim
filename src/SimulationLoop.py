@@ -96,7 +96,10 @@ def sim_step(network):
         else: Undecided.  This may indicate the packet should be removed
 
     def update_packet_location(packet):
-        packet.current_node = packet.current_connection.other_end(packet.current_node)
+
+        if packet.current_node != packet.destination:
+            packet.current_node = packet.current_connection.other_end(packet.current_node)
+        else: #I have no idea right now.
 
 
     '''
