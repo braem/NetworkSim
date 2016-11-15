@@ -79,7 +79,7 @@ def start_simulation(network):
 
 
 def sim_step(network):
-    """This is the "step function" that will run the simulation ahead on tick.
+    """This is the "step function" that will run the simulation ahead one tick.
 
     The idea is that a SimThread will loop through this either a specified number of times, or until
     it is told to stop. Each pass through the loop updates every network entity in sequence, decrementing wait counters
