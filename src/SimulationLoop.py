@@ -95,9 +95,6 @@ def sim_step(network):
         elif packet.timer == 0: update_packet_location(packet)
         else: Undecided.  This may indicate the packet should be removed
 
-    for node in network.nodes:
-        update_node(node)
-
     def update_packet_location(packet):
 
         if packet.current_node != packet.destination:
