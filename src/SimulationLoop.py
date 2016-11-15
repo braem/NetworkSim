@@ -30,7 +30,7 @@ class SimThread(threading.Thread):
 
         function is a function to be called
         args is a tuple specifying the arguments to function, defaults to ()
-        theEnd is an integer indicating how many times function should be performed, defaults to -1"""
+        theEnd is an integer indicating how many times function should be performed, defaults to -1 (run forever)"""
 
         time = 0
 
