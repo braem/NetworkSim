@@ -117,11 +117,6 @@ def sim_step(network):
             #packets are handled within a node.
 
 
-    def update_node(node):
-
-
-        #This will
-
 
 
     '''
