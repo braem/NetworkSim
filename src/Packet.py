@@ -54,8 +54,8 @@ if __name__ == '__main__':
             self.current_node = self.connection.other_node(self.current_node)
             self.connection = None
 
-        def get_destination(self):
+       ''' def get_destination(self):
             #extracts destination from the payload and returns it
             #This should probably behave contextually, extracting the destination from the outermost layer
             #of the payload.
-
+       '''
