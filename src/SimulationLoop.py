@@ -97,7 +97,7 @@ def sim_step(network):
 
     def update_packet_location(packet):
 
-        if packet.current_node != packet.destination:
+        if packet.current_node != packet.get_destination():
             packet.deliver() #just updates what node the packet thinks it's at
             packet.current_node.deliver(packet)
 
@@ -218,7 +218,7 @@ def sim_step(network):
 
         Step 3: Where to now?
             If the message has reached it's final destination, the message is pushed up the network stack within the
-            host unwrappy stuff happens and the message is delivered to the currently imaginary application layer.  This
+            host, unwrappy stuff happens and the message is delivered to the currently imaginary application layer.  This
             comes under Jeremy's purview, as he is writing the Host, Router, and Switch classes.
 
             If we still have a ways to go, see Step 1.
