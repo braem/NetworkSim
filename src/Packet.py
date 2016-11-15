@@ -31,6 +31,25 @@ if __name__ == '__main__':
         def decrement_timer(self):
             self.timer -= 1
 
+        '''def update_packet_location(packet):
+
+            if packet.current_node != packet.get_destination():
+                packet.deliver()  # just updates what node the packet thinks it's at
+                packet.current_node.deliver(packet)
+
+                # My guess is that node.deliver(packet) will begin the process of dealing
+                # with a packet at a given node, for example put a link layer frame into the
+                # node's link layer input buffer, but I have no idea how that will actually work.
+
+            else:
+                node.process_step()
+
+                # This means the packet started this cycle at it's final destination...
+                # What to do now depends on the implementation of the node classes.
+                # Presumably the node classes have something in place to define how
+                # packets are handled within a node.
+        '''
+
         def deliver(self):
             self.current_node = self.connection.other_node(self.current_node)
             self.connection = None

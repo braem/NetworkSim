@@ -91,30 +91,9 @@ def sim_step(network):
     Sprint 1 pseudocode
 
     for packet in network.packets[:]:
-        if packet.timer > 0: decrement_timer
-        elif packet.timer == 0: update_packet_location(packet)
+        if packet.timer > 0: packet.decrement_timer()
+        elif packet.timer == 0: packet.update_location(packet)
         else: Undecided.  This may indicate the packet should be removed
-
-    def update_packet_location(packet):
-
-        if packet.current_node != packet.get_destination():
-            packet.deliver() #just updates what node the packet thinks it's at
-            packet.current_node.deliver(packet)
-
-            #My guess is that node.deliver(packet) will begin the process of dealing
-            #with a packet at a given node, for example put a link layer frame into the
-            #node's link layer input buffer, but I have no idea how that will actually work.
-
-        else:
-            node.process_step()
-
-            #This means the packet started this cycle at it's final destination...
-            #What to do now depends on the implementation of the node classes.
-            #Presumably the node classes have something in place to define how
-            #packets are handled within a node.
-
-
-
 
     '''
 
