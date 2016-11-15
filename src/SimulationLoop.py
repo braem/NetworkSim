@@ -109,7 +109,7 @@ def sim_step(network):
             #node's link layer input buffer, but I have no idea how that will actually work.
 
         else:
-            node.do_next_thing_with_packet(packet) #???
+            node.process_step()
 
             #This means the packet started this cycle at it's final destination...
             #What to do now depends on the implementation of the node classes.
