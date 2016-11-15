@@ -87,15 +87,15 @@ def sim_step(network):
 
     :type network Network"""
 
-    '''
-    Sprint 1 pseudocode
+
+    #Sprint 1
 
     for packet in network.packets[:]:
         if packet.timer > 0: packet.decrement_timer()
         elif packet.timer == 0: packet.update_location(packet)
-        else: Undecided.  This may indicate the packet should be removed
+        #else: Undecided.  This may indicate the packet should be removed
 
-    '''
+
 
     '''
     Rhys's Notes
