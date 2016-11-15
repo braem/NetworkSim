@@ -17,9 +17,9 @@ class Packet:
     so I can tell what to do with it when the timer is up.
     '''
 
-    def __init__(self, node):
-        self.current_node = node
+    def __init__(self, node, payload):
         self.connection = None
+        self.payload = payload
 
     def set_connection(self, connection):
         self.connection = connection
