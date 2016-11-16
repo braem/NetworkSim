@@ -1,5 +1,5 @@
-from TCPSegment import TCPSegment
-from UDPSegment import UDPSegment
+from Segment import TCPSegment
+from Segment import UDPSegment
 from Header import TCPHeader
 from Header import UDPHeader
 from IPDatagram import IPDatagram
