@@ -23,10 +23,11 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class MessageInfo_Window(object):
-    protocol_stack = {}
+    protocol_stack = ["Application", "Transport", "Network", "Link"]
 
-    def __init__(self, MainWindow, protocol_stack_list):
-        self.protocol_stack = protocol_stack_list
+    def __init__(self, MainWindow, Message, layer_designator):
+        self.message = Message
+        self.layer = layer_designator
         self.setupUi(MainWindow)
 
     def setupUi(self, MainWindow):
@@ -44,14 +45,14 @@ class MessageInfo_Window(object):
         self.messageInfoTable.setFont(font)
         self.messageInfoTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.messageInfoTable.setAlternatingRowColors(True)
-        self.messageInfoTable.setRowCount(len(self.protocol_stack))
+        self.messageInfoTable.setRowCount(self.getSpecifiedDepth())
         self.messageInfoTable.setColumnCount(1)
         self.messageInfoTable.setObjectName(_fromUtf8("messageInfoTable"))
         self.messageInfoTable.horizontalHeader().setVisible(True)
         self.messageInfoTable.horizontalHeader().setDefaultSectionSize(100)
         self.messageInfoTable.verticalHeader().setVisible(True)
         self.messageInfoTable.setHorizontalHeaderLabels(QtCore.QStringList() << "Protocol Stack")
-        self.fillTable(self.protocol_stack)
+        self.fillTable()
         self.verticalLayout_3.addWidget(self.messageInfoTable)
         self.selectedItemView = QtGui.QLabel(self.centralwidget)
         self.selectedItemView.setObjectName(_fromUtf8("selectedItemView"))
@@ -74,9 +75,16 @@ class MessageInfo_Window(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Message Info", None))
 
     # Fills the rows top-down in the order of the list given.
-    def fillTable(self, items):
-        for index in range(len(items)):
-            self.addItem(index, items[index])
+    def fillTable(self):
+        for index in range(self.getSpecifiedDepth()):
+            if index == 0:
+
+            elif index == 1:
+
+            elif index == 2:
+
+            else:
+
 
     def addItem(self, row_index, item_text):
         self.messageInfoTable.setItem(row_index, 0, QtGui.QTableWidgetItem(QtCore.QString(item_text)))
@@ -84,15 +92,7 @@ class MessageInfo_Window(object):
     def setInfoText(self, text):
         self.selectedItemView.setText(QtCore.QString(text))
 
-
-# Commented as this is used if you execute this file directly which we don't want.
-"""
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = MessageInfo_Window()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())"""
-
+    def getSpecifiedDepth(self):
+        for index in range(len(self.protocol_stack)):
+            if self.protocol_stack[index] == self.layer:
+                return index
