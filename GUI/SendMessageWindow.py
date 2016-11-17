@@ -7,6 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+from src import Network
+from networkobjects import Node
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -37,19 +39,18 @@ class SendMessage_Window(object):
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 1, 3, 1, 1)
-        self.fromComboBox = QtGui.QComboBox(self.centralwidget)
-        self.fromComboBox.setEditable(True)
-        self.fromComboBox.setObjectName(_fromUtf8("fromComboBox"))
-        self.fromComboBox.activated.connect(self.populate_dropdown)
-        self.fromComboBox.editTextChanged.connect(self.validate_combobox_text)
-        self.gridLayout.addWidget(self.fromComboBox, 1, 2, 1, 1)
-        self.fromLabel = QtGui.QLabel(self.centralwidget)
+        self.toComboBox = QtGui.QComboBox(self.centralwidget)
+        self.toComboBox.setEditable(False)
+        self.toComboBox.setObjectName(_fromUtf8("fromComboBox"))
+        self.toComboBox.editTextChanged.connect(self.validate_combobox_text)
+        self.gridLayout.addWidget(self.toComboBox, 1, 2, 1, 1)
+        self.toLabel = QtGui.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setPointSize(16)
-        self.fromLabel.setFont(font)
-        self.fromLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.fromLabel.setObjectName(_fromUtf8("fromLabel"))
-        self.gridLayout.addWidget(self.fromLabel, 0, 2, 1, 1)
+        self.toLabel.setFont(font)
+        self.toLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.toLabel.setObjectName(_fromUtf8("fromLabel"))
+        self.gridLayout.addWidget(self.toLabel, 0, 2, 1, 1)
         self.sendButton = QtGui.QPushButton(self.centralwidget)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -59,19 +60,18 @@ class SendMessage_Window(object):
         self.gridLayout.addWidget(self.sendButton, 5, 2, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 1, 1, 1)
-        self.toComboBox = QtGui.QComboBox(self.centralwidget)
-        self.toComboBox.setEditable(True)
-        self.toComboBox.setObjectName(_fromUtf8("toComboBox"))
-        self.toComboBox.activated.connect(self.populate_dropdown)
-        self.toComboBox.editTextChanged.connect(self.validate_combobox_text)
-        self.gridLayout.addWidget(self.toComboBox, 3, 2, 1, 1)
-        self.toLabel = QtGui.QLabel(self.centralwidget)
+        self.fromComboBox = QtGui.QComboBox(self.centralwidget)
+        self.fromComboBox.setEditable(False)
+        self.fromComboBox.setObjectName(_fromUtf8("toComboBox"))
+        self.fromComboBox.editTextChanged.connect(self.validate_combobox_text)
+        self.gridLayout.addWidget(self.fromComboBox, 3, 2, 1, 1)
+        self.fromLabel = QtGui.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setPointSize(16)
-        self.toLabel.setFont(font)
-        self.toLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.toLabel.setObjectName(_fromUtf8("toLabel"))
-        self.gridLayout.addWidget(self.toLabel, 2, 2, 1, 1)
+        self.fromLabel.setFont(font)
+        self.fromLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.fromLabel.setObjectName(_fromUtf8("toLabel"))
+        self.gridLayout.addWidget(self.fromLabel, 2, 2, 1, 1)
         spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem2, 4, 2, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -86,38 +86,35 @@ class SendMessage_Window(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.refreshDropdowns()
+
         MainWindow.show()
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Send Message", None))
-        self.fromLabel.setText(_translate("MainWindow", "To:", None))
+        self.fromLabel.setText(_translate("MainWindow", "From:", None))
         self.sendButton.setText(_translate("MainWindow", "Send Message", None))
-        self.toLabel.setText(_translate("MainWindow", "From:", None))
+        self.toLabel.setText(_translate("MainWindow", "To:", None))
 
-    def populate_dropdown(self):
-        print("In populate_dropdown")
-        # Get the list of nodes and their addresses.
-
-    def find_node(self, node_identifier):
-        print("Finding node")
+    def refreshDropdowns(self):
+        # Clear the current dropdown information.
+        self.toComboBox.clear()
+        self.toComboBox.clearEditText()
+        self.fromComboBox.clear()
+        self.fromComboBox.clearEditText()
+        array = ['1', '2', '3']
+        # Repopulate the dropdowns with updated info from the network.
+        for index in range(len(array)):
+            self.toComboBox.addItem(QtCore.QString(array[index]))
+            self.fromComboBox.addItem(QtCore.QString(array[index]))
 
     def validate_combobox_text(self):
         print "Validating combobox text"
 
     def send_message(self):
-        self.toComboBox.itemData(self.toComboBox.currentIndex())
-        self.fromComboBox.itemData(self.fromComboBox.currentIndex())
+        # Use this for sending the standard string to the network/nodes.
+        print str(self.toComboBox.currentText())
+        print str(self.fromComboBox.currentText())
         # Send message to the toNode.
 
-
-# Disabled so this class/object can only be initialized from its interface.
-"""
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = SendMessage_Window()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())"""
-
+        self.refreshDropdowns()
