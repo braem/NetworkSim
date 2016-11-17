@@ -27,7 +27,8 @@ class MessageInfo_Window(object):
 
     def __init__(self, MainWindow, Message, layer_designator):
         self.message = Message
-        self.layer = layer_designator
+        # Store the layer designator with first letter capitalized
+        self.layer = layer_designator.lower().capitalize()
         self.setupUi(MainWindow)
 
     def setupUi(self, MainWindow):
@@ -78,25 +79,19 @@ class MessageInfo_Window(object):
     def fillTable(self):
         message_parts = self.parseMessageContents()
         for index in range(self.getSpecifiedDepth()):
-            if index == 0:
-
-            elif index == 1:
-
-            elif index == 2:
-
-      else:
+            self.addItem(index, message_parts[index] + " + ")
 
     # Extracts the message and headers from the core message object.
     def parseMessageContents(self):
         parts_array = []
-        # Ethernet Frame Header
-        parts_array.append(self.message.frame_header)
-        # IPDatagram Header
-        parts_array.append(self.message.ip_datagram.ip_header)
-        # Segment Header
-        parts_array.append(self.message.ip_datagram.segment.header)
         # Application message
         parts_array.append(self.message.ip_datagram.segment.message)
+        # Segment Header
+        parts_array.append(self.message.ip_datagram.segment.header)
+        # IPDatagram Header
+        parts_array.append(self.message.ip_datagram.ip_header)
+        # Ethernet Frame Header
+        parts_array.append(self.message.frame_header)
         return parts_array
 
     def addItem(self, row_index, item_text):
