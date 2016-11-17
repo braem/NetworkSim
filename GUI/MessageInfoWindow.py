@@ -76,6 +76,7 @@ class MessageInfo_Window(object):
 
     # Fills the rows top-down in the order of the list given.
     def fillTable(self):
+        message_parts = self.parseMessageContents()
         for index in range(self.getSpecifiedDepth()):
             if index == 0:
 
@@ -83,8 +84,20 @@ class MessageInfo_Window(object):
 
             elif index == 2:
 
-            else:
+      else:
 
+    # Extracts the message and headers from the core message object.
+    def parseMessageContents(self):
+        parts_array = []
+        # Ethernet Frame Header
+        parts_array.append(self.message.frame_header)
+        # IPDatagram Header
+        parts_array.append(self.message.ip_datagram.ip_header)
+        # Segment Header
+        parts_array.append(self.message.ip_datagram.segment.header)
+        # Application message
+        parts_array.append(self.message.ip_datagram.segment.message)
+        return parts_array
 
     def addItem(self, row_index, item_text):
         self.messageInfoTable.setItem(row_index, 0, QtGui.QTableWidgetItem(QtCore.QString(item_text)))
