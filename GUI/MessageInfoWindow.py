@@ -96,6 +96,8 @@ class MessageInfo_Window(object):
 
     def addItem(self, row_index, item_text):
         self.messageInfoTable.setItem(row_index, 0, QtGui.QTableWidgetItem(QtCore.QString(item_text)))
+        # Resizes all columns to fit their contents.
+        self.messageInfoTable.resizeColumnsToContents()
 
     def setInfoText(self, text):
         self.selectedItemView.setText(QtCore.QString(text))
