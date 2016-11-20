@@ -5,12 +5,19 @@ __version__ = "1.0.0"
 
 class Connection:
 
-    def __init__(self, sourceNode, destinationNode):
-        self.id = self.assignID                                     # instance variable unique to each instance
+    counter = 0
+
+    def __init__(self, connectionID, sourceNode, destinationNode):
+        Connection.counter += 1
+        self.id = connectionID                                      # instance variable unique to each instance
         self.connectionType = ""                                    # "Coax", "Fibre", or "Custom"
-        self.connectionNodes = [sourceNode, destinationNode]        # a pair of nodes
+        self.connectionSourceNode = sourceNode                      # the source node
+        self.connectionDestinationNode = destinationNode            # the source node
         self.connectionLength = 0                                   # length of connection
         self.connectionBandWidth = 0                                #bandwidth of connection - can set if custom connectionType
+
+    def __del__(self):
+        Connection.counter -= 1
 
     def setConnectionType(self, cType):
         self.connectionType = cType

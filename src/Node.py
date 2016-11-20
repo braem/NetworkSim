@@ -3,24 +3,36 @@ __author__ = "Darren Hendrickson"
 __version__ = "1.0.0"
 
 
-class Node:
+class Node(object):
 
-    def __init__(self, node_id):
-        self.id = node_id            # instance variable unique to each instance
-        self.nodeType = ""      # node type "PC", "Router", or "Switch"
-        self.x = 0              # position x value
-        self.y = 0              # position y value
-        self.image = ""         # path to image
+    counter = 0
+
+    def __init__(self, node_id, nodeType, x, y):
+        Node.counter += 1
+        self.__Node__ID = node_id           # instance variable unique to each instance
+        self.__NodeType = nodeType          # node type "PC", "Router", or "Switch"
+        self.__X = x                        # position x value
+        self.__Y = y                        # position y value
+        self.__NetworkInfo = object         # object that holds addressing info etc
+
+    def __del__(self):
+        Node.counter -= 1
 
     def setType(self, nType):
-        self.nodeTypetype = nType
+        self.__NodeType = nType
 
     def getType(self):
-        return self.nodeType
+        return self.__NodeType
 
     def setLocation(self, xPos, yPos):
-        self.x = xPos
-        self.y = yPos
+        self.__X = xPos
+        self.__Y = yPos
 
     def getLocation(self):
-        return [self.x, self.y]
+        return [self.__X, self.__Y]
+
+    def setNetworkInfo(self, networkInfo):
+        self.__NetworkInfo = networkInfo
+
+    def getNetworkInfo(self):
+        return self.__NetworkInfo
