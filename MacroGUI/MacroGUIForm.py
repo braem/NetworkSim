@@ -8,7 +8,6 @@
 
 import sys
 from PyQt4 import QtCore, QtGui
-from GUINetwork import *
 from Connection import *
 from Node import *
 
@@ -32,8 +31,6 @@ except AttributeError:
 
 
 class Ui_MainWindow(QtGui.QMainWindow):
-
-    theNetwork = GUINetwork
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
@@ -208,17 +205,17 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btnFibre.setEnabled(False);
         self.btnCustom.setEnabled(False);
 
-        myNode = Node(0)
-        myNode.setType("Host")
-        myNode.setLocation(100, 200)
+        myNode = Node(0, "Host", 100, 200)
 
-        self.theNetwork.addNode(self.theNetwork, myNode)
 
-        myNode = Node(1)
-        myNode.setType("Host")
-        myNode.setLocation(150, 200)
+        myNode2 = Node(1, "Host", 150, 200)
 
-        self.theNetwork.addNode(self.theNetwork, myNode)
+        connections = []
+
+        connection = Connection(0, myNode, myNode2)
+
+        connections.append(connection)
+        print "here you are"
 
     def addHost(self):
         if self.lblHost1Image.isVisible():
