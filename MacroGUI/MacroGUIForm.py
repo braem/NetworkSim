@@ -8,6 +8,9 @@
 
 import sys
 from PyQt4 import QtCore, QtGui
+from GUINetwork import *
+from Connection import *
+from Node import *
 
 __author__ = "Darren Hendrickson"
 __version__ = "1.0.0"
@@ -29,6 +32,8 @@ except AttributeError:
 
 
 class Ui_MainWindow(QtGui.QMainWindow):
+
+    theNetwork = GUINetwork
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
@@ -150,7 +155,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
 
         self.retranslateUi(MainWindow)
         # I cannot figure out how create generic calls here yet so will need to redo each time .ui file is recreated
-        self.initializeGraphics();
+        self.initializeNetwork();
         QtCore.QObject.connect(self.btnHost, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addHost)
         QtCore.QObject.connect(self.btnSwitch, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addSwitch)
         QtCore.QObject.connect(self.btnRouter, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addRouter)
@@ -181,7 +186,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
 
 # I cannot figure out how to put these calls elsewhere yet so will need to redo each time .ui file is recreated
 
-    def initializeGraphics(self):
+    def initializeNetwork(self):
         # All graphics hidden to start
         self.lblHost1Image.hide();
         self.lblHost2Image.hide();
@@ -193,6 +198,9 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.linConnection4.hide();
         self.linConnection5.hide();
 
+
+
+
         # Only add host button should be enabled to start
         self.btnRouter.setEnabled(False);
         self.btnSwitch.setEnabled(False);
@@ -200,7 +208,17 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btnFibre.setEnabled(False);
         self.btnCustom.setEnabled(False);
 
+        myNode = Node(0)
+        myNode.setType("Host")
+        myNode.setLocation(100, 200)
 
+        self.theNetwork.addNode(self.theNetwork, myNode)
+
+        myNode = Node(1)
+        myNode.setType("Host")
+        myNode.setLocation(150, 200)
+
+        self.theNetwork.addNode(self.theNetwork, myNode)
 
     def addHost(self):
         if self.lblHost1Image.isVisible():

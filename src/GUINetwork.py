@@ -20,6 +20,7 @@ class GUINetwork:
 
     def removeNode(self, nodeID):
         # some remove code
-
+        print "remove node"
     def removeConnection(self, connectionID):
         # some remove code
+        print "remove connection"

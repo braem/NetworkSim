@@ -38,6 +38,7 @@ class Connection:
 
     def createConnection(self, sourceNode, destNode):
         # draw connection based on location of supplied nodes
-
+        print "create connection"
     def assignID(self):
         # code to assign unique id
+        print "assign id"
