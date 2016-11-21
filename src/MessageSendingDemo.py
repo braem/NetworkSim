@@ -1,3 +1,7 @@
+"""Message Sending Demo"""
+__author__ = "Rhys Beck"
+__version__ = "1.0.0"
+
 from Segments.Segment import *
 from Segments.Header import *
 from Segments import IPDatagram
@@ -11,6 +15,8 @@ import Network
 import Packet
 
 #First off, we need a network.
+
+
 
 teh_matrix = Network()
 
