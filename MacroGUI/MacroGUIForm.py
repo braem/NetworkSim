@@ -266,8 +266,8 @@ class Ui_MainWindow(object):
         self.cboNode1.clear()
         self.cboNode2.clear()
         for x in range(0, self.nodes.__len__()):
-            self.cboNode1.addItem(str(self.nodes[x]._Node__Node__ID))
-            self.cboNode2.addItem(str(self.nodes[x]._Node__Node__ID))
+            self.cboNode1.addItem(str(self.nodes[x]._Node__Node_ID))
+            self.cboNode2.addItem(str(self.nodes[x]._Node__Node_ID))
 
     def initializeNetwork(self):
         # All graphics hidden to start
@@ -282,35 +282,16 @@ class Ui_MainWindow(object):
         self.cboConnectionType.addItems(['Coax', 'Fibre', 'Custom'])
         self.cboNodeType.addItems(['Host', 'Router', 'Switch'])
 
-        myNode = Node(0, "Host", 100, 200)
-
-        myNode2 = Node(1, "Host", 150, 200)
-
-
-        connection = Connection(0, myNode, myNode2)
-
-        self.connections.append(connection)
-        print "here you are"
-
     def addNode(self):
-
-        self.nodes.append(Node(self.nodes.__len__() + 1, self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText()))
-        self.populateDropDown() # update the node comboboxes temp solution until graphics selectable
+        self.nodes.append(Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText()))
+        self.populateDropDown()  # update the node comboboxes temp solution until graphics selectable
         print "hey"
 
     def deleteNode(self):
-        if self.lblRouterImage.isVisible():
-            self.lblRouterImage.hide()
-        else:
-            self.lblRouterImage.show()
+        print "delete node"
 
     def modifyNode(self):
-        if self.lblSwitchImage.isVisible():
-            self.lblSwitchImage.hide()
-        else:
-            self.lblSwitchImage.show()
-
-        self.placeRouter()
+        print "modify node"
 
     def addConnection(self):
         connection = Connection(self.connections.__len__() + 1, self.nodes[self.cboNode1.currentIndex()], self.nodes[self.cboNode2.currentIndex()])
@@ -321,55 +302,8 @@ class Ui_MainWindow(object):
         print "add connection"
 
     def deleteConnection(self):
-        self.changeConnectionType("Fibre")
+        print "delete connection"
 
     def modifyConnection(self):
-        self.changeConnectionType("Custom")
+        print "modify connection"
 
-
-
-
-
-
-
-    def placeRouter(self):
-        if self.lblSwitchImage.isVisible():
-            self.lblRouterImage.setGeometry(QtCore.QRect(360, 250, 41, 41))
-        else:
-            self.lblRouterImage.setGeometry(QtCore.QRect(280, 250, 41, 41))
-
-    def changeConnectionType(self, connectionType):
-
-        self.linConnection1.show()
-        self.linConnection2.show()
-        self.linConnection3.show()
-        self.linConnection4.show()
-        self.linConnection5.show()
-
-        if connectionType == "Coax":
-            self.linConnection1.setStyleSheet("color:blue")
-            self.linConnection2.setStyleSheet("color:blue")
-            self.linConnection3.setStyleSheet("color:blue")
-            self.linConnection4.setStyleSheet("color:blue")
-            self.linConnection5.setStyleSheet("color:blue")
-        elif connectionType == "Fibre":
-            self.linConnection1.setStyleSheet("color:red")
-            self.linConnection2.setStyleSheet("color:red")
-            self.linConnection3.setStyleSheet("color:red")
-            self.linConnection4.setStyleSheet("color:red")
-            self.linConnection5.setStyleSheet("color:red")
-        else:
-            self.linConnection1.setStyleSheet("color:green")
-            self.linConnection2.setStyleSheet("color:green")
-            self.linConnection3.setStyleSheet("color:green")
-            self.linConnection4.setStyleSheet("color:green")
-            self.linConnection5.setStyleSheet("color:green")
-
-    def mousePressEvent(self, event):
-        print "some shit"
-
-    def test(self):
-        print "please"
-
-    def verifyNode(self, node):
-        return True
