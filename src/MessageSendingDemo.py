@@ -31,7 +31,7 @@ teh_matrix.add_node(hostess)
 def test_step(network):
     i = 0
     print "New Step"
-    for packet in network.packets[:]:
+    for packet in network.packets.values[:]:
         print "packet #" + i
 
         if packet.timer > 0:
@@ -68,7 +68,8 @@ eth_frame = EthernetFrame("Dis be a ethernet header", ip_datagram)
 packet = Packet(host, eth_frame)
 
 #Add packet to the packets list
-teh_matrix.packets.append(packet)
+teh_matrix.packets[packet.packet_id] = packet
+teh_matrix.packets.
 
 #Create a SimThread that will run a little longer than the connection latency.
 simulation = SimThread(test_step, teh_matrix, 10)
