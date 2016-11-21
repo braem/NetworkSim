@@ -7,12 +7,12 @@ from Segments.Header import *
 from Segments import IPDatagram
 from Segments import EthernetFrame
 from NetworkObjects.Node import *
-from NetworkObjects import Connection
+from NetworkObjects.Connection import Connection
 from SimulationLoop import *
 
 
-import Network
-import Packet
+from Network import Network
+from Packet import Packet
 
 #First off, we need a network.
 
@@ -40,7 +40,7 @@ def test_step(network):
             network.packets.remove(packet)
 
         print "final timer value: " + packet.timer
-        print "packet location is node" + packet.
+        print "packet location is node" + packet.current_node.node_id
         # else: Undecided.  This may indicate the packet should be removed
         i += 1
 
@@ -48,7 +48,7 @@ def test_step(network):
 #Gender equality ftw.  Let's connect 'em up with some arbitrary latency.
 
 wire = Connection(host, hostess, 5)
-teh_matrix.add_connection(wire)
+teh_matrix.add_connection(host, hostess, wire)
 
 #Okay, now we have a shoddy network.  Next we need a message to send.
 #UDP seems easy. Let's do that.
@@ -73,9 +73,10 @@ teh_matrix.packets.append(packet)
 #Create a SimThread that will run a little longer than the connection latency.
 simulation = SimThread(test_step, teh_matrix, 10)
 
+print "Starting simulation"
 simulation.start()
 simulation.join()
-
+print "Simulation all done now =)"
 
 
 #Let's stop here and see if the message will move around as is.
