@@ -90,7 +90,7 @@ def sim_step(network):
 
     #Sprint 1
 
-    for packet in network.packets.values():
+    for packet in network.packets.values()[:]:
         if packet.timer > 0: packet.decrement_timer()
         elif packet.timer == 0: packet.update_location(packet)
         #else: Undecided.  This may indicate the packet should be removed
