@@ -2,65 +2,68 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-if __name__ == '__main__':
-    class Packet:
 
-        """This class is intended to wrap Ryan's Segment/Datagram/Frame for convenience in advancing the simulation."""
+class Packet:
 
-        '''Why is this here?
+    """This class is intended to wrap Ryan's Segment/Datagram/Frame for convenience in advancing the simulation."""
 
-        Sprint 1: Right now, I need to keep track of:
-            - what node the packet is at/is moving away from.
-            - a packet-specific timer for connection delay.
-        It makes no sense to store this information in the Network class.
+    '''Why is this here?
 
-        Sprint 2: Later on I'll also need to know if the packet is transmitting or propagating
-        so I can tell what to do with it when the timer is up.
-        '''
+    Sprint 1: Right now, I need to keep track of:
+        - what node the packet is at/is moving away from.
+        - a packet-specific timer for connection delay.
+    It makes no sense to store this information in the Network class.
 
-        def __init__(self, node, payload):
-            self.connection = None
-            self.payload = payload
-            self.current_node = node
+    Sprint 2: Later on I'll also need to know if the packet is transmitting or propagating
+    so I can tell what to do with it when the timer is up.
+    '''
+    #Need an id so the Packet dictionary in Network works the same as the others
+    packet_num = 0
+    def __init__(self, node, payload):
+        self.connection = None
+        self.payload = payload
+        self.current_node = node
+        self.packet_id = self.packet_num
+        self.packet_num += 1
 
-        def set_connection(self, connection):
-            self.connection = connection
+    def set_connection(self, connection):
+        self.connection = connection
 
-        def set_timer(self, time):
-            self.timer = time
+    def set_timer(self, time):
+        self.timer = time
 
-        def decrement_timer(self):
-            self.timer -= 1
+    def decrement_timer(self):
+        self.timer -= 1
 
-        def update_packet_location(self):
+    def update_packet_location(self):
 
-            self.current_node = self.connection.other_node(self.current_node)
+        self.current_node = self.connection.other_node(self.current_node)
 
-        '''    if packet.current_node != packet.get_destination():
-                packet.deliver()  # just updates what node the packet thinks it's at
-                packet.current_node.deliver(packet)
+    '''    if packet.current_node != packet.get_destination():
+            packet.deliver()  # just updates what node the packet thinks it's at
+            packet.current_node.deliver(packet)
 
-                # My guess is that node.deliver(packet) will begin the process of dealing
-                # with a packet at a given node, for example put a link layer frame into the
-                # node's link layer input buffer, but I have no idea how that will actually work.
+            # My guess is that node.deliver(packet) will begin the process of dealing
+            # with a packet at a given node, for example put a link layer frame into the
+            # node's link layer input buffer, but I have no idea how that will actually work.
 
-            else:
-                node.process_step()
+        else:
+            node.process_step()
 
-                # This means the packet started this cycle at it's final destination...
-                # What to do now depends on the implementation of the node classes.
-                # Presumably the node classes have something in place to define how
-                # packets are handled within a node.
-        '''
+            # This means the packet started this cycle at it's final destination...
+            # What to do now depends on the implementation of the node classes.
+            # Presumably the node classes have something in place to define how
+            # packets are handled within a node.
+    '''
 
-        def deliver(self):
-            self.current_node = self.connection.other_node(self.current_node)
-            self.connection = None
+    def deliver(self):
+        self.current_node = self.connection.other_node(self.current_node)
+        self.connection = None
 
-        def get_destination(self):
-            pass
-        '''
-            #extracts destination from the payload and returns it
-            #This should probably behave contextually, extracting the destination from the outermost layer
-            #of the payload.
-       '''
+    def get_destination(self):
+        pass
+    '''
+        #extracts destination from the payload and returns it
+        #This should probably behave contextually, extracting the destination from the outermost layer
+        #of the payload.
+   '''
