@@ -21,6 +21,7 @@ if __name__ == '__main__':
         def __init__(self, node, payload):
             self.connection = None
             self.payload = payload
+            self.current_node = node
 
         def set_connection(self, connection):
             self.connection = connection
