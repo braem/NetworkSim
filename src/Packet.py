@@ -28,6 +28,7 @@ class Packet:
 
     def set_connection(self, connection):
         self.connection = connection
+        self.set_timer(connection.latency)
 
     def set_timer(self, time):
         self.timer = time
