@@ -32,8 +32,9 @@ if __name__ == '__main__':
         def decrement_timer(self):
             self.timer -= 1
 
-        def update_packet_location(packet):
-            pass
+        def update_packet_location(self):
+
+            self.current_node = self.connection.other_node(self.current_node)
 
         '''    if packet.current_node != packet.get_destination():
                 packet.deliver()  # just updates what node the packet thinks it's at
