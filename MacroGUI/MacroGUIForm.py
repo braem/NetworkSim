@@ -31,7 +31,6 @@ class Ui_MainWindow(object):
     nodes = []
 
     def setupUi(self, MainWindow):
-
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(805, 575)
         self.centralwidget = QtGui.QWidget(MainWindow)
@@ -44,28 +43,6 @@ class Ui_MainWindow(object):
         self.frameMain.setFrameShadow(QtGui.QFrame.Raised)
         self.frameMain.setLineWidth(1)
         self.frameMain.setObjectName(_fromUtf8("frameMain"))
-        self.lblHost1Image = QtGui.QLabel(self.frameMain)
-        self.lblHost1Image.setGeometry(QtCore.QRect(110, 150, 41, 31))
-        self.lblHost1Image.setText(_fromUtf8(""))
-        self.lblHost1Image.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
-        self.lblHost1Image.setObjectName(_fromUtf8("lblHost1Image"))
-        self.lblHost2Image = QtGui.QLabel(self.frameMain)
-        self.lblHost2Image.setGeometry(QtCore.QRect(480, 150, 41, 31))
-        self.lblHost2Image.setText(_fromUtf8(""))
-        self.lblHost2Image.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
-        self.lblHost2Image.setObjectName(_fromUtf8("lblHost2Image"))
-        self.lblRouterImage = QtGui.QLabel(self.frameMain)
-        self.lblRouterImage.setEnabled(True)
-        self.lblRouterImage.setGeometry(QtCore.QRect(280, 250, 41, 41))
-        self.lblRouterImage.setText(_fromUtf8(""))
-        self.lblRouterImage.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/router.png")))
-        self.lblRouterImage.setObjectName(_fromUtf8("lblRouterImage"))
-        self.lblSwitchImage = QtGui.QLabel(self.frameMain)
-        self.lblSwitchImage.setEnabled(True)
-        self.lblSwitchImage.setGeometry(QtCore.QRect(220, 250, 41, 41))
-        self.lblSwitchImage.setText(_fromUtf8(""))
-        self.lblSwitchImage.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch.png")))
-        self.lblSwitchImage.setObjectName(_fromUtf8("lblSwitchImage"))
         self.linConnection1 = QtGui.QFrame(self.frameMain)
         self.linConnection1.setGeometry(QtCore.QRect(123, 180, 20, 91))
         self.linConnection1.setStyleSheet(_fromUtf8("color:blue"))
@@ -87,13 +64,9 @@ class Ui_MainWindow(object):
         self.linConnection3.setLineWidth(5)
         self.linConnection3.setFrameShape(QtGui.QFrame.VLine)
         self.linConnection3.setObjectName(_fromUtf8("linConnection3"))
-        self.lblHost1Image.raise_()
-        self.lblHost2Image.raise_()
         self.linConnection1.raise_()
         self.linConnection2.raise_()
         self.linConnection3.raise_()
-        self.lblSwitchImage.raise_()
-        self.lblRouterImage.raise_()
         self.dockNodeProperties = QtGui.QDockWidget(self.centralwidget)
         self.dockNodeProperties.setGeometry(QtCore.QRect(580, 30, 211, 251))
         self.dockNodeProperties.setObjectName(_fromUtf8("dockNodeProperties"))
@@ -271,10 +244,6 @@ class Ui_MainWindow(object):
 
     def initializeNetwork(self):
         # All graphics hidden to start
-        self.lblHost1Image.hide()
-        self.lblHost2Image.hide()
-        self.lblRouterImage.hide()
-        self.lblSwitchImage.hide()
         self.linConnection1.hide()
         self.linConnection2.hide()
         self.linConnection3.hide()
@@ -283,8 +252,10 @@ class Ui_MainWindow(object):
         self.cboNodeType.addItems(['Host', 'Router', 'Switch'])
 
     def addNode(self):
-        self.nodes.append(Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText()))
+        thisNode = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
+        self.nodes.append(thisNode)
         self.populateDropDown()  # update the node comboboxes temp solution until graphics selectable
+        self.placeNodeGraphic(thisNode.getUniqueID())
         print "hey"
 
     def deleteNode(self):
@@ -294,11 +265,15 @@ class Ui_MainWindow(object):
         print "modify node"
 
     def addConnection(self):
-        connection = Connection(self.connections.__len__() + 1, self.nodes[self.cboNode1.currentIndex()], self.nodes[self.cboNode2.currentIndex()])
+        node1 = self.nodes[self.cboNode1.currentIndex()]
+        node2 = self.nodes[self.cboNode2.currentIndex()]
+        connection = Connection(node1, node2)
         connection.connectionType = self.cboConnectionType.currentText()
         connection.connectionLength = self.txtConnectionLength.toPlainText()
         connection.connectionBandWidth = self.txtConnectionBandwidth.toPlainText()
         self.connections.append(connection)
+
+        self.placeConnectionGraphic(node1, node2)
         print "add connection"
 
     def deleteConnection(self):
@@ -307,3 +282,23 @@ class Ui_MainWindow(object):
     def modifyConnection(self):
         print "modify connection"
 
+    def placeNodeGraphic(self, uniqueName):
+        self.lblNode = QtGui.QLabel(self.frameMain)
+        self.lblNode.setGeometry(QtCore.QRect(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 41, 31))
+        self.lblNode.setText(_fromUtf8(""))
+        if self.cboNodeType.currentText() == "Host":
+            self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
+        elif self.cboNodeType.currentText() == "Router":
+            self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/router.png")))
+        else:
+            self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch.png")))
+
+        self.lblNode.setObjectName(_fromUtf8(uniqueName))
+
+        self.lblNode.show()
+
+        print "place node graphic"
+
+    def placeConnectionGraphic(self, firstNode, secondNode):
+
+        print "place connection graphic"
