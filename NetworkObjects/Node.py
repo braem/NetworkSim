@@ -1,23 +1,19 @@
-from EthernetFrame import EthernetFrame
-from IPDatagram import IPDatagram
-from Header import Header
-from Header import TCPHeader
-from Header import UDPHeader
-from Segment import TCPSegment
-from Segment import UDPSegment
-from Segment import Segment
+from Segments.EthernetFrame import EthernetFrame
+from Segments.IPDatagram import IPDatagram
+from Segments.Header import *
+from Segments.Segment import *
 
 class Node:
     node_id = 0
 
     def __init__(self):
-        self.node_id = self.Node.node_id
-        self.Node.node_id += 1
+        self.node_id = Node.node_id
+        Node.node_id += 1
 
 
 class Switch (Node):
     def __init__(self):
-        pass
+        Node.__init__(self)
 
     def get_ethernet_header(self, message):
         return message.frame_header
@@ -32,7 +28,7 @@ class Switch (Node):
 
 class Router (Switch):
     def __init__(self):
-        pass
+        Switch.__init__(self)
 
     def get_ip_header(self, message):
         return message.ip_header
@@ -48,7 +44,7 @@ class Router (Switch):
 
 class Host (Router):
     def __init__(self):
-        pass
+        Router.__init__(self)
 
     def get_protocol_header(self, message):
         return message.header

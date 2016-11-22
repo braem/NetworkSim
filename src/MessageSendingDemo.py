@@ -2,7 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-from Segments.Segment import *
+from Segments import *
 from Segments.Header import *
 from Segments import IPDatagram
 from Segments import EthernetFrame
@@ -53,15 +53,14 @@ def n_node_demo(n):
     teh_matrix = Network()
     # Sweeet.  Now we need a few host nodes.
 
-    first = 0
-    last = n - 1
+
     for j in range(0,n):
 
         previous = j - 1
         this = j
         teh_matrix.add_node(Host())
 
-        if previous >= first:
+        if previous >= 0:
             previous_node = teh_matrix.nodes[previous]
             this_node = teh_matrix.nodes[this]
             teh_matrix.add_connection(previous_node, this_node, Connection(previous_node, this_node, 2))
