@@ -21,6 +21,7 @@ class Node(object):
     def __del__(self):
         Node.counter -= 1
 
+    # borrowed from http://gurukhalsa.me/2011/uniqid-in-python/
     def uniqid(more_entropy=False):
         m = time.time()
         uniqid = '%8x%05x' % (math.floor(m), (m - math.floor(m)) * 1000000)
@@ -51,3 +52,5 @@ class Node(object):
     def getNetworkInfo(self):
         return self.__NetworkInfo
 
+    def getUniqueID(self):
+        return self.__Node_ID
