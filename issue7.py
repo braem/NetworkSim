@@ -1,10 +1,15 @@
+from Node import Node
+from Connection import Connection
+from Network import Network
+
 class Graph:
     # graph dict is calling the Node class and Network to get the connection between the nodes and latency will be cost
     #  between the two nodes and path with min delay will be chosen as shortest path
-    graph = {}
+    def __init__(self):
+       pass
 
-    def connection_network(self, graph):
-        self.graph[Node.node_id] = {Network.connected, Connection.latency}
+   # def connection_network(self, graph):
+    #    self.graph[Node.node_id] = {Network.connected, Connection.latency}
 
 
 # graph = {'s': {'a': 2, 'b': 1},
@@ -61,5 +66,14 @@ def dijkstra(graph, destination_id, source_id, visited=[], cost={}, predecessors
         dijkstra(graph, destination_id, shortest, visited, cost, predecessors)
 
 
+def connection_network(graph):
+    graph[Node.node_id] = {Network.connected, Connection.latency}
+    return graph
+
+
 if __name__ == "__main__":
-    dijkstra(graph, 's', 'c')
+    # graph= dict({[Node.node_id] = {Network.connected, Connection.latency}})
+    #graph={}
+    graph=connection_network(graph={})
+
+    dijkstra(graph, 'source_id', 'destination_id')
