@@ -43,30 +43,6 @@ class Ui_MainWindow(object):
         self.frameMain.setFrameShadow(QtGui.QFrame.Raised)
         self.frameMain.setLineWidth(1)
         self.frameMain.setObjectName(_fromUtf8("frameMain"))
-        self.linConnection1 = QtGui.QFrame(self.frameMain)
-        self.linConnection1.setGeometry(QtCore.QRect(123, 180, 20, 91))
-        self.linConnection1.setStyleSheet(_fromUtf8("color:blue"))
-        self.linConnection1.setFrameShadow(QtGui.QFrame.Plain)
-        self.linConnection1.setLineWidth(6)
-        self.linConnection1.setFrameShape(QtGui.QFrame.VLine)
-        self.linConnection1.setObjectName(_fromUtf8("linConnection1"))
-        self.linConnection2 = QtGui.QFrame(self.frameMain)
-        self.linConnection2.setGeometry(QtCore.QRect(130, 260, 371, 16))
-        self.linConnection2.setStyleSheet(_fromUtf8("color:blue"))
-        self.linConnection2.setFrameShadow(QtGui.QFrame.Plain)
-        self.linConnection2.setLineWidth(5)
-        self.linConnection2.setFrameShape(QtGui.QFrame.HLine)
-        self.linConnection2.setObjectName(_fromUtf8("linConnection2"))
-        self.linConnection3 = QtGui.QFrame(self.frameMain)
-        self.linConnection3.setGeometry(QtCore.QRect(490, 180, 20, 91))
-        self.linConnection3.setStyleSheet(_fromUtf8("color:blue"))
-        self.linConnection3.setFrameShadow(QtGui.QFrame.Plain)
-        self.linConnection3.setLineWidth(5)
-        self.linConnection3.setFrameShape(QtGui.QFrame.VLine)
-        self.linConnection3.setObjectName(_fromUtf8("linConnection3"))
-        self.linConnection1.raise_()
-        self.linConnection2.raise_()
-        self.linConnection3.raise_()
         self.dockNodeProperties = QtGui.QDockWidget(self.centralwidget)
         self.dockNodeProperties.setGeometry(QtCore.QRect(580, 30, 211, 251))
         self.dockNodeProperties.setObjectName(_fromUtf8("dockNodeProperties"))
@@ -191,7 +167,7 @@ class Ui_MainWindow(object):
         self.actionExit.setObjectName(_fromUtf8("actionExit"))
 
         # I cannot figure out how create generic calls here yet so will need to redo each time .ui file is recreated
-        self.initializeNetwork();
+        self.initializeWidgets();
 
         self.retranslateUi(MainWindow)
         self.cboNodeType.setCurrentIndex(-1)
@@ -242,12 +218,7 @@ class Ui_MainWindow(object):
             self.cboNode1.addItem(str(self.nodes[x]._Node__Node_ID))
             self.cboNode2.addItem(str(self.nodes[x]._Node__Node_ID))
 
-    def initializeNetwork(self):
-        # All graphics hidden to start
-        self.linConnection1.hide()
-        self.linConnection2.hide()
-        self.linConnection3.hide()
-
+    def initializeWidgets(self):
         self.cboConnectionType.addItems(['Coax', 'Fibre', 'Custom'])
         self.cboNodeType.addItems(['Host', 'Router', 'Switch'])
 
@@ -273,7 +244,7 @@ class Ui_MainWindow(object):
         connection.connectionBandWidth = self.txtConnectionBandwidth.toPlainText()
         self.connections.append(connection)
 
-        self.placeConnectionGraphic(node1, node2)
+        self.placeConnectionGraphic(connection.getUniqueID(), connection.getConnectionType(), node1, node2)
         print "add connection"
 
     def deleteConnection(self):
@@ -284,7 +255,9 @@ class Ui_MainWindow(object):
 
     def placeNodeGraphic(self, uniqueName):
         self.lblNode = QtGui.QLabel(self.frameMain)
-        self.lblNode.setGeometry(QtCore.QRect(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 41, 31))
+        #self.lblNode = MyLabel(QtGui.QLabel(self.frameMain))
+        self.lblNode.setGeometry(QtCore.QRect(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 40, 30))
+        #self.lblNode.setGeometry(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 41, 31)
         self.lblNode.setText(_fromUtf8(""))
         if self.cboNodeType.currentText() == "Host":
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
@@ -299,6 +272,74 @@ class Ui_MainWindow(object):
 
         print "place node graphic"
 
-    def placeConnectionGraphic(self, firstNode, secondNode):
+    def placeConnectionGraphic(self, uniqueName, connectionType, firstNode, secondNode):
+
+        # connection will always be a pair of lines 1 horizontal and 1 vertical
+
+        # find center of firstNode image as start x, y
+        start = firstNode.getLocation()
+        end = secondNode.getLocation()
+        x1 = int(start[0]) + 20
+        y1 = int(start[1]) + 15
+
+        x2 = int(end[0]) + 20
+        y2 = int(end[1]) + 15
+
+        if (x2 - x1) > (y2 - y1):
+            # first line
+            self.linConnection = QtGui.QFrame(self.frameMain)
+            self.linConnection.setGeometry(QtCore.QRect(x1, y1, (x2 - x1), 16))
+
+            if connectionType == "Coax":
+                self.linConnection.setStyleSheet(_fromUtf8("color:blue"))
+            elif connectionType == "Fibre":
+                self.linConnection.setStyleSheet(_fromUtf8("color:red"))
+            else:
+                self.linConnection.setStyleSheet(_fromUtf8("color:green"))
+
+            self.linConnection.setFrameShadow(QtGui.QFrame.Plain)
+            self.linConnection.setLineWidth(6)
+            self.linConnection.setFrameShape(QtGui.QFrame.HLine)
+            self.linConnection.setObjectName(_fromUtf8(uniqueName + "a"))
+            #self.linConnection.lower()
+            self.linConnection.show()
+
+            # second line
+            self.linConnection = QtGui.QFrame(self.frameMain)
+            self.linConnection.setGeometry(QtCore.QRect(x2, y1, 20, (y2 - y1)))
+
+            if connectionType == "Coax":
+                self.linConnection.setStyleSheet(_fromUtf8("color:blue"))
+            elif connectionType == "Fibre":
+                self.linConnection.setStyleSheet(_fromUtf8("color:red"))
+            else:
+                self.linConnection.setStyleSheet(_fromUtf8("color:green"))
+
+            self.linConnection.setFrameShadow(QtGui.QFrame.Plain)
+            self.linConnection.setLineWidth(6)
+            self.linConnection.setFrameShape(QtGui.QFrame.VLine)
+            self.linConnection.setObjectName(_fromUtf8(uniqueName + "b"))
+            #self.linConnection.lower()
+            self.linConnection.show()
 
         print "place connection graphic"
+
+
+class MyLabel(QtGui.QLabel):
+    myX = 0
+    myY = 0
+    myW = 0
+    myH = 0
+
+    def mousePressEvent(self, ev):
+        point = ev.pos()
+        posX = point.x() + self.myX
+        posY = point.y() + self.myY
+        print "x: " + `posX` + ", y: " + `posY`
+
+    def setGeometry (self, ax, ay, aw, ah):
+        super(MyLabel, self).setGeometry(ax, ay, aw, ah)
+        self.myX = ax
+        self.myY = ay
+        self.myW = aw
+        self.myH = ah
