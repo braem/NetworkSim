@@ -10,6 +10,9 @@ class Node:
         self.node_id = Node.node_id
         Node.node_id += 1
 
+        #stores {final destination, mininmun distance, next hop}
+        #self.routing_table = {{}}
+
 
 class Switch (Node):
     def __init__(self):

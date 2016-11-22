@@ -10,7 +10,7 @@ from NetworkObjects.Node import *
 from NetworkObjects.Connection import Connection
 from SimulationLoop import *
 
-from Network import Network
+from Network import network
 from Packet import Packet
 
 
@@ -50,7 +50,7 @@ def n_node_demo(n):
     # First off, we need a network.
 
     global teh_matrix
-    teh_matrix = Network()
+    teh_matrix = network
     # Sweeet.  Now we need a few host nodes.
 
 

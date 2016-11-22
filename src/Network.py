@@ -56,3 +56,5 @@ class Network:
                 other_node = connection["nodes"][0] if node_id == connection["nodes"][0] else connection["nodes"][1]
                 connected.append({"node":other_node, "connection":connection["connection"]})
         return connected
+
+network = Network()
