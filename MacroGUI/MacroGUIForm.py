@@ -173,6 +173,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.cboNodeType.setCurrentIndex(-1)
         self.cboConnectionType.setCurrentIndex(-1)
+        QtCore.QObject.connect(self.cboConnectionType, QtCore.SIGNAL(_fromUtf8("activated(int)")), self.decideBandwidth)
         QtCore.QObject.connect(self.btnAddConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addConnection)
         QtCore.QObject.connect(self.btnDeleteConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addNode)
         QtCore.QObject.connect(self.btnModifyConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addNode)
@@ -220,8 +221,23 @@ class Ui_MainWindow(object):
             self.cboNode2.addItem(str(self.nodes[x]._Node__Node_ID))
 
     def initializeWidgets(self):
+        self.hideBandwidth()
         self.cboConnectionType.addItems(['Coax', 'Fibre', 'Custom'])
         self.cboNodeType.addItems(['Host', 'Router', 'Switch'])
+
+    def hideBandwidth(self):
+        self.lblConnectionBandwidth.hide()
+        self.txtConnectionBandwidth.hide()
+
+    def showBandwidth(self):
+        self.lblConnectionBandwidth.show()
+        self.txtConnectionBandwidth.show()
+
+    def decideBandwidth(self):
+        if self.cboConnectionType.currentText() == "Custom":
+            self.showBandwidth()
+        else:
+            self.hideBandwidth()
 
     def addNode(self):
         thisNode = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
@@ -255,9 +271,7 @@ class Ui_MainWindow(object):
         print "modify connection"
 
     def placeNodeGraphic(self, uniqueName):
-        #self.lblNode = QtGui.QLabel(self.frameMain)
         self.lblNode = NodeLabel(self.frameMain)
-        #self.lblNode.setGeometry(QtCore.QRect(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 40, 30))
         self.lblNode.setGeometry(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 41, 31)
         self.lblNode.setText(_fromUtf8(""))
         if self.cboNodeType.currentText() == "Host":
@@ -293,19 +307,41 @@ class Ui_MainWindow(object):
         else:
             connectionColor = "green"
 
-        if (x2 - x1) > (y2 - y1):
-            self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, uniqueName)
-            self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
-        else:
-            self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
-            self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
-
+        if (x2 - x1) > 0:   # x direction from node 1 to node 2 is positive
+            if (y2 - y1) > 0:   # y direction from node 1 to node 2 is positive
+                if (x2 - x1) > (y2 - y1):   # line in x direction is longer than y
+                    self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, uniqueName)
+                    self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
+                else:   # line in y is longer than x
+                    self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
+            else:   # y direction from node 1 to node 2 is negative
+                if (x2 - x1) > (y1 - y2):   # line in x direction is longer than y
+                    self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, uniqueName)
+                    self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, uniqueName)
+                else:   # line in y is longer than x
+                    self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
+        else:   # x direction from node 1 to node 2 is negative
+            if (y2 - y1) > 0:   # y direction from node 1 to node 2 is positive
+                if (x1 - x2) > (y2 - y1):   # line in x is longer than y
+                    self.drawHorizontalLine(x2, y1, (x1 - x2), connectionColor, uniqueName)
+                    self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
+                else:   # line in y is longer than x
+                    self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x2, y2, (x1 - x2), connectionColor, uniqueName)
+            else:   # y direction from node 1 to node 2 is negative
+                if (x1 - x2) > (y1 - y2):   # line in x is longer than y
+                    self.drawHorizontalLine(x2, y1, (x1 - x2), connectionColor, uniqueName)
+                    self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, uniqueName)
+                else:   # line in y is longer than x
+                    self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x2, y2, (x1 - x2), connectionColor, uniqueName)
 
 
         print "place connection graphic"
 
     def drawHorizontalLine(self, xPos, yPos, lineLength, lineColor, connectionName):
-        #self.linConnection = QtGui.QFrame(self.frameMain)
         self.linConnection = NetworkConnection(self.frameMain)
         self.linConnection.setGeometry(QtCore.QRect(xPos, yPos, lineLength, 6))
         self.linConnection.setStyleSheet(_fromUtf8("color:" + lineColor))
@@ -313,13 +349,12 @@ class Ui_MainWindow(object):
         self.linConnection.setFrameShadow(QtGui.QFrame.Plain)
         self.linConnection.setLineWidth(6)
         self.linConnection.setFrameShape(QtGui.QFrame.HLine)
-        self.linConnection.setObjectName(_fromUtf8(connectionName + "a"))
+        self.linConnection.setObjectName(_fromUtf8(connectionName + "H"))
         self.linConnection.lower()
         self.linConnection.show()
 
 
     def drawVerticalLine(self, xPos, yPos, lineLength, lineColor, connectionName):
-        #self.linConnection = QtGui.QFrame(self.frameMain)
         self.linConnection = NetworkConnection(self.frameMain)
         self.linConnection.setGeometry(QtCore.QRect(xPos, yPos, 6, lineLength))
         self.linConnection.setStyleSheet(_fromUtf8("color:" + lineColor))
@@ -327,7 +362,7 @@ class Ui_MainWindow(object):
         self.linConnection.setFrameShadow(QtGui.QFrame.Plain)
         self.linConnection.setLineWidth(6)
         self.linConnection.setFrameShape(QtGui.QFrame.VLine)
-        self.linConnection.setObjectName(_fromUtf8(connectionName + "a"))
+        self.linConnection.setObjectName(_fromUtf8(connectionName + "V"))
         self.linConnection.lower()
         self.linConnection.show()
 
@@ -337,6 +372,9 @@ class NodeLabel(QtGui.QLabel):
     myY = 0
     myW = 0
     myH = 0
+
+    def mouseDoubleClickEvent(self, ev):
+        print "double click - Open micro view for selected node"
 
     def mousePressEvent(self, ev):
         point = ev.pos()
@@ -371,10 +409,11 @@ class NetworkConnection(QtGui.QFrame):
     myY = 0
     myW = 0
     myH = 0
+    connectionName = ""
 
     def mousePressEvent(self, ev):
         point = ev.pos()
         posX = point.x() + self.myX
         posY = point.y() + self.myY
 
-        print "connection clicked " + connectionName
+        print "connection clicked " + self.connectionName
