@@ -35,7 +35,8 @@ class Ui_MainWindow(object):
         MainWindow.resize(805, 575)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.frameMain = QtGui.QFrame(self.centralwidget)
+        #self.frameMain = QtGui.QFrame(self.centralwidget)
+        self.frameMain = NetworkFrame(self.centralwidget)
         self.frameMain.setGeometry(QtCore.QRect(0, 0, 631, 521))
         self.frameMain.setAcceptDrops(True)
         self.frameMain.setAutoFillBackground(False)
@@ -254,10 +255,10 @@ class Ui_MainWindow(object):
         print "modify connection"
 
     def placeNodeGraphic(self, uniqueName):
-        self.lblNode = QtGui.QLabel(self.frameMain)
-        #self.lblNode = MyLabel(QtGui.QLabel(self.frameMain))
-        self.lblNode.setGeometry(QtCore.QRect(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 40, 30))
-        #self.lblNode.setGeometry(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 41, 31)
+        #self.lblNode = QtGui.QLabel(self.frameMain)
+        self.lblNode = NodeLabel(self.frameMain)
+        #self.lblNode.setGeometry(QtCore.QRect(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 40, 30))
+        self.lblNode.setGeometry(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 41, 31)
         self.lblNode.setText(_fromUtf8(""))
         if self.cboNodeType.currentText() == "Host":
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
@@ -285,47 +286,53 @@ class Ui_MainWindow(object):
         x2 = int(end[0]) + 20
         y2 = int(end[1]) + 15
 
+        if connectionType == "Coax":
+            connectionColor = "blue"
+        elif connectionType == "Fibre":
+            connectionColor = "red"
+        else:
+            connectionColor = "green"
+
         if (x2 - x1) > (y2 - y1):
-            # first line
-            self.linConnection = QtGui.QFrame(self.frameMain)
-            self.linConnection.setGeometry(QtCore.QRect(x1, y1, (x2 - x1), 16))
+            self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, uniqueName)
+            self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
+        else:
+            self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
+            self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
 
-            if connectionType == "Coax":
-                self.linConnection.setStyleSheet(_fromUtf8("color:blue"))
-            elif connectionType == "Fibre":
-                self.linConnection.setStyleSheet(_fromUtf8("color:red"))
-            else:
-                self.linConnection.setStyleSheet(_fromUtf8("color:green"))
 
-            self.linConnection.setFrameShadow(QtGui.QFrame.Plain)
-            self.linConnection.setLineWidth(6)
-            self.linConnection.setFrameShape(QtGui.QFrame.HLine)
-            self.linConnection.setObjectName(_fromUtf8(uniqueName + "a"))
-            #self.linConnection.lower()
-            self.linConnection.show()
-
-            # second line
-            self.linConnection = QtGui.QFrame(self.frameMain)
-            self.linConnection.setGeometry(QtCore.QRect(x2, y1, 20, (y2 - y1)))
-
-            if connectionType == "Coax":
-                self.linConnection.setStyleSheet(_fromUtf8("color:blue"))
-            elif connectionType == "Fibre":
-                self.linConnection.setStyleSheet(_fromUtf8("color:red"))
-            else:
-                self.linConnection.setStyleSheet(_fromUtf8("color:green"))
-
-            self.linConnection.setFrameShadow(QtGui.QFrame.Plain)
-            self.linConnection.setLineWidth(6)
-            self.linConnection.setFrameShape(QtGui.QFrame.VLine)
-            self.linConnection.setObjectName(_fromUtf8(uniqueName + "b"))
-            #self.linConnection.lower()
-            self.linConnection.show()
 
         print "place connection graphic"
 
+    def drawHorizontalLine(self, xPos, yPos, lineLength, lineColor, connectionName):
+        #self.linConnection = QtGui.QFrame(self.frameMain)
+        self.linConnection = NetworkConnection(self.frameMain)
+        self.linConnection.setGeometry(QtCore.QRect(xPos, yPos, lineLength, 6))
+        self.linConnection.setStyleSheet(_fromUtf8("color:" + lineColor))
 
-class MyLabel(QtGui.QLabel):
+        self.linConnection.setFrameShadow(QtGui.QFrame.Plain)
+        self.linConnection.setLineWidth(6)
+        self.linConnection.setFrameShape(QtGui.QFrame.HLine)
+        self.linConnection.setObjectName(_fromUtf8(connectionName + "a"))
+        self.linConnection.lower()
+        self.linConnection.show()
+
+
+    def drawVerticalLine(self, xPos, yPos, lineLength, lineColor, connectionName):
+        #self.linConnection = QtGui.QFrame(self.frameMain)
+        self.linConnection = NetworkConnection(self.frameMain)
+        self.linConnection.setGeometry(QtCore.QRect(xPos, yPos, 6, lineLength))
+        self.linConnection.setStyleSheet(_fromUtf8("color:" + lineColor))
+
+        self.linConnection.setFrameShadow(QtGui.QFrame.Plain)
+        self.linConnection.setLineWidth(6)
+        self.linConnection.setFrameShape(QtGui.QFrame.VLine)
+        self.linConnection.setObjectName(_fromUtf8(connectionName + "a"))
+        self.linConnection.lower()
+        self.linConnection.show()
+
+
+class NodeLabel(QtGui.QLabel):
     myX = 0
     myY = 0
     myW = 0
@@ -338,8 +345,36 @@ class MyLabel(QtGui.QLabel):
         print "x: " + `posX` + ", y: " + `posY`
 
     def setGeometry (self, ax, ay, aw, ah):
-        super(MyLabel, self).setGeometry(ax, ay, aw, ah)
+        super(NodeLabel, self).setGeometry(ax, ay, aw, ah)
         self.myX = ax
         self.myY = ay
         self.myW = aw
         self.myH = ah
+
+
+class NetworkFrame(QtGui.QFrame):
+    myX = 0
+    myY = 0
+    myW = 0
+    myH = 0
+
+    def mousePressEvent(self, ev):
+        point = ev.pos()
+        posX = point.x() + self.myX
+        posY = point.y() + self.myY
+        
+        print "x: " + `posX` + ", y: " + `posY`
+
+
+class NetworkConnection(QtGui.QFrame):
+    myX = 0
+    myY = 0
+    myW = 0
+    myH = 0
+
+    def mousePressEvent(self, ev):
+        point = ev.pos()
+        posX = point.x() + self.myX
+        posY = point.y() + self.myY
+
+        print "connection clicked " + connectionName
