@@ -38,15 +38,19 @@ class Packet:
 
     def update_packet_location(self):
 
-        self.current_node = self.connection.other_node(self.current_node)
-
-    '''    if packet.current_node != packet.get_destination():
-            packet.deliver()  # just updates what node the packet thinks it's at
-            packet.current_node.deliver(packet)
+        if self.current_node != self.get_destination():
+            self.deliver()  # just updates what node the packet thinks it's at
+            #self.current_node.deliver(self)
 
             # My guess is that node.deliver(packet) will begin the process of dealing
             # with a packet at a given node, for example put a link layer frame into the
             # node's link layer input buffer, but I have no idea how that will actually work.
+
+            # Update: No it won't.  It will be more like
+            # self.current_node.forward(self) which should set the packet connection to the next connection in the
+            # route.  That's it.
+
+        '''
 
         else:
             node.process_step()
@@ -55,14 +59,16 @@ class Packet:
             # What to do now depends on the implementation of the node classes.
             # Presumably the node classes have something in place to define how
             # packets are handled within a node.
-    '''
+        '''
 
     def deliver(self):
         self.current_node = self.connection.other_node(self.current_node)
-        self.connection = None
+        #del(self.connection)
+        #TODO Connection should be deleted upon delivery in actual execution.  For demo purposes it has been removed.
 
     def get_destination(self):
-        pass
+        return self.payload.ip_datagram.segment.header.dest_port
+        #This is super bad.  For shoddy demo only.  Then again, it might actually be all that is required.
     '''
         #extracts destination from the payload and returns it
         #This should probably behave contextually, extracting the destination from the outermost layer
