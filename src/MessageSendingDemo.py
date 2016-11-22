@@ -61,7 +61,7 @@ def n_node_demo(n):
         this = j
         teh_matrix.add_node(Host())
 
-        if previous >= first and this <= last:
+        if previous >= first:
             previous_node = teh_matrix.nodes[previous]
             this_node = teh_matrix.nodes[this]
             teh_matrix.add_connection(previous_node, this_node, Connection(previous_node, this_node, 2))
