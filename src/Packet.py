@@ -18,13 +18,13 @@ class Packet:
     so I can tell what to do with it when the timer is up.
     '''
     #Need an id so the Packet dictionary in Network works the same as the others
-    packet_num = 0
+    static_packet_id = 0
     def __init__(self, node, payload):
         self.connection = None
         self.payload = payload
         self.current_node = node
-        self.packet_id = self.packet_num
-        self.packet_num += 1
+        self.packet_id = Packet.static_packet_id
+        Packet.static_packet_id += 1
 
     def set_connection(self, connection):
         self.connection = connection
