@@ -7,10 +7,14 @@ import threading
 
 
 class SimThread(threading.Thread):
+
     """The thread class to be instantiated to run the simulation
 
     USAGE NOTE: in order to stop a SimThread under normal usage, use SimThread.end().  This will allow
     the network's state to be saved by letting the current cycle (tick) finish before terminating."""
+
+    #lock will be used to synchronize threads accessing the run flag.
+
 
     def __init__(self, function, args=(), the_end=-1):
         """Initializes a new SimThread which will run function(args) the_end times
@@ -24,6 +28,7 @@ class SimThread(threading.Thread):
         self.function = function
         self.args = args
         self.theEnd = the_end
+        self.lock = threading.Lock()
 
     def run(self):
         """The run method executes function(args) theEnd times, or if theEnd < 0 runs until stopped
@@ -45,16 +50,16 @@ class SimThread(threading.Thread):
         :type write: boolean
         :type value: boolean"""
 
-        lock = threading.Lock()
-        lock.acquire()
+
+        self.lock.acquire()
 
         if write:
             self.runFlag = value
-            lock.release()
+            self.lock.release()
             return
         else:
             flag = self.runFlag
-            lock.release()
+            self.lock.release()
             return flag
 
     def end(self):
