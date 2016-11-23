@@ -2,14 +2,15 @@ from Node import Node
 from Connection import Connection
 from Network import Network
 
+
 class Graph:
     # graph dict is calling the Node class and Network to get the connection between the nodes and latency will be cost
     #  between the two nodes and path with min delay will be chosen as shortest path
     def __init__(self):
-       pass
+        pass
 
-   # def connection_network(self, graph):
-    #    self.graph[Node.node_id] = {Network.connected, Connection.latency}
+        # def connection_network(self, graph):
+        #    self.graph[Node.node_id] = {Network.connected, Connection.latency}
 
 
 # graph = {'s': {'a': 2, 'b': 1},
@@ -27,53 +28,59 @@ class Graph:
 # visited list will have list of all the visited nodes
 # Cost dict will have the measured cost for each edge
 # predecessors dic will have all the neighbours of the node
-
-
-def dijkstra(graph, destination_id, source_id, visited=[], cost={}, predecessors={}):
-    if source_id == destination_id:
-        # The very next hop is the destination
+def dijkstra(graph, dest_node, source_node, visited=[], cost={}, previous={}):
+    if source_node == dest_node:
+        # if the very next hop is the destination
         path = []
-        first_hop = destination_id
-        while first_hop != None:
+        first_hop = dest_node
+        while first_hop is not None:
+            # add that hop to the path list
             path.append(first_hop)
-            first_hop = predecessors.get(first_hop, None)
+            # none here will be the default result if there will be an error
+            first_hop = previous.get(first_hop, None)
             x = str(path)
-            y = str(cost[destination_id])
-            return x, y
-            # returns path and cost counted for that path
+            y = str(cost[dest_node])
+            return x
+            # returns path and but we ae not showing cost
     else:
         # if not then search for the whole network
         if not visited:
-            cost[source_id] = 0
+            # initialise  the cost dict with 0
+            cost[source_node] = 0
         # go through all the neighbors
-        for neighbor in graph[source_id]:
+        for neighbor in graph[source_node]:
             if neighbor not in visited:
-                new_distance = cost[source_id] + graph[source_id][neighbor]
-                if new_distance < cost.get(neighbor, float('inf')):
-                    cost[neighbor] = new_distance
-                    predecessors[neighbor] = source_id
+                # new_cost will contain the sum of value in cost and the cost of source node's neighbour
+                new_cost = cost[source_node] + graph[source_node][neighbor]
+                # if new cost is smaller than calculated then update the cost dict with new min cost
+                # float('inf') is representing infinity and it will be default result if the error will be generated
+                #  that is cost will be infinity that case
+                if new_cost < cost.get(neighbor, float('inf')):
+                    cost[neighbor] = new_cost
+                    previous[neighbor] = source_node
         # label it as visited and add into visited list
-        visited.append(source_id)
+        visited.append(source_node)
         # now it will take into consideration the non visited one's
         # it has minimum latency and will match with minimum latency, to check there is any shorter path(small latency)
         # than the  one already calculated
         # run Dijkstra with source_id='shortest'
         unvisited = {}
         for k in graph:
+            # if key is not in visited
             if k not in visited:
                 unvisited[k] = cost.get(k, float('inf'))
         shortest = min(unvisited, key=unvisited.get)
-        dijkstra(graph, destination_id, shortest, visited, cost, predecessors)
+        dijkstra(graph, dest_node, shortest, visited, cost, previous)
 
 
-def connection_network(graph):
+def convert_connections(graph):
     graph[Node.node_id] = {Network.connected, Connection.latency}
     return graph
 
 
 if __name__ == "__main__":
     # graph= dict({[Node.node_id] = {Network.connected, Connection.latency}})
-    #graph={}
-    graph=connection_network(graph={})
+    # graph={}
+    graph = convert_connections(graph={})
 
-    dijkstra(graph, 'source_id', 'destination_id')
+    dijkstra(graph, 'source_node', 'previous')
