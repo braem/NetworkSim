@@ -10,11 +10,15 @@ class Network:
         """
         self.nodes[node.node_id] = node
 
+    def get_node_pair_id(self, n1_id, n2_id):
+        return (n1_id, n2_id) if n1_id <= n2_id else (n2_id, n1_id)
+        
     def add_connection(self, n1_id, n2_id, connection):
         """
         add a connection between two nodes (by id)
         """
-        self.connections[connection.connection_id] = {"nodes": sorted([n1_id, n2_id]), "connection": connection}
+        pair_id = get_node_pair_id(n1_id, n2_id)
+        self.connections[pair_id] = {connection}
 
     def add_packet(self, packet):
         self.packets[packet.packet_id] = packet
@@ -26,7 +30,7 @@ class Network:
         try:
             del self.nodes[node_id]
             for c_id, connection in self.connections.iteritems():
-                if node_id in connection["nodes"]:
+                if node_id in c_id:
                     del self.connections[c_id]
             for p_id, packet in self.packets.iteritems():
                 if node_id == packet.current_node.node_id:
@@ -35,12 +39,12 @@ class Network:
         except:
             return False
 
-    def remove_connection(self, c_id):
+    def remove_connection(self, n1_id, n2_id):
         """
-        remove a connection by id
+        remove a connection by ids of nodes
         """
         try:
-            del self.connections[c_id]
+            del self.connections[get_node_pair_id(n1_id, n2_id)]
             return True
         except:
             return False
@@ -51,8 +55,17 @@ class Network:
         [{"node": the node at the other end, "connection": the connection object}]
         """
         connected = []
-        for connection in self.connections.values():
-            if node_id in connection["nodes"]:
-                other_node = connection["nodes"][0] if node_id == connection["nodes"][0] else connection["nodes"][1]
-                connected.append({"node":other_node, "connection":connection["connection"]})
+        for c_id, connection in self.connections.iteritems():
+            if node_id in c_id:
+                other_node = c_id[0] if c_id[1] == node_id else c_id[1]
+                connected.append({"node":other_node, "connection":connection})
         return connected
+
+    def get_as_graph(self):
+        graph = {}
+        for node in self.nodes:
+            graph_node = {}
+            for connection in self.get_connected_nodes(node):
+                graph_node[connection["node"]] = connection["connection"].latency
+            graph[node] = graph_node
+        return graph
