@@ -67,6 +67,8 @@ class SimThread(threading.Thread):
         self.access_flag(write=True, value=False)
 
 
+
+
 def start_simulation(network):
     """Starts a new thread to run the simulation with the given global network object
 
@@ -76,6 +78,15 @@ def start_simulation(network):
     SEE SimThread USAGE NOTE!!! (in SimThread class)
     :type network: Network
     :rtype SimThread"""
+
+    #compute routing tables for each node
+    tables = {}
+    #tables = Nav's_stuff.routing_tables(network)
+
+    #insert routing tables into the nodes
+    for node in network.nodes:
+        node.routing_table = tables[node.node_id]
+
 
     thread = SimThread(sim_step, network)
     thread.start()
