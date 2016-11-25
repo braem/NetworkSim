@@ -7,8 +7,11 @@ class Node:
     node_id = 0
 
     def __init__(self):
+
         self.node_id = Node.node_id
         Node.node_id += 1
+
+
 
         #stores {final destination, mininmun distance, next hop}
         #self.routing_table = {{}}
@@ -17,6 +20,7 @@ class Node:
 class Switch (Node):
     def __init__(self):
         Node.__init__(self)
+        self.routing_table = {}
 
     def get_ethernet_header(self, message):
         return message.frame_header
@@ -27,6 +31,9 @@ class Switch (Node):
     def wrap_new_ethernet_frame(self, message, destination_id):
         #TODO the length of the header shouldn't be zero?
         return EthernetFrame(Header(self.node_id, destination_id, 0), message)
+
+    def next_hop(self, dest_id):
+        return self.routing_table[dest_id]
 
 
 class Router (Switch):
