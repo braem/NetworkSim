@@ -2,6 +2,7 @@ from Segments.EthernetFrame import EthernetFrame
 from Segments.IPDatagram import IPDatagram
 from Segments.Header import *
 from Segments.Segment import *
+from src import SimulationLoop
 
 class Node:
     node_id = 0
@@ -69,3 +70,5 @@ class Host (Router):
             UDPSegment(header, message)
         else:
             Segment(header, message)
+
+    #TODO add send_message(dest_id, message_contents)
