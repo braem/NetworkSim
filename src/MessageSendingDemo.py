@@ -26,7 +26,7 @@ def test_step(network):
             packet.decrement_timer()
         elif packet.timer == 0:
             packet.decrement_timer()
-            packet.update_packet_location()
+            packet.update_location()
             next_connection = get_next_connection(packet)
 
             if(next_connection == packet.connection):
