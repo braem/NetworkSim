@@ -5,6 +5,7 @@ __version__ = "1.0.0"
 
 import threading
 
+the_network = None
 
 class SimThread(threading.Thread):
 
@@ -14,7 +15,6 @@ class SimThread(threading.Thread):
     the network's state to be saved by letting the current cycle (tick) finish before terminating."""
 
     #lock will be used to synchronize threads accessing the run flag.
-
 
     def __init__(self, function, args=(), the_end=-1):
         """Initializes a new SimThread which will run function(args) the_end times
@@ -80,6 +80,7 @@ def start_simulation(network):
     :rtype SimThread"""
 
     #compute routing tables for each node
+
     tables = {}
     #tables = Nav's_stuff.routing_tables(network)
 
@@ -103,6 +104,8 @@ def sim_step(network):
 
     :type network Network"""
 
+    global the_network
+    the_network = network
 
     #Sprint 1
 
