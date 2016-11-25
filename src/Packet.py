@@ -37,7 +37,7 @@ class Packet:
     def decrement_timer(self):
         self.timer -= 1
 
-    def update_packet_location(self):
+    def update_location(self):
         global the_network
 
         if self.current_node != self.get_destination():
@@ -46,17 +46,9 @@ class Packet:
             #get the next node and set this packet's connection to that between current_node and next_node
             next_node = self.current_node.next_hop(self.get_destination())
             self.set_connection(the_network.connections(self.current_node, next_node))
-
-        '''
-
         else:
-            node.process_step()
-
-            # This means the packet started this cycle at it's final destination...
-            # What to do now depends on the implementation of the node classes.
-            # Presumably the node classes have something in place to define how
-            # packets are handled within a node.
-        '''
+            #If the packet has reached its destination, delete it.
+            del(the_network.packets[self.packet_id])
 
     def deliver(self):
         self.current_node = self.connection.other_node(self.current_node)
