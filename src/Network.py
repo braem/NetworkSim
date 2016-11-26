@@ -1,3 +1,9 @@
+from Segments.Segment import *
+from Segments.Header import *
+from Segments import IPDatagram
+from Segments import EthernetFrame
+import Packet
+
 class Network:
     def __init__(self):
         self.nodes = {}
@@ -12,6 +18,25 @@ class Network:
 
     def get_node_pair_id(self, n1_id, n2_id):
         return (n1_id, n2_id) if n1_id <= n2_id else (n2_id, n1_id)
+
+    def create_messageUDP(self, startID, endID, messageString):
+
+        segment = UDPSegment(UDPHeader(startID, endID, 0), messageString)
+        self.create_message(startID, endID, segment)
+
+
+    def create_messageTCP(self, startID, endID, messageString):
+
+        segment = TCPSegment(TCPHeader(startID, endID, 0), messageString)
+        self.create_message(startID, endID, segment)
+
+
+    def create_message(self, startID, endID, UDP_TCP_segment):
+
+        ip_datagram = IPDatagram(Header(startID,endID,0), UDP_TCP_segment)
+        eth_frame = EthernetFrame(Header(startID, endID, 0), ip_datagram)
+        network.add_packet(Packet(network.nodes[startID], eth_frame))
+
         
     def add_connection(self, n1_id, n2_id, connection):
         """
@@ -69,3 +94,6 @@ class Network:
                 graph_node[connection["node"]] = connection["connection"].latency
             graph[node] = graph_node
         return graph
+
+
+network = Network()
