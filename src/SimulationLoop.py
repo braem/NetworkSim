@@ -82,7 +82,7 @@ def start_simulation(network):
     #compute routing tables for each node
 
     tables = {}
-    #tables = Nav's_stuff.routing_tables(network)
+    #nav's_stuff.routing_tables(network)
 
     #insert routing tables into the nodes
     for node in network.nodes:
