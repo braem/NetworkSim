@@ -2,7 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-from Segments.Segment import *
+from Segments import *
 from Segments.Header import *
 from Segments import IPDatagram
 from Segments import EthernetFrame
@@ -10,7 +10,7 @@ from NetworkObjects.Node import *
 from NetworkObjects.Connection import Connection
 from SimulationLoop import *
 
-from Network import Network
+from Network import network
 from Packet import Packet
 
 
@@ -26,7 +26,7 @@ def test_step(network):
             packet.decrement_timer()
         elif packet.timer == 0:
             packet.decrement_timer()
-            packet.update_packet_location()
+            packet.update_location()
             next_connection = get_next_connection(packet)
 
             if(next_connection == packet.connection):
@@ -50,18 +50,17 @@ def n_node_demo(n):
     # First off, we need a network.
 
     global teh_matrix
-    teh_matrix = Network()
+    teh_matrix = network
     # Sweeet.  Now we need a few host nodes.
 
-    first = 0
-    last = n - 1
+
     for j in range(0,n):
 
         previous = j - 1
         this = j
         teh_matrix.add_node(Host())
 
-        if previous >= first:
+        if previous >= 0:
             previous_node = teh_matrix.nodes[previous]
             this_node = teh_matrix.nodes[this]
             teh_matrix.add_connection(previous_node, this_node, Connection(previous_node, this_node, 2))
