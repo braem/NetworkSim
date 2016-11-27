@@ -1,86 +1,95 @@
-from Node import Node
-from Connection import Connection
-from Network import Network
+graph = { 1:{2:2,3:1},
+          2:{1:2,3:8},
+          3:{1:1,2:8,6:4,4:2},
+          4:{3:2,6:4,5:7},
+          5:{6:5,4:7},
+          6:{3:4,4:4,5:5}}
 
 
-class Graph:
-    # graph dict is calling the Node class and Network to get the connection between the nodes and latency will be cost
-    #  between the two nodes and path with min delay will be chosen as shortest path
-    def __init__(self):
-        pass
+def routing_tables(graph):
 
-        # def connection_network(self, graph):
-        #    self.graph[Node.node_id] = {Network.connected, Connection.latency}
+    tables = {}
 
+    paths = shortest_paths(graph)
+    for node in graph.keys():
+        table = {}
 
-# graph = {'s': {'a': 2, 'b': 1},
-#  'a': {'s': 3, 'b': 4, 'c': 8},
-# 'b': {'s': 4, 'a': 2, 'd': 2},
-#  'c': {'a': 2, 'd': 7, 't': 4},
-# 'd': {'b': 1, 'c': 11, 't': 5},
-# 't': {'c': 3, 'd': 5}}
+        for path in paths:
+            if(path.__contains__(node)):
+                index = path.index(node)
 
+                for i in range(0, len(path)):
+                    if i < index:
+                        table[path[i]] = path[index - 1]
+                    elif i > index:
+                        table[path[i]] = path[index + 1]
 
-# Dijkstra's algorithm to calculate the shortest path
-# graph will have the connection and cost between nodes
-# destination_id will carry the address of destination node
-# source_id will have the address of source node
-# visited list will have list of all the visited nodes
-# Cost dict will have the measured cost for each edge
-# predecessors dic will have all the neighbours of the node
-def dijkstra(graph, dest_node, source_node, visited=[], cost={}, previous={}):
-    if source_node == dest_node:
-        # if the very next hop is the destination
+            tables[node] = table
+
+    return tables
+
+def shortest_paths(graph):
+    paths = []
+    graph_copy = graph.copy()
+
+    for source in graph_copy.keys():
+        for dest in graph_copy.keys():
+            if source != dest and len(graph_copy)>1:
+                paths.append(dijkstra(graph_copy, source, dest))
+        #del (graph_copy[source])
+    return paths
+
+#This is here because Python is dumb.
+def dijkstra(graph, source_id, dest_id):
+    return dijkstra2(graph, source_id, dest_id,[],{},{})
+
+def dijkstra2(graph, source_id, dest_id, visited=[], distances={}, parents={}):
+    unvisited = [graph.keys()]
+
+    if source_id == dest_id:
+        # We build the shortest path and display it
         path = []
-        first_hop = dest_node
-        while first_hop is not None:
-            # add that hop to the path list
-            path.append(first_hop)
-            # none here will be the default result if there will be an error
-            first_hop = previous.get(first_hop, None)
-            x = str(path)
-            y = str(cost[dest_node])
-            return x
-            # returns path and but we ae not showing cost
+        distances[dest_id] = []
+        parent = dest_id
+        while parent != None:
+            path.append(parent)
+            parent = parents.get(parent, None)  # D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+        list = [1,2,3,4]
+
+        path.reverse()
+
+        return path
     else:
-        # if not then search for the whole network
+        # if it is the initial  run, initializes the cost and visited dict is empty
         if not visited:
-            # initialise  the cost dict with 0
-            cost[source_node] = 0
-        # go through all the neighbors
-        for neighbor in graph[source_node]:
+            distances[source_id] = 0
+        # visit the neighbors
+        for neighbor in graph[source_id]:
             if neighbor not in visited:
-                # new_cost will contain the sum of value in cost and the cost of source node's neighbour
-                new_cost = cost[source_node] + graph[source_node][neighbor]
-                # if new cost is smaller than calculated then update the cost dict with new min cost
-                # float('inf') is representing infinity and it will be default result if the error will be generated
-                #  that is cost will be infinity that case
-                if new_cost < cost.get(neighbor, float('inf')):
-                    cost[neighbor] = new_cost
-                    previous[neighbor] = source_node
-        # label it as visited and add into visited list
-        visited.append(source_node)
-        # now it will take into consideration the non visited one's
-        # it has minimum latency and will match with minimum latency, to check there is any shorter path(small latency)
-        # than the  one already calculated
-        # run Dijkstra with source_id='shortest'
+                new_distance = distances[source_id] + graph[source_id][neighbor]
+                # graph[source_id][neighbor] returns list of the nodes connected to source
+                if new_distance < distances.get(neighbor, float('inf')):
+                    distances[neighbor] = new_distance
+                    parents[neighbor] = source_id  # source id will become parent
+        # mark as visited
+        visited.append(source_id)
+        # now that all neighbors have been visited: recurse
+        # unvisited.pop(source_id)
+        # select the non visited node with lowest distance 'x'
+        # run Dijskstra with src='x'
         unvisited = {}
         for k in graph:
-            # if key is not in visited
-            if k not in visited:
-                unvisited[k] = cost.get(k, float('inf'))
-        shortest = min(unvisited, key=unvisited.get)
-        dijkstra(graph, dest_node, shortest, visited, cost, previous)
-
-
-def convert_connections(graph):
-    graph[Node.node_id] = {Network.connected, Connection.latency}
-    return graph
+            if k not in visited:  # if key is not in visited dict
+                unvisited[k] = distances.get(k, float('inf'))  # D.get(k[,d]) -> D[k] if k in D,defaults to infinity.
+                # get the distances for all unvisited nodes and put it into unvisited dict with distances as values.
+        # for getting minimum value out of those
+        #  x = min(unvisited, key=unvisited.get)
+        node_with_minvalue = min(unvisited, key=lambda k: unvisited.get(k,None))
+        return dijkstra2(graph, node_with_minvalue, dest_id, visited, distances, parents)
 
 
 if __name__ == "__main__":
-    # graph= dict({[Node.node_id] = {Network.connected, Connection.latency}})
-    # graph={}
-    graph = convert_connections(graph={})
+    tables = routing_tables(graph)
+    for node,table in zip(tables.keys(),tables.values()): print node, table
 
-    dijkstra(graph, 'source_node', 'previous')
+
