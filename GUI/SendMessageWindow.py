@@ -8,7 +8,7 @@
 
 from PyQt4 import QtCore, QtGui
 from src import Network
-from networkobjects import Node
+from networkobjects.Node import Host
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -28,12 +28,13 @@ except AttributeError:
 class SendMessage_Window(object):
 
     def __init__(self, MainWindow):
-        self.setupUi(MainWindow)
+        self.MainWindow = MainWindow
+        self.setupUi()
 
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(200, 200)
-        self.centralwidget = QtGui.QWidget(MainWindow)
+    def setupUi(self):
+        self.MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        self.MainWindow.resize(200, 200)
+        self.centralwidget = QtGui.QWidget(self.MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -42,7 +43,7 @@ class SendMessage_Window(object):
         self.toComboBox = QtGui.QComboBox(self.centralwidget)
         self.toComboBox.setEditable(False)
         self.toComboBox.setObjectName(_fromUtf8("fromComboBox"))
-        self.toComboBox.editTextChanged.connect(self.validate_combobox_text)
+        self.toComboBox.lineEdit().setInputMask("NNN")
         self.gridLayout.addWidget(self.toComboBox, 1, 2, 1, 1)
         self.toLabel = QtGui.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -63,7 +64,7 @@ class SendMessage_Window(object):
         self.fromComboBox = QtGui.QComboBox(self.centralwidget)
         self.fromComboBox.setEditable(False)
         self.fromComboBox.setObjectName(_fromUtf8("toComboBox"))
-        self.fromComboBox.editTextChanged.connect(self.validate_combobox_text)
+        self.fromComboBox.lineEdit().setInputMask("NNN")
         self.gridLayout.addWidget(self.fromComboBox, 3, 2, 1, 1)
         self.fromLabel = QtGui.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -74,21 +75,20 @@ class SendMessage_Window(object):
         self.gridLayout.addWidget(self.fromLabel, 2, 2, 1, 1)
         spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem2, 4, 2, 1, 1)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
+        self.MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(self.MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 200, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(self.MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
+        self.MainWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(self.MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
         self.refreshDropdowns()
-
-        MainWindow.show()
+        self.MainWindow.show()
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Send Message", None))
@@ -102,14 +102,12 @@ class SendMessage_Window(object):
         self.toComboBox.clearEditText()
         self.fromComboBox.clear()
         self.fromComboBox.clearEditText()
-        array = ['1', '2', '3']
+        array = [1, 2, 3]
         # Repopulate the dropdowns with updated info from the network.
         for index in range(len(array)):
-            self.toComboBox.addItem(QtCore.QString(array[index]))
-            self.fromComboBox.addItem(QtCore.QString(array[index]))
-
-    def validate_combobox_text(self):
-        print "Validating combobox text"
+            if isinstance(array[index], Host):
+                self.toComboBox.addItem(QtCore.QString(array[index]))
+                self.fromComboBox.addItem(QtCore.QString(array[index]))
 
     def send_message(self):
         # Use this for sending the standard string to the network/nodes.
@@ -118,3 +116,10 @@ class SendMessage_Window(object):
         # Send message to the toNode.
 
         self.refreshDropdowns()
+
+    def getHosts(self):
+        array = []
+        for index in range(len(Network.nodes)):
+            if isinstance(Network.nodes[index], Host):
+                array.append(Network.nodes[index])
+        return array
