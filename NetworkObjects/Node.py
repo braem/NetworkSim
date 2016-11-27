@@ -1,8 +1,7 @@
 from Segments.EthernetFrame import EthernetFrame
 from Segments.IPDatagram import IPDatagram
-from Segments.Header import *
 from Segments.Segment import *
-from src import SimulationLoop
+from Src.Network import Network
 
 class Node:
     node_id = 0
@@ -11,11 +10,20 @@ class Node:
 
         self.node_id = Node.node_id
         Node.node_id += 1
-
-
-
         #stores {final destination, mininmun distance, next hop}
         #self.routing_table = {{}}
+
+    '''returns the packets who's current location is this node'''
+    def get_packets(self):
+        my_packets = []
+        for packet in Network.network.packets:
+            if packet.current_node == self.node_id:
+                my_packets.append(packet)
+        return my_packets
+
+
+
+
 
 
 class Switch (Node):
@@ -65,10 +73,13 @@ class Host (Router):
 
     def wrap_new_protocol_header(self, header, message):
         if isinstance(header, TCPHeader):
-            TCPSegment(header, message)
+            return TCPSegment(header, message)
         elif isinstance(header, UDPHeader):
-            UDPSegment(header, message)
+            return UDPSegment(header, message)
         else:
-            Segment(header, message)
+            return Segment(header, message)
 
-    #TODO add send_message(dest_id, message_contents)
+    def send_message(self, dest_id, message_string):
+        Network.network.create_messageTCP(self.node_id, dest_id, message_string)
+
+
