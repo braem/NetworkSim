@@ -1,6 +1,6 @@
-from Node import Node
-from Connection import Connection
-from Network import Network
+from NetworkObjects.Node import Node
+from NetworkObjects.Connection import Connection
+from src.Network import Network
 
 
 class Graph:
