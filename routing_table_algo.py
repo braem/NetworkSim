@@ -1,31 +1,49 @@
-graph = {1: {2: 2, 3: 1},
-         2: {3: 8},
-         3: {1: 2, 4: 2},
-         4: {5: 7, 6: 4},
-         5: {6: 5},
-         6: {3: 4}}
+graph = { 1:{2:2,3:1},
+          2:{1:2,3:8},
+          3:{1:1,2:8,6:4,4:2},
+          4:{3:2,6:4,5:7},
+          5:{6:5,4:7},
+          6:{3:4,4:4,5:5}}
 
 
-# def shortest_paths(graph, src, dst):
-#     paths = []
-#     graph_copy = graph.copy()
-#     for source in graph.keys():
-#         for dest in graph.keys():
-#             if source != dest:
-#                 paths.append(dijkstra(graph_copy, source, dest))
-#                 del (graph_copy[source])
-#         print paths
+def routing_tables(graph):
 
+    tables = {}
 
-def dijkstra(graph, source_id, dest_id, visited=[], distances={}, parents={}):
-    # Dijkstra's algorithm to calculate the shortest path
-    # graph will have the connection and cost between nodes
-    # dest_id will carry the address of destination node
-    # source_id will have the address of source node
-    # visited list will have list of all the visited nodes
-    # cost dict will have the measured cost for each edge
-    # parent dic will have all the neighbours of the node
+    paths = shortest_paths(graph)
+    for node in graph.keys():
+        table = {}
 
+        for path in paths:
+            if(path.__contains__(node)):
+                index = path.index(node)
+
+                for i in range(0, len(path)):
+                    if i < index:
+                        table[path[i]] = path[index - 1]
+                    elif i > index:
+                        table[path[i]] = path[index + 1]
+
+            tables[node] = table
+
+    return tables
+
+def shortest_paths(graph):
+    paths = []
+    graph_copy = graph.copy()
+
+    for source in graph_copy.keys():
+        for dest in graph_copy.keys():
+            if source != dest and len(graph_copy)>1:
+                paths.append(dijkstra(graph_copy, source, dest))
+        #del (graph_copy[source])
+    return paths
+
+#This is here because Python is dumb.
+def dijkstra(graph, source_id, dest_id):
+    return dijkstra2(graph, source_id, dest_id,[],{},{})
+
+def dijkstra2(graph, source_id, dest_id, visited=[], distances={}, parents={}):
     unvisited = [graph.keys()]
 
     if source_id == dest_id:
@@ -36,7 +54,11 @@ def dijkstra(graph, source_id, dest_id, visited=[], distances={}, parents={}):
         while parent != None:
             path.append(parent)
             parent = parents.get(parent, None)  # D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
-            print('shortest path: ' + str(path))
+        list = [1,2,3,4]
+
+        path.reverse()
+
+        return path
     else:
         # if it is the initial  run, initializes the cost and visited dict is empty
         if not visited:
@@ -62,9 +84,12 @@ def dijkstra(graph, source_id, dest_id, visited=[], distances={}, parents={}):
                 # get the distances for all unvisited nodes and put it into unvisited dict with distances as values.
         # for getting minimum value out of those
         #  x = min(unvisited, key=unvisited.get)
-        node_with_minvalue = min(unvisited, key=lambda k: unvisited[k])
-        dijkstra(graph, node_with_minvalue, dest_id, visited, distances, parents)
+        node_with_minvalue = min(unvisited, key=lambda k: unvisited.get(k,None))
+        return dijkstra2(graph, node_with_minvalue, dest_id, visited, distances, parents)
 
 
 if __name__ == "__main__":
-    dijkstra(graph, 1, 6)
+    tables = routing_tables(graph)
+    for node,table in zip(tables.keys(),tables.values()): print node, table
+
+
