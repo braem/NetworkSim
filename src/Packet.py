@@ -2,6 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
+import SimulationLoop
 
 class Packet:
 
@@ -36,30 +37,18 @@ class Packet:
     def decrement_timer(self):
         self.timer -= 1
 
-    def update_packet_location(self):
+    def update_location(self):
+        global the_network
 
         if self.current_node != self.get_destination():
-            self.deliver()  # just updates what node the packet thinks it's at
-            #self.current_node.deliver(self)
-
-            # My guess is that node.deliver(packet) will begin the process of dealing
-            # with a packet at a given node, for example put a link layer frame into the
-            # node's link layer input buffer, but I have no idea how that will actually work.
-
-            # Update: No it won't.  It will be more like
-            # self.current_node.forward(self) which should set the packet connection to the next connection in the
-            # route.  That's it.
-
-        '''
-
+            # Updates what node the packet thinks it's at
+            self.deliver()
+            #get the next node and set this packet's connection to that between current_node and next_node
+            next_node = self.current_node.next_hop(self.get_destination())
+            self.set_connection(the_network.connections(self.current_node, next_node))
         else:
-            node.process_step()
-
-            # This means the packet started this cycle at it's final destination...
-            # What to do now depends on the implementation of the node classes.
-            # Presumably the node classes have something in place to define how
-            # packets are handled within a node.
-        '''
+            #If the packet has reached its destination, delete it.
+            del(the_network.packets[self.packet_id])
 
     def deliver(self):
         self.current_node = self.connection.other_node(self.current_node)
