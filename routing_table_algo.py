@@ -1,30 +1,34 @@
-graph = { 1:{2:2,3:1},
-          2:{1:2,3:8},
-          3:{1:1,2:8,6:4,4:2},
-          4:{3:2,6:4,5:7},
-          5:{6:5,4:7},
-          6:{3:4,4:4,5:5}}
+from src.Network import *
+
+# graph = { 1:{2:2,3:1},
+#            2:{1:2,3:8},
+#            3:{1:1,2:8,6:4,4:2},
+#            4:{3:2,6:4,5:7},
+#            5:{6:5,4:7},
+#            6:{3:4,4:4,5:5}}
 
 
-def routing_tables(graph):
-
+def routing_tables(network):
     tables = {}
+    if isinstance(network, Network):
 
-    paths = shortest_paths(graph)
-    for node in graph.keys():
-        table = {}
+        graph= {network.get_as_graph()}
 
-        for path in paths:
-            if(path.__contains__(node)):
-                index = path.index(node)
+        paths = shortest_paths(graph)
+        for node in graph.keys():
+            table = {}
 
-                for i in range(0, len(path)):
-                    if i < index:
-                        table[path[i]] = path[index - 1]
-                    elif i > index:
-                        table[path[i]] = path[index + 1]
+            for path in paths:
+                if(path.__contains__(node)):
+                    index = path.index(node)
 
-            tables[node] = table
+                    for i in range(0, len(path)):
+                        if i < index:
+                            table[path[i]] = path[index - 1]
+                        elif i > index:
+                            table[path[i]] = path[index + 1]
+
+                tables[node] = table
 
     return tables
 
@@ -36,7 +40,6 @@ def shortest_paths(graph):
         for dest in graph_copy.keys():
             if source != dest and len(graph_copy)>1:
                 paths.append(dijkstra(graph_copy, source, dest))
-        #del (graph_copy[source])
     return paths
 
 #This is here because Python is dumb.
@@ -54,7 +57,6 @@ def dijkstra2(graph, source_id, dest_id, visited=[], distances={}, parents={}):
         while parent != None:
             path.append(parent)
             parent = parents.get(parent, None)  # D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
-        list = [1,2,3,4]
 
         path.reverse()
 
@@ -89,7 +91,7 @@ def dijkstra2(graph, source_id, dest_id, visited=[], distances={}, parents={}):
 
 
 if __name__ == "__main__":
-    tables = routing_tables(graph)
+    tables = routing_tables(network)
     for node,table in zip(tables.keys(),tables.values()): print node, table
 
 
