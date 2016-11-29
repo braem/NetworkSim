@@ -18,14 +18,16 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_MainWindow(object):
 
+class Ui_MainWindow(object):
     connections = []
 
     nodes = []
@@ -35,11 +37,15 @@ class Ui_MainWindow(object):
         MainWindow.resize(805, 575)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        #self.frameMain = QtGui.QFrame(self.centralwidget)
         self.frameMain = NetworkFrame(self.centralwidget)
+
+        palette = QtGui.QPalette()
+        palette.setColor(QtGui.QPalette.Background, QtCore.Qt.darkGray)
+        self.frameMain.setPalette(palette)
+        self.frameMain.setAutoFillBackground(False)
+
         self.frameMain.setGeometry(QtCore.QRect(0, 0, 631, 521))
         self.frameMain.setAcceptDrops(True)
-        self.frameMain.setAutoFillBackground(False)
         self.frameMain.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frameMain.setFrameShadow(QtGui.QFrame.Raised)
         self.frameMain.setLineWidth(1)
@@ -79,6 +85,7 @@ class Ui_MainWindow(object):
         self.txtYPos.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.txtYPos.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.txtYPos.setObjectName(_fromUtf8("txtYPos"))
+        self.frameMain.addPosition(self.txtXPos, self.txtYPos)
         self.txtIP = QtGui.QPlainTextEdit(self.dockNCContents)
         self.txtIP.setGeometry(QtCore.QRect(80, 110, 121, 21))
         self.txtIP.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -211,7 +218,7 @@ class Ui_MainWindow(object):
         self.actionSave_As.setText(_translate("MainWindow", "Save As...", None))
         self.actionExit.setText(_translate("MainWindow", "Exit", None))
 
-    # I cannot figure out how to put these calls elsewhere yet so will need to redo each time .ui file is recreated
+    # I cannot figure out how to put these calls elsewhere yet so will need to copy each time .ui file is recreated
 
     def populateDropDown(self):
         self.cboNode1.clear()
@@ -221,59 +228,67 @@ class Ui_MainWindow(object):
             self.cboNode2.addItem(str(self.nodes[x]._Node__Node_ID))
 
     def initializeWidgets(self):
-        self.hideBandwidth()
+        self.decideBandwidth()
         self.cboConnectionType.addItems(['Coax', 'Fibre', 'Custom'])
         self.cboNodeType.addItems(['Host', 'Router', 'Switch'])
 
-    def hideBandwidth(self):
-        self.lblConnectionBandwidth.hide()
-        self.txtConnectionBandwidth.hide()
-
-    def showBandwidth(self):
-        self.lblConnectionBandwidth.show()
-        self.txtConnectionBandwidth.show()
-
     def decideBandwidth(self):
         if self.cboConnectionType.currentText() == "Custom":
-            self.showBandwidth()
+            self.lblConnectionBandwidth.show()
+            self.txtConnectionBandwidth.show()
         else:
-            self.hideBandwidth()
+            self.lblConnectionBandwidth.hide()
+            self.txtConnectionBandwidth.hide()
 
     def addNode(self):
         thisNode = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
         self.nodes.append(thisNode)
         self.populateDropDown()  # update the node comboboxes temp solution until graphics selectable
-        self.placeNodeGraphic(thisNode.getUniqueID())
-        print "hey"
+        self.placeNodeGraphic(thisNode)
 
     def deleteNode(self):
+
         print "delete node"
 
     def modifyNode(self):
         print "modify node"
 
     def addConnection(self):
-        node1 = self.nodes[self.cboNode1.currentIndex()]
-        node2 = self.nodes[self.cboNode2.currentIndex()]
-        connection = Connection(node1, node2)
-        connection.connectionType = self.cboConnectionType.currentText()
-        connection.connectionLength = self.txtConnectionLength.toPlainText()
-        connection.connectionBandWidth = self.txtConnectionBandwidth.toPlainText()
-        self.connections.append(connection)
+        foundOne = False
+        foundTwo = False
 
-        self.placeConnectionGraphic(connection.getUniqueID(), connection.getConnectionType(), node1, node2)
-        print "add connection"
+        for x in xrange(len(self.nodes)-1):
+            if self.nodes[x].isSelected:
+                node1 = self.nodes[x]
+                foundOne = True
+                x = x + 1
+            if self.nodes[x].isSelected and foundOne:
+                node2 = self.nodes[x]
+                foundTwo = True
+
+        if foundOne and foundTwo:
+            connection = Connection(node1, node2)
+            connection.connectionType = self.cboConnectionType.currentText()
+            connection.connectionLength = self.txtConnectionLength.toPlainText()
+            connection.connectionBandWidth = self.txtConnectionBandwidth.toPlainText()
+            self.connections.append(connection)
+
+            self.placeConnectionGraphic(connection.getUniqueID(), connection.getConnectionType(), node1, node2)
+            self.clearSelected()
+        else:
+            print "Must select 2 nodes before attempting to create a connection"
 
     def deleteConnection(self):
-        print "delete connection"
+        print
 
     def modifyConnection(self):
         print "modify connection"
 
-    def placeNodeGraphic(self, uniqueName):
+    def placeNodeGraphic(self, aNode):
         self.lblNode = NodeLabel(self.frameMain)
         self.lblNode.setGeometry(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 41, 31)
         self.lblNode.setText(_fromUtf8(""))
+        self.lblNode.nodeObject = aNode
         if self.cboNodeType.currentText() == "Host":
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
         elif self.cboNodeType.currentText() == "Router":
@@ -281,11 +296,8 @@ class Ui_MainWindow(object):
         else:
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch.png")))
 
-        self.lblNode.setObjectName(_fromUtf8(uniqueName))
-
+        self.lblNode.setObjectName(_fromUtf8(aNode.getUniqueID()))
         self.lblNode.show()
-
-        print "place node graphic"
 
     def placeConnectionGraphic(self, uniqueName, connectionType, firstNode, secondNode):
 
@@ -307,39 +319,36 @@ class Ui_MainWindow(object):
         else:
             connectionColor = "green"
 
-        if (x2 - x1) > 0:   # x direction from node 1 to node 2 is positive
-            if (y2 - y1) > 0:   # y direction from node 1 to node 2 is positive
-                if (x2 - x1) > (y2 - y1):   # line in x direction is longer than y
+        if (x2 - x1) > 0:  # x direction from node 1 to node 2 is positive
+            if (y2 - y1) > 0:  # y direction from node 1 to node 2 is positive
+                if (x2 - x1) > (y2 - y1):  # line in x direction is longer than y
                     self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, uniqueName)
                     self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
-                else:   # line in y is longer than x
+                else:  # line in y is longer than x
                     self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
                     self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
-            else:   # y direction from node 1 to node 2 is negative
-                if (x2 - x1) > (y1 - y2):   # line in x direction is longer than y
+            else:  # y direction from node 1 to node 2 is negative
+                if (x2 - x1) > (y1 - y2):  # line in x direction is longer than y
                     self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, uniqueName)
                     self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, uniqueName)
-                else:   # line in y is longer than x
+                else:  # line in y is longer than x
                     self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, uniqueName)
                     self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
-        else:   # x direction from node 1 to node 2 is negative
-            if (y2 - y1) > 0:   # y direction from node 1 to node 2 is positive
-                if (x1 - x2) > (y2 - y1):   # line in x is longer than y
+        else:  # x direction from node 1 to node 2 is negative
+            if (y2 - y1) > 0:  # y direction from node 1 to node 2 is positive
+                if (x1 - x2) > (y2 - y1):  # line in x is longer than y
                     self.drawHorizontalLine(x2, y1, (x1 - x2), connectionColor, uniqueName)
                     self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
-                else:   # line in y is longer than x
+                else:  # line in y is longer than x
                     self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
                     self.drawHorizontalLine(x2, y2, (x1 - x2), connectionColor, uniqueName)
-            else:   # y direction from node 1 to node 2 is negative
-                if (x1 - x2) > (y1 - y2):   # line in x is longer than y
+            else:  # y direction from node 1 to node 2 is negative
+                if (x1 - x2) > (y1 - y2):  # line in x is longer than y
                     self.drawHorizontalLine(x2, y1, (x1 - x2), connectionColor, uniqueName)
                     self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, uniqueName)
-                else:   # line in y is longer than x
+                else:  # line in y is longer than x
                     self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, uniqueName)
                     self.drawHorizontalLine(x2, y2, (x1 - x2), connectionColor, uniqueName)
-
-
-        print "place connection graphic"
 
     def drawHorizontalLine(self, xPos, yPos, lineLength, lineColor, connectionName):
         self.linConnection = NetworkConnection(self.frameMain)
@@ -352,7 +361,6 @@ class Ui_MainWindow(object):
         self.linConnection.setObjectName(_fromUtf8(connectionName + "H"))
         self.linConnection.lower()
         self.linConnection.show()
-
 
     def drawVerticalLine(self, xPos, yPos, lineLength, lineColor, connectionName):
         self.linConnection = NetworkConnection(self.frameMain)
@@ -373,16 +381,36 @@ class NodeLabel(QtGui.QLabel):
     myW = 0
     myH = 0
 
+    comboBox1 = None
+    comboBox2 = None
+    nodeObject = None
+
     def mouseDoubleClickEvent(self, ev):
-        print "double click - Open micro view for selected node"
+        print "double click event"
 
     def mousePressEvent(self, ev):
         point = ev.pos()
-        posX = point.x() + self.myX
-        posY = point.y() + self.myY
-        print "x: " + `posX` + ", y: " + `posY`
 
-    def setGeometry (self, ax, ay, aw, ah):
+        self.nodeObject.toggleIsSelected()
+        self.highlightSelected()
+
+    def highlightSelected(self):
+        if self.nodeObject.isSelected:
+            if self.nodeObject.getType() == "Host":
+                self.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc_hl.png")))
+            elif self.nodeObject.getType() == "Router":
+                self.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/router_hl.png")))
+            else:
+                self.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch_hl.png")))
+        else:
+            if self.nodeObject.getType() == "Host":
+                self.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
+            elif self.nodeObject.getType() == "Router":
+                self.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/router.png")))
+            else:
+                self.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch.png")))
+
+    def setGeometry(self, ax, ay, aw, ah):
         super(NodeLabel, self).setGeometry(ax, ay, aw, ah)
         self.myX = ax
         self.myY = ay
@@ -395,13 +423,23 @@ class NetworkFrame(QtGui.QFrame):
     myY = 0
     myW = 0
     myH = 0
+    txtXPosBox = None
+    txtYPosBox = None
+
+    def addPosition(self, tbXpos, tbYpos):
+        self.txtXPosBox = tbXpos
+        self.txtYPosBox = tbYpos
 
     def mousePressEvent(self, ev):
         point = ev.pos()
-        posX = point.x() + self.myX
-        posY = point.y() + self.myY
-        
-        print "x: " + `posX` + ", y: " + `posY`
+        posX = self.round10((point.x() + self.myX), 10)
+        posY = self.round10((point.y() + self.myY), 10)
+
+        self.txtXPosBox.setPlainText(`posX`)
+        self.txtYPosBox.setPlainText(`posY`)
+
+    def round10(self, x, base=10):
+        return int(base * round(float(x) / base))
 
 
 class NetworkConnection(QtGui.QFrame):
