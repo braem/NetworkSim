@@ -148,17 +148,6 @@ class Ui_MainWindow(object):
 
         # some temp stuff
 
-        self.cboNode1 = QtGui.QComboBox(self.frameMain)
-        self.cboNode1.setGeometry(QtCore.QRect(90, 50, 81, 22))
-        self.cboNode1.setMaxVisibleItems(10)
-        self.cboNode1.setMaxCount(1000)
-        self.cboNode1.setObjectName(_fromUtf8("cboNode1"))
-
-        self.cboNode2 = QtGui.QComboBox(self.frameMain)
-        self.cboNode2.setGeometry(QtCore.QRect(180, 50, 81, 22))
-        self.cboNode2.setMaxVisibleItems(10)
-        self.cboNode2.setMaxCount(1000)
-        self.cboNode2.setObjectName(_fromUtf8("cboNode2"))
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.actionNew = QtGui.QAction(MainWindow)
@@ -243,7 +232,6 @@ class Ui_MainWindow(object):
     def addNode(self):
         thisNode = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
         self.nodes.append(thisNode)
-        self.populateDropDown()  # update the node comboboxes temp solution until graphics selectable
         self.placeNodeGraphic(thisNode)
 
     def deleteNode(self):
@@ -257,8 +245,8 @@ class Ui_MainWindow(object):
         foundOne = False
         foundTwo = False
 
-        for x in xrange(len(self.nodes)-1):
-            if self.nodes[x].isSelected:
+        for x in xrange(len(self.nodes)):
+            if self.nodes[x].isSelected and not foundOne:
                 node1 = self.nodes[x]
                 foundOne = True
                 x = x + 1
@@ -274,7 +262,6 @@ class Ui_MainWindow(object):
             self.connections.append(connection)
 
             self.placeConnectionGraphic(connection.getUniqueID(), connection.getConnectionType(), node1, node2)
-            self.clearSelected()
         else:
             print "Must select 2 nodes before attempting to create a connection"
 
