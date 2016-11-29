@@ -238,7 +238,7 @@ class Ui_MainWindow(object):
         self.nodes.append(thisNode)
         self.placeNodeGraphic(thisNode)
 
-    # deletes node, but doesn't repaint (node will still show on screen despite it not existing)
+    # deletes node, close on repaint
     def deleteNode(self):
         fullPass = False
         while fullPass == False:
@@ -255,14 +255,14 @@ class Ui_MainWindow(object):
         # call repaint
         self.clearAndRepaint()
 
-    # modifies node, but doesn't repaint (node will not move to new location)
-    # difficult to implement. Worry about add/delete working properly
+    # modifies node, mostly working intermittent error
     def modifyNode(self):
+        tooMany = False
         foundOne = False
         for x in xrange(len(self.nodes)):
             if self.nodes[x].isSelected and not foundOne:
                 foundOne = True
-                nodeToModifyIndex = self.nodes[x]
+                nodeToModifyIndex = x
             elif self.nodes[x].isSelected and foundOne:
                 tooMany = True
                 break
@@ -272,6 +272,7 @@ class Ui_MainWindow(object):
         else:
             self.nodes[nodeToModifyIndex] = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
         # call repaint
+        self.clearAndRepaint()
 
     def addConnection(self):
         tooMany = False
