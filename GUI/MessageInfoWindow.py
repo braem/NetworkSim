@@ -46,7 +46,7 @@ class MessageInfo_Window(object):
         self.messageInfoTable.setFont(font)
         self.messageInfoTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.messageInfoTable.setAlternatingRowColors(True)
-        self.messageInfoTable.setRowCount(self.getSpecifiedDepth())
+        self.messageInfoTable.setRowCount(self.getSpecifiedDepth() + 1)
         self.messageInfoTable.setColumnCount(1)
         self.messageInfoTable.setObjectName(_fromUtf8("messageInfoTable"))
         self.messageInfoTable.horizontalHeader().setVisible(True)
@@ -78,8 +78,8 @@ class MessageInfo_Window(object):
     # Fills the rows top-down in the order of the list given.
     def fillTable(self):
         message_parts = self.parseMessageContents()
-        for index in range(self.getSpecifiedDepth()):
-            self.addItem(index, message_parts[index] + " + ")
+        for index in range(self.getSpecifiedDepth() + 1):
+            self.addItem(index, message_parts[index])
 
     # Extracts the message and headers from the core message object.
     def parseMessageContents(self):
@@ -87,7 +87,14 @@ class MessageInfo_Window(object):
         # Application message
         parts_array.append(self.message.ip_datagram.segment.message)
         # Segment Header
-        parts_array.append(self.message.ip_datagram.segment.header)
+        parts_array.append('src/dest port: ' +
+                           str(self.message.ip_datagram.segment.header.src_port) +
+                           '/' +
+                           str(self.message.ip_datagram.segment.header.dest_port) +
+                           ', length: ' +
+                           str(self.message.ip_datagram.segment.header.length) +
+                           ', checksum: ' +
+                           str(self.message.ip_datagram.segment.header.length))
         # IPDatagram Header
         parts_array.append(self.message.ip_datagram.ip_header)
         # Ethernet Frame Header
