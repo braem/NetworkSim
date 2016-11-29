@@ -4,8 +4,8 @@ __version__ = "1.0.0"
 
 import routing_table_algo
 import threading
+from src.Network import Network
 
-the_network = None
 
 class SimThread(threading.Thread):
 
@@ -69,7 +69,7 @@ class SimThread(threading.Thread):
 
 
 
-def start_simulation(network):
+def start_simulation(network, num=-1):
     """Starts a new thread to run the simulation with the given global network object
 
     returns a reference to the SimThread running the simulation so that the GUI thread
@@ -87,7 +87,7 @@ def start_simulation(network):
         node.routing_table = tables[node.node_id]
 
 
-    thread = SimThread(sim_step, network)
+    thread = SimThread(sim_step, network, num)
     thread.start()
 
     return thread
@@ -102,15 +102,13 @@ def sim_step(network):
 
     :type network Network"""
 
-    global the_network
-    the_network = network
-
 
     for packet in network.packets.values():
         if packet.timer > 0: packet.decrement_timer()
         else: packet.update_location(packet)
 
-
+def tick():
+    start_simulation(Network.network, 1)
 
     '''
     Rhys's Notes - Rough Outline
