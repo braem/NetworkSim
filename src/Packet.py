@@ -52,14 +52,8 @@ class Packet:
 
     def deliver(self):
         self.current_node = self.connection.other_node(self.current_node)
-        #del(self.connection)
-        #TODO Connection should be deleted upon delivery in actual execution.  For demo purposes it has been removed.
+        del(self.connection)
 
     def get_destination(self):
         return self.payload.ip_datagram.segment.header.dest_port
-        #This is super bad.  For shoddy demo only.  Then again, it might actually be all that is required.
-    '''
-        #extracts destination from the payload and returns it
-        #This should probably behave contextually, extracting the destination from the outermost layer
-        #of the payload.
-   '''
+
