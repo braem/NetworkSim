@@ -72,6 +72,34 @@ def main():
     x_btn.move(1250, 150)
     pc_btn.clicked.connect(lambda: three())
 
+    # Network Buttons
+    pixmap = QPixmap('ui_images/red_btn.png')
+    red_btn = QPushButton(backgroundWidget)
+    red_btn.setIcon(QIcon('ui_images/red_btn.png'))
+    red_btn.setStyleSheet('ui_images/red_btn.png')
+    red_btn.setIconSize(pixmap.rect().size())
+    red_btn.setFixedSize(pixmap.rect().size())
+    red_btn.move(1150, 80)
+    red_btn.clicked.connect(lambda: three())
+
+    pixmap = QPixmap('ui_images/blue_btn.png')
+    blue_btn = QPushButton(backgroundWidget)
+    blue_btn.setIcon(QIcon('ui_images/blue_btn.png'))
+    blue_btn.setStyleSheet('ui_images/blue_btn.png')
+    blue_btn.setIconSize(pixmap.rect().size())
+    blue_btn.setFixedSize(pixmap.rect().size())
+    blue_btn.move(1150, 100)
+    blue_btn.clicked.connect(lambda: three())
+
+    pixmap = QPixmap('ui_images/white_btn.png')
+    white_btn = QPushButton(backgroundWidget)
+    white_btn.setIcon(QIcon('ui_images/white_btn.png'))
+    white_btn.setStyleSheet('ui_images/white_btn.png')
+    white_btn.setIconSize(pixmap.rect().size())
+    white_btn.setFixedSize(pixmap.rect().size())
+    white_btn.move(1150, 120)
+    white_btn.clicked.connect(lambda: three())
+
 
 
 
