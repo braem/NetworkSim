@@ -28,7 +28,10 @@ class Packet:
         Packet.static_packet_id += 1
 
     def set_connection(self, connection):
+        if self.connection is not None:
+            self.connection.removeTraffic()
         self.connection = connection
+        self.connection.addTraffic()
         self.set_timer(connection.latency)
 
     def set_timer(self, time):
@@ -48,6 +51,7 @@ class Packet:
             self.set_connection(the_network.connections(self.current_node, next_node))
         else:
             #If the packet has reached its destination, delete it.
+            self.connection.removeTraffic()
             del(the_network.packets[self.packet_id])
 
     def deliver(self):
