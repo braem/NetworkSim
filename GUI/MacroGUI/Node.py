@@ -17,6 +17,7 @@ class Node(object):
         self.__X = x                        # position x value
         self.__Y = y                        # position y value
         self.__NetworkInfo = object         # object that holds addressing info etc
+        self.isSelected = False
 
     def __del__(self):
         Node.counter -= 1
@@ -54,3 +55,6 @@ class Node(object):
 
     def getUniqueID(self):
         return self.__Node_ID
+
+    def toggleIsSelected(self):
+        self.isSelected = not self.isSelected
