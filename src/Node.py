@@ -1,85 +1,56 @@
-from Segments.EthernetFrame import EthernetFrame
-from Segments.IPDatagram import IPDatagram
-from Segments.Segment import *
-from src.Network import Network
-
-class Node:
-    node_id = 0
-
-    def __init__(self):
-
-        self.node_id = Node.node_id
-        Node.node_id += 1
-        #stores {final destination, mininmun distance, next hop}
-        #self.routing_table = {{}}
-
-    '''returns the packets who's current location is this node'''
-    def get_packets(self):
-        my_packets = []
-        for packet in Network.network.packets:
-            if packet.current_node == self.node_id:
-                my_packets.append(packet)
-        return my_packets
+import string, time, math, random
 
 
+"""Node.py - node object """
+__author__ = "Darren Hendrickson"
+__version__ = "1.0.0"
 
 
+class Node(object):
 
+    counter = 0
 
-class Switch (Node):
-    def __init__(self):
-        Node.__init__(self)
-        self.routing_table = {}
+    def __init__(self, nodeType, x, y):
+        Node.counter += 1
+        self.__Node_ID = self.uniqid()           # instance variable unique to each instance
+        self.__NodeType = nodeType          # node type "PC", "Router", or "Switch"
+        self.__X = x                        # position x value
+        self.__Y = y                        # position y value
+        self.__NetworkInfo = object         # object that holds addressing info etc
 
-    def get_ethernet_header(self, message):
-        return message.frame_header
+    def __del__(self):
+        Node.counter -= 1
 
-    def get_ethernet_datagram(self, message):
-        return message.ip_datagram
+    # borrowed from http://gurukhalsa.me/2011/uniqid-in-python/
+    def uniqid(more_entropy=False):
+        m = time.time()
+        uniqid = '%8x%05x' % (math.floor(m), (m - math.floor(m)) * 1000000)
+        if more_entropy:
+            valid_chars = list(set(string.hexdigits.lower()))
+            entropy_string = ''
+            for i in range(0, 10, 1):
+                entropy_string += random.choice(valid_chars)
+            uniqid = uniqid + entropy_string
+        return uniqid
 
-    def wrap_new_ethernet_frame(self, message, destination_id):
-        #TODO the length of the header shouldn't be zero?
-        return EthernetFrame(Header(self.node_id, destination_id, 0), message)
+    def setType(self, nType):
+        self.__NodeType = nType
 
-    def next_hop(self, dest_id):
-        return self.routing_table[dest_id]
+    def getType(self):
+        return self.__NodeType
 
+    def setLocation(self, xPos, yPos):
+        self.__X = xPos
+        self.__Y = yPos
 
-class Router (Switch):
-    def __init__(self):
-        Switch.__init__(self)
+    def getLocation(self):
+        return [self.__X, self.__Y]
 
-    def get_ip_header(self, message):
-        return message.ip_header
+    def setNetworkInfo(self, networkInfo):
+        self.__NetworkInfo = networkInfo
 
-    def get_ip_segment(self, message):
-        return message.segment
+    def getNetworkInfo(self):
+        return self.__NetworkInfo
 
-
-    def wrap_new_ip_frame(self, message, source_id, destination_id):
-        #TODO the length of the header shouldn't be zero?
-        return IPDatagram(Header(source_id, destination_id, 0),message)
-
-
-class Host (Router):
-    def __init__(self):
-        Router.__init__(self)
-
-    def get_protocol_header(self, message):
-        return message.header
-
-    def get_protocol_message(self, message):
-        return message.message
-
-    def wrap_new_protocol_header(self, header, message):
-        if isinstance(header, TCPHeader):
-            return TCPSegment(header, message)
-        elif isinstance(header, UDPHeader):
-            return UDPSegment(header, message)
-        else:
-            return Segment(header, message)
-
-    def send_message(self, dest_id, message_string):
-        Network.network.create_messageTCP(self.node_id, dest_id, message_string)
-
-
+    def getUniqueID(self):
+        return self.__Node_ID
