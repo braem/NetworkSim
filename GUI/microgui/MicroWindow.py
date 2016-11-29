@@ -7,7 +7,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from Connection import *
 from Node import *
-from MessageInfoInterface import MessageInfoInterface
 from MessageInfoWindow import MessageInfo_Window
 
 try:
@@ -45,6 +44,9 @@ class MicroMainWindow(QMainWindow):
         self.lineList = []
         self.central_widget = None
         self.list_size = 0
+        self.connection1 = con1
+        self.connection2 = con2
+        self.connection3 = con3
 
         self.setup(con1, con2, con3)
 
@@ -104,7 +106,7 @@ class MicroMainWindow(QMainWindow):
                     pos_x = Values.windWidth / 2 + total_width / 2 - temp_offset
                     pos_y = Values.windHeight / 2 - MicroHostFrame.myHeight / 2 + (MicroHostFrame.myHeight -
                                                                                    MicroGraphicsLabel.getHeight())
-                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(self.conList[i], pos_x, pos_y))
 
             # Show components
             for i in self.deviceList:
@@ -207,15 +209,15 @@ class MicroMainWindow(QMainWindow):
             frame = MicroSwitchFrame(self.central_widget, device, pos_x, pos_y)
             return frame
 
-    def makeLine(self, device_left, device_right, pos_x, pos_y):
-        label = MicroGraphicsLabel(self.central_widget, device_left, device_right, pos_x, pos_y)
+    def makeLine(self, connection, pos_x, pos_y):
+        label = MicroGraphicsLabel(self.central_widget, connection, pos_x, pos_y)
         return label
 
     def update(self):
-        None
-        # If connection 1 in use, activate line[0]
-        # If connection 2 in use, activate line[1]
-        # If connection 3 in use, activate line[2]
+        for gfx in self.lineList:
+            gfx.update();
+
+
 
 
 class MicroHostFrame(QFrame):
@@ -461,18 +463,19 @@ class MicroGraphicsLabel(QLabel):
     myHeight = Values.buttonHeight*5-5
     myWidth = Values.graphicWidth
 
-    def __init__(self, holder, device_left, device_right, pos_x, pos_y):
+    def __init__(self, holder, connection, pos_x, pos_y):
         super(MicroGraphicsLabel, self).__init__(holder)
 
         self.myType = 0
         self.active = False
         self.myMaps = []
+        self.myConnection = connection
 
-        self.setup(device_left, device_right, pos_x, pos_y)
+        self.setup(pos_x, pos_y)
 
-    def setup(self, leftDevice, rightDevice, posX, posY):
+    def setup(self, posX, posY):
         self.setGeometry(posX, posY, MicroGraphicsLabel.myWidth, MicroGraphicsLabel.myHeight)
-        self.myType = self.getType(leftDevice, rightDevice)
+        self.myType = self.getType(self.myConnection.nodes[0], self.myConnection.nodes[1])
         cwd = os.getcwd()
         cwd = cwd.replace("\\", "/")
         self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
@@ -578,6 +581,13 @@ class MicroGraphicsLabel(QLabel):
                 self.setPixmap(self.myMaps[13])
             else:
                 self.setPixmap(self.myMaps[12])
+
+    def update(self):
+        if self.myConnection.inUse():
+            self.active = True
+        else:
+            self.active = False
+        self.updateStatus()
 
 # For testing purposes
 if __name__ == "__main__":
