@@ -78,5 +78,5 @@ class TableFunction(QWidget):
         window.addWidget(run_btn)
 
         bigwin.setLayout(window)
-        bigwin.setGeometry(30, 30, 190, 360)
+        bigwin.setGeometry(1150, 300, 190, 360)
         return bigwin
