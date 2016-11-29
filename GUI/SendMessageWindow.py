@@ -9,6 +9,7 @@
 from PyQt4 import QtCore, QtGui
 from src import Network
 from networkobjects.Node import Host
+from src.Network import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -43,7 +44,6 @@ class SendMessage_Window(object):
         self.toComboBox = QtGui.QComboBox(self.centralwidget)
         self.toComboBox.setEditable(False)
         self.toComboBox.setObjectName(_fromUtf8("fromComboBox"))
-        self.toComboBox.lineEdit().setInputMask("NNN")
         self.gridLayout.addWidget(self.toComboBox, 1, 2, 1, 1)
         self.toLabel = QtGui.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -52,19 +52,32 @@ class SendMessage_Window(object):
         self.toLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.toLabel.setObjectName(_fromUtf8("fromLabel"))
         self.gridLayout.addWidget(self.toLabel, 0, 2, 1, 1)
+        # Prep the protocol radios.
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.TCPradioButton = QtGui.QRadioButton(self.centralwidget)
+        self.TCPradioButton.setFont(font)
+        self.TCPradioButton.setText(QtCore.QString('TCP'))
+        self.TCPradioButton.setObjectName(_fromUtf8("TCPradioButton"))
+        self.gridLayout.addWidget(self.TCPradioButton, 5, 1, 1, 1)
+        self.UDPradioButton = QtGui.QRadioButton(self.centralwidget)
+        self.UDPradioButton.setFont(font)
+        self.UDPradioButton.setText(QtCore.QString('UDP'))
+        self.UDPradioButton.setObjectName(_fromUtf8("UDPradioButton"))
+        self.gridLayout.addWidget(self.UDPradioButton, 5, 3, 1, 1)
+        # Prep the send button.
         self.sendButton = QtGui.QPushButton(self.centralwidget)
         font = QtGui.QFont()
         font.setPointSize(10)
         self.sendButton.setFont(font)
         self.sendButton.setObjectName(_fromUtf8("sendButton"))
         self.sendButton.clicked.connect(self.send_message)
-        self.gridLayout.addWidget(self.sendButton, 5, 2, 1, 1)
+        self.gridLayout.addWidget(self.sendButton, 6, 2, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 1, 1, 1)
         self.fromComboBox = QtGui.QComboBox(self.centralwidget)
         self.fromComboBox.setEditable(False)
         self.fromComboBox.setObjectName(_fromUtf8("toComboBox"))
-        self.fromComboBox.lineEdit().setInputMask("NNN")
         self.gridLayout.addWidget(self.fromComboBox, 3, 2, 1, 1)
         self.fromLabel = QtGui.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -114,6 +127,12 @@ class SendMessage_Window(object):
         print str(self.toComboBox.currentText())
         print str(self.fromComboBox.currentText())
         # Send message to the toNode.
+        if self.TCPradioButton.isChecked():
+            print str("TCP Message")
+            Network.create_messageTCP(self.toComboBox.currentText(), self.fromComboBox.currentText())
+        else:
+            print str("UDP Message")
+            Network.create_messageUDP(self.toComboBox.currentText(), self.fromComboBox.currentText())
 
         self.refreshDropdowns()
 
