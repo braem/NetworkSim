@@ -5,10 +5,10 @@
 import os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from Connection import *
-from Node import *
-from MessageInfoInterface import MessageInfoInterface
-from MessageInfoWindow import MessageInfo_Window
+from networkobjects.Connection import *
+from networkobjects.Node import *
+# from MessageInfoInterface import MessageInfoInterface
+from GUI.MessageInfoWindow import MessageInfo_Window
 
 try:
     _fromUtf8 = QString.fromUtf8
