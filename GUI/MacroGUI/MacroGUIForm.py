@@ -10,6 +10,7 @@ from PyQt4 import QtCore, QtGui
 
 from Connection import *
 from Node import *
+import sip
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -37,8 +38,8 @@ class Ui_MainWindow(object):
         MainWindow.resize(805, 575)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+        self.thisMainWindow = MainWindow
         self.frameMain = NetworkFrame(self.centralwidget)
-
         palette = QtGui.QPalette()
         palette.setColor(QtGui.QPalette.Background, QtCore.Qt.darkGray)
         self.frameMain.setPalette(palette)
@@ -64,9 +65,11 @@ class Ui_MainWindow(object):
         self.lblNetworkInfo = QtGui.QLabel(self.dockNCContents)
         self.lblNetworkInfo.setGeometry(QtCore.QRect(20, 90, 91, 16))
         self.lblNetworkInfo.setObjectName(_fromUtf8("lblNetworkInfo"))
+        self.lblNetworkInfo.hide()
         self.lblIP = QtGui.QLabel(self.dockNCContents)
         self.lblIP.setGeometry(QtCore.QRect(50, 110, 46, 13))
         self.lblIP.setObjectName(_fromUtf8("lblIP"))
+        self.lblIP.hide()
         self.cboNodeType = QtGui.QComboBox(self.dockNCContents)
         self.cboNodeType.setGeometry(QtCore.QRect(108, 10, 81, 22))
         self.cboNodeType.setMaxVisibleItems(3)
@@ -75,6 +78,7 @@ class Ui_MainWindow(object):
         self.lblMAC = QtGui.QLabel(self.dockNCContents)
         self.lblMAC.setGeometry(QtCore.QRect(50, 140, 46, 13))
         self.lblMAC.setObjectName(_fromUtf8("lblMAC"))
+        self.lblMAC.hide()
         self.txtXPos = QtGui.QPlainTextEdit(self.dockNCContents)
         self.txtXPos.setGeometry(QtCore.QRect(90, 50, 51, 21))
         self.txtXPos.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -91,11 +95,13 @@ class Ui_MainWindow(object):
         self.txtIP.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.txtIP.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.txtIP.setObjectName(_fromUtf8("txtIP"))
+        self.txtIP.hide()
         self.txtMAC = QtGui.QPlainTextEdit(self.dockNCContents)
         self.txtMAC.setGeometry(QtCore.QRect(80, 140, 121, 21))
         self.txtMAC.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.txtMAC.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.txtMAC.setObjectName(_fromUtf8("txtMAC"))
+        self.txtMAC.hide()
         self.btnModifyNode = QtGui.QPushButton(self.dockNCContents)
         self.btnModifyNode.setGeometry(QtCore.QRect(80, 200, 75, 23))
         self.btnModifyNode.setObjectName(_fromUtf8("btnModifyNode"))
@@ -210,17 +216,13 @@ class Ui_MainWindow(object):
 
     # I cannot figure out how to put these calls elsewhere yet so will need to copy each time .ui file is recreated
 
-    def populateDropDown(self):
-        self.cboNode1.clear()
-        self.cboNode2.clear()
-        for x in range(0, self.nodes.__len__()):
-            self.cboNode1.addItem(str(self.nodes[x]._Node__Node_ID))
-            self.cboNode2.addItem(str(self.nodes[x]._Node__Node_ID))
-
     def initializeWidgets(self):
         self.decideBandwidth()
         self.cboConnectionType.addItems(['Coax', 'Fibre', 'Custom'])
+        self.cboConnectionType.setCurrentIndex(0)   # set default connection type Why don't you work??????
+                                                    # the index is set but does not display the value
         self.cboNodeType.addItems(['Host', 'Router', 'Switch'])
+        self.cboNodeType.setCurrentIndex(0)   # set default node type
 
     def decideBandwidth(self):
         if self.cboConnectionType.currentText() == "Custom":
@@ -230,12 +232,13 @@ class Ui_MainWindow(object):
             self.lblConnectionBandwidth.hide()
             self.txtConnectionBandwidth.hide()
 
+
     def addNode(self):
         thisNode = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
         self.nodes.append(thisNode)
         self.placeNodeGraphic(thisNode)
 
-    # deletes node, but doesn't repaint (node will still show on screen despite it not existing)
+    # deletes node, close on repaint
     def deleteNode(self):
         fullPass = False
         while fullPass == False:
@@ -250,15 +253,16 @@ class Ui_MainWindow(object):
                     fullPass = True
                 x = x + 1
         # call repaint
+        self.clearAndRepaint()
 
-    # modifies node, but doesn't repaint (node will not move to new location)
-    # difficult to implement. Worry about add/delete working properly
+    # modifies node, mostly working intermittent error
     def modifyNode(self):
+        tooMany = False
         foundOne = False
         for x in xrange(len(self.nodes)):
             if self.nodes[x].isSelected and not foundOne:
                 foundOne = True
-                nodeToModifyIndex = self.nodes[x]
+                nodeToModifyIndex = x
             elif self.nodes[x].isSelected and foundOne:
                 tooMany = True
                 break
@@ -268,6 +272,7 @@ class Ui_MainWindow(object):
         else:
             self.nodes[nodeToModifyIndex] = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
         # call repaint
+        self.clearAndRepaint()
 
     def addConnection(self):
         tooMany = False
@@ -299,7 +304,25 @@ class Ui_MainWindow(object):
 
     def deleteConnection(self):
         print "delete: " + self
+
         # call repaint
+
+    def clearAndRepaint(self):
+
+#        sip.delete(self.lblNode)
+        for x in xrange(len(self.frameMain.children())):
+            sip.delete(self.frameMain.children()[0])
+
+        self.frameMain.repaint()
+
+        self.repaintFrameMain()
+
+    def repaintFrameMain(self):
+        for x in xrange(len(self.nodes)):
+            self.placeNodeGraphic(self.nodes[x])
+
+        self.frameMain.repaint()
+
 
     # difficult to implement. Worry about add/delete working properly
     def modifyConnection(self):
@@ -307,8 +330,13 @@ class Ui_MainWindow(object):
         # call repaint
 
     def placeNodeGraphic(self, aNode):
+
+        nodePosition = aNode.getLocation()
+        x1 = int(nodePosition[0])
+        y1 = int(nodePosition[1])
+
         self.lblNode = NodeLabel(self.frameMain)
-        self.lblNode.setGeometry(int(self.txtXPos.toPlainText()), int(self.txtYPos.toPlainText()), 41, 31)
+        self.lblNode.setGeometry(x1, y1, 41, 31)
         self.lblNode.setText(_fromUtf8(""))
         self.lblNode.nodeObject = aNode
         if self.cboNodeType.currentText() == "Host":
@@ -351,7 +379,7 @@ class Ui_MainWindow(object):
                     self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
             else:  # y direction from node 1 to node 2 is negative
                 if (x2 - x1) > (y1 - y2):  # line in x direction is longer than y
-                    self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x1, y1, (x2 - x1 + 6), connectionColor, uniqueName)
                     self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, uniqueName)
                 else:  # line in y is longer than x
                     self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, uniqueName)
@@ -403,8 +431,6 @@ class NodeLabel(QtGui.QLabel):
     myW = 0
     myH = 0
 
-    comboBox1 = None
-    comboBox2 = None
     nodeObject = None
 
     def mouseDoubleClickEvent(self, ev):
@@ -432,12 +458,12 @@ class NodeLabel(QtGui.QLabel):
             else:
                 self.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch.png")))
 
-    def setGeometry(self, ax, ay, aw, ah):
-        super(NodeLabel, self).setGeometry(ax, ay, aw, ah)
-        self.myX = ax
-        self.myY = ay
-        self.myW = aw
-        self.myH = ah
+#    def setGeometry(self, ax, ay, aw, ah):
+#        super(NodeLabel, self).setGeometry(ax, ay, aw, ah)
+#        self.myX = ax
+#       self.myY = ay
+#        self.myW = aw
+#        self.myH = ah
 
 
 class NetworkFrame(QtGui.QFrame):
