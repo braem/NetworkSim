@@ -243,19 +243,21 @@ class Ui_MainWindow(object):
         print "modify node"
 
     def addConnection(self):
-        foundOne = False
-        foundTwo = False
+        tooMany = False
 
+        numNodes = 0
         for x in xrange(len(self.nodes)):
-            if self.nodes[x].isSelected and not foundOne:
+            if self.nodes[x].isSelected and numNodes == 0:
                 node1 = self.nodes[x]
-                foundOne = True
-                x = x + 1
-            if self.nodes[x].isSelected and foundOne:
+                numNodes = numNodes + 1
+            elif self.nodes[x].isSelected and numNodes == 1:
                 node2 = self.nodes[x]
-                foundTwo = True
+                numNodes = numNodes + 1
+            elif self.nodes[x].isSelected and numNodes == 2:
+                tooMany = True
+            x = x + 1
 
-        if foundOne and foundTwo:
+        if not tooMany and numNodes == 2:
             connection = Connection(node1, node2)
             connection.connectionType = self.cboConnectionType.currentText()
             connection.connectionLength = self.txtConnectionLength.toPlainText()
@@ -263,6 +265,8 @@ class Ui_MainWindow(object):
             self.connections.append(connection)
 
             self.placeConnectionGraphic(connection.getUniqueID(), connection.getConnectionType(), node1, node2)
+        elif tooMany:
+            print "Cant select more than 2 nodes before attempting to create a connection"
         else:
             print "Must select 2 nodes before attempting to create a connection"
 
