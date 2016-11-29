@@ -2,7 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-
+import routing_table_algo
 import threading
 
 the_network = None
@@ -80,9 +80,7 @@ def start_simulation(network):
     :rtype SimThread"""
 
     #compute routing tables for each node
-
-    tables = {}
-    #nav's_stuff.routing_tables(network)
+    tables=routing_table_algo.routing_tables(network)
 
     #insert routing tables into the nodes
     for node in network.nodes:
@@ -107,17 +105,15 @@ def sim_step(network):
     global the_network
     the_network = network
 
-    #Sprint 1
 
     for packet in network.packets.values():
         if packet.timer > 0: packet.decrement_timer()
-        elif packet.timer == 0: packet.update_location(packet)
-        #else: Undecided.  This may indicate the packet should be removed
+        else: packet.update_location(packet)
 
 
 
     '''
-    Rhys's Notes
+    Rhys's Notes - Rough Outline
 
     For this bit, I'm assuming messages are not threads, because that idea is inconsistent with
     this approach.
