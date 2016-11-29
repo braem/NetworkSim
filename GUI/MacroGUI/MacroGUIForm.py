@@ -30,7 +30,6 @@ except AttributeError:
 
 class Ui_MainWindow(object):
     connections = []
-
     nodes = []
 
     def setupUi(self, MainWindow):
@@ -170,13 +169,14 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.cboNodeType.setCurrentIndex(-1)
         self.cboConnectionType.setCurrentIndex(-1)
+        # calling functions from buttons here
         QtCore.QObject.connect(self.cboConnectionType, QtCore.SIGNAL(_fromUtf8("activated(int)")), self.decideBandwidth)
         QtCore.QObject.connect(self.btnAddConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addConnection)
-        QtCore.QObject.connect(self.btnDeleteConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addNode)
-        QtCore.QObject.connect(self.btnModifyConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addNode)
+        QtCore.QObject.connect(self.btnDeleteConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.deleteConnection)
+        QtCore.QObject.connect(self.btnModifyConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.modifyConnection)
         QtCore.QObject.connect(self.btnAddNode, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addNode)
-        QtCore.QObject.connect(self.btnDeleteNode, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addNode)
-        QtCore.QObject.connect(self.btnModifyNode, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addNode)
+        QtCore.QObject.connect(self.btnDeleteNode, QtCore.SIGNAL(_fromUtf8("clicked()")), self.deleteNode)
+        QtCore.QObject.connect(self.btnModifyNode, QtCore.SIGNAL(_fromUtf8("clicked()")), self.modifyNode)
 
         # copy to here
 
@@ -235,17 +235,44 @@ class Ui_MainWindow(object):
         self.nodes.append(thisNode)
         self.placeNodeGraphic(thisNode)
 
+    # deletes node, but doesn't repaint (node will still show on screen despite it not existing)
     def deleteNode(self):
+        fullPass = False
+        while fullPass == False:
+            if not self.nodes:
+                break
+            for x in xrange(len(self.nodes)):
+                if self.nodes[x].isSelected:
+                    fullPass = False
+                    self.nodes.pop(x)
+                    break
+                else:
+                    fullPass = True
+                x = x + 1
+        # call repaint
 
-        print "delete node"
-
+    # modifies node, but doesn't repaint (node will not move to new location)
+    # difficult to implement. Worry about add/delete working properly
     def modifyNode(self):
-        print "modify node"
+        foundOne = False
+        for x in xrange(len(self.nodes)):
+            if self.nodes[x].isSelected and not foundOne:
+                foundOne = True
+                nodeToModifyIndex = self.nodes[x]
+            elif self.nodes[x].isSelected and foundOne:
+                tooMany = True
+                break
+            x = x + 1
+        if tooMany:
+            print "Can only modify one node at a time"
+        else:
+            self.nodes[nodeToModifyIndex] = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
+        # call repaint
 
     def addConnection(self):
         tooMany = False
-
         numNodes = 0
+
         for x in xrange(len(self.nodes)):
             if self.nodes[x].isSelected and numNodes == 0:
                 node1 = self.nodes[x]
@@ -271,10 +298,13 @@ class Ui_MainWindow(object):
             print "Must select 2 nodes before attempting to create a connection"
 
     def deleteConnection(self):
-        print
+        print "delete: " + self
+        # call repaint
 
+    # difficult to implement. Worry about add/delete working properly
     def modifyConnection(self):
         print "modify connection"
+        # call repaint
 
     def placeNodeGraphic(self, aNode):
         self.lblNode = NodeLabel(self.frameMain)
