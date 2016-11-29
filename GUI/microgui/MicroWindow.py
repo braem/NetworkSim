@@ -8,6 +8,7 @@ from PyQt4.QtGui import *
 from Connection import *
 from Node import *
 from MessageInfoInterface import MessageInfoInterface
+from MessageInfoWindow import MessageInfo_Window
 
 try:
     _fromUtf8 = QString.fromUtf8
@@ -35,7 +36,7 @@ class Values():
 
 class MicroMainWindow(QMainWindow):
 
-    def __init__(self, con1, con2, con3):
+    def __init__(self, con1, con2=None, con3=None):
         super(MicroMainWindow, self).__init__()
 
         self.validFlag = False
@@ -126,7 +127,34 @@ class MicroMainWindow(QMainWindow):
         return self.validFlag
 
     @staticmethod
-    def isValidCombo(device1, device2, device3, device4):
+    def isValidCombo(comp1, comp2=None, comp3=None, comp4=None):
+        device3 = None
+        device4 = None
+        if isinstance(comp1, Node) and isinstance(comp2, Node) and (isinstance(comp3, Node) or comp3 is None)\
+                and (isinstance(comp4, Node) or comp4 is None):
+            device1 = comp1
+            device2 = comp2
+            device3 = comp3
+            device4 = comp4
+        else:
+            if isinstance(comp1, Connection):
+                if comp4 is not None:
+                    return False
+                if isinstance(comp3, Connection) or comp3 is None:
+                    if isinstance(comp3, Connection):
+                        device4 = comp3.nodes[1]
+                else:
+                    return False
+                if isinstance(comp2, Connection) or comp2 is None:
+                    if isinstance(comp2, Connection):
+                        device3 = comp2.nodes[1]
+                else:
+                    return False
+                device1 = comp1.nodes[0]
+                device2 = comp1.nodes[1]
+            else:
+                return False
+
         # Check that first and second devices are not invalid
         if device1 is None or not isinstance(device1, Host) or device2 is None:
             return False
@@ -260,6 +288,10 @@ class MicroHostFrame(QFrame):
         # TODO Open Application message window
         # MessageInfoInterface.openMessageInfoWindow(???)
         # TODO remove test code
+        MainWindow = QMainWindow(self)
+        qqq = EthernetFrame("relevant info",
+                            IPDatagram("relevant data", UDPSegment(UDPHeader(80, 80, 7777), "Hello World")))
+        ui = MessageInfo_Window(MainWindow, qqq, "Application")
         self.myHolder.lineList[0].setActive(True)
         if self.myHolder.list_size > 2:
             self.myHolder.lineList[1].setActive(False)
@@ -272,6 +304,10 @@ class MicroHostFrame(QFrame):
         # TODO Open Transport message window
         # MessageInfoInterface.openMessageInfoWindow(???)
         # TODO remove test code
+        MainWindow = QMainWindow(self)
+        qqq = EthernetFrame("relevant info",
+                            IPDatagram("relevant data", UDPSegment(UDPHeader(80, 80, 7777), "Hello World")))
+        ui = MessageInfo_Window(MainWindow, qqq, "Transport")
         self.myHolder.lineList[0].setActive(False)
         if self.myHolder.list_size > 2:
             self.myHolder.lineList[1].setActive(True)
@@ -281,9 +317,14 @@ class MicroHostFrame(QFrame):
 
     def clickedButton_Network(self):
         print "Network"
+
         # TODO Open Network message window
         # MessageInfoInterface.openMessageInfoWindow(???)
         # TODO remove test code
+        MainWindow = QMainWindow(self)
+        qqq = EthernetFrame("relevant info",
+                            IPDatagram("relevant data", UDPSegment(UDPHeader(80, 80, 7777), "Hello World")))
+        ui = MessageInfo_Window(MainWindow, qqq, "Network")
         self.myHolder.lineList[0].setActive(False)
         if self.myHolder.list_size > 2:
             self.myHolder.lineList[1].setActive(False)
@@ -296,6 +337,10 @@ class MicroHostFrame(QFrame):
         # TODO Open Link message window
         # MessageInfoInterface.openMessageInfoWindow(???)
         # TODO remove test code
+        MainWindow = QMainWindow(self)
+        qqq = EthernetFrame("relevant info",
+                            IPDatagram("relevant data", UDPSegment(UDPHeader(80, 80, 7777), "Hello World")))
+        ui = MessageInfo_Window(MainWindow, qqq, "Link")
         self.myHolder.lineList[0].setActive(False)
         if self.myHolder.list_size > 2:
             self.myHolder.lineList[1].setActive(False)
@@ -550,9 +595,10 @@ if __name__ == "__main__":
     #con2 = Connection(router, host2, None)
     con3 = Connection(switch, host2, None)
     #con3 = Connection(router, host2, None)
-    ui = MicroMainWindow(con1, con2, con3)
-    #ui = MicroMainWindow(con1, con2, None)
-    #ui = MicroMainWindow(con1, None, None)
+    if MicroMainWindow.isValidCombo(con1, con2, con3):
+        ui = MicroMainWindow(con1, con2, con3)
+    #ui = MicroMainWindow(con1, con2)
+    #ui = MicroMainWindow(con1, con2, con3)
     ui.show()
     sys.exit(app.exec_())
 
