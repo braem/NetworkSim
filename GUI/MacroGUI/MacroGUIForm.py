@@ -6,11 +6,12 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+import sip
+
 from PyQt4 import QtCore, QtGui
 
-from Connection import *
+from GUI.MacroGUI.Connection import *
 from Node import *
-import sip
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

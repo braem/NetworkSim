@@ -3,10 +3,12 @@
 # Author: Lukas Pihl
 
 import os
+
+from Node import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from Connection import *
-from Node import *
+
+from GUI.MacroGUI.Connection import *
 from MessageInfoWindow import MessageInfo_Window
 
 try:

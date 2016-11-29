@@ -81,3 +81,5 @@ class Host (Router):
 
     def send_message(self, dest_id, message_string):
         Network.network.create_messageTCP(self.node_id, dest_id, message_string)
+
+
