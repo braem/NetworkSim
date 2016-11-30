@@ -469,16 +469,16 @@ class Ui_MainWindow(object):
 
     def startSimulation(self):
         if not self.simulation_started:
-            SimulationLoop.tick()
+            SimThread.tick()
             self.simulation_started = True
 
     def stepSimulation(self):
-        SimulationLoop.tick();
+        SimThread.tick()
 
     def playSimulation(self):
         self.simulation_paused = False
         while True and not self.simulation_paused:
-            SimulationLoop.tick()
+            SimThread.tick()
             time.sleep(self.updateIntervalSpinner.value()/1000)
 
     def pauseSimulation(self):
