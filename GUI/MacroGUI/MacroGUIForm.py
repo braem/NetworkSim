@@ -12,6 +12,10 @@ from PyQt4 import QtCore, QtGui
 
 from GUI.MacroGUI.Connection import *
 from Node import *
+from src.Connection import *
+from src.Node import *
+import sip
+import time
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -31,12 +35,14 @@ except AttributeError:
 
 
 class Ui_MainWindow(object):
+    simulation_started = False
+    simulation_paused = False
     connections = []
     nodes = []
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(805, 575)
+        MainWindow.resize(805, 585)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.thisMainWindow = MainWindow
@@ -53,7 +59,7 @@ class Ui_MainWindow(object):
         self.frameMain.setLineWidth(1)
         self.frameMain.setObjectName(_fromUtf8("frameMain"))
         self.dockNodeProperties = QtGui.QDockWidget(self.centralwidget)
-        self.dockNodeProperties.setGeometry(QtCore.QRect(580, 30, 211, 251))
+        self.dockNodeProperties.setGeometry(QtCore.QRect(580, 10, 211, 251))
         self.dockNodeProperties.setObjectName(_fromUtf8("dockNodeProperties"))
         self.dockNCContents = QtGui.QWidget()
         self.dockNCContents.setObjectName(_fromUtf8("dockNCContents"))
@@ -114,7 +120,7 @@ class Ui_MainWindow(object):
         self.btnAddNode.setObjectName(_fromUtf8("btnAddNode"))
         self.dockNodeProperties.setWidget(self.dockNCContents)
         self.dockConnectionProperties = QtGui.QDockWidget(self.centralwidget)
-        self.dockConnectionProperties.setGeometry(QtCore.QRect(560, 290, 211, 231))
+        self.dockConnectionProperties.setGeometry(QtCore.QRect(560, 270, 211, 231))
         self.dockConnectionProperties.setObjectName(_fromUtf8("dockConnectionProperties"))
         self.dockCPContents = QtGui.QWidget()
         self.dockCPContents.setObjectName(_fromUtf8("dockCPContents"))
@@ -152,7 +158,33 @@ class Ui_MainWindow(object):
         self.btnDeleteConnection.setGeometry(QtCore.QRect(120, 140, 75, 23))
         self.btnDeleteConnection.setObjectName(_fromUtf8("btnDeleteConnection"))
         self.dockConnectionProperties.setWidget(self.dockCPContents)
-
+        #Simulation Controls
+        self.dockSimulationControls = QtGui.QDockWidget(self.centralwidget)
+        self.dockSimulationControls.setGeometry(QtCore.QRect(550, 500, 225, 65))
+        self.dockSimulationControls.setObjectName(_fromUtf8("dockSimulationControls"))
+        self.dockSCContents = QtGui.QWidget()
+        self.dockSCContents.setObjectName(_fromUtf8("dockSCContents"))
+        self.btnStart = QtGui.QPushButton(self.dockSCContents)
+        self.btnStart.setGeometry(QtCore.QRect(0, 0, 50, 23))
+        self.btnStart.setObjectName(_fromUtf8("btnStartButton"))
+        self.btnNext = QtGui.QPushButton(self.dockSCContents)
+        self.btnNext.setGeometry(QtCore.QRect(55, 0, 50, 23))
+        self.btnNext.setObjectName(_fromUtf8("btnNextButton"))
+        self.btnPlay = QtGui.QPushButton(self.dockSCContents)
+        self.btnPlay.setGeometry(QtCore.QRect(110, 0, 50, 23))
+        self.btnPlay.setObjectName(_fromUtf8("btnPlayButton"))
+        self.btnPause = QtGui.QPushButton(self.dockSCContents)
+        self.btnPause.setGeometry(QtCore.QRect(165, 0, 50, 23))
+        self.btnPause.setObjectName(_fromUtf8("btnPauseButton"))
+        self.updateIntervalSpinner = QtGui.QSpinBox(self.dockSCContents)
+        self.lblUpdateInterval = QtGui.QLabel(self.dockSCContents)
+        self.lblUpdateInterval.setGeometry(QtCore.QRect(30, 25, 100, 20))
+        self.lblUpdateInterval.setObjectName(_fromUtf8("lblUpdateInterval"))
+        self.updateIntervalSpinner.setGeometry(QtCore.QRect(135, 25, 50, 20))
+        self.updateIntervalSpinner.setObjectName(_fromUtf8("spinnerUpdateInterval"))
+        self.updateIntervalSpinner.setRange(0, 1000)
+        self.updateIntervalSpinner.setSingleStep(100)
+        self.dockSimulationControls.setWidget(self.dockSCContents)
         # some temp stuff
 
 
@@ -184,6 +216,10 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.btnAddNode, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addNode)
         QtCore.QObject.connect(self.btnDeleteNode, QtCore.SIGNAL(_fromUtf8("clicked()")), self.deleteNode)
         QtCore.QObject.connect(self.btnModifyNode, QtCore.SIGNAL(_fromUtf8("clicked()")), self.modifyNode)
+        QtCore.QObject.connect(self.btnStart, QtCore.SIGNAL(_fromUtf8("clicked()")), self.startSimulation)
+        QtCore.QObject.connect(self.btnNext, QtCore.SIGNAL(_fromUtf8("clicked()")), self.stepSimulation)
+        QtCore.QObject.connect(self.btnPause, QtCore.SIGNAL(_fromUtf8("clicked()")), self.pauseSimulation)
+        QtCore.QObject.connect(self.btnPlay, QtCore.SIGNAL(_fromUtf8("clicked()")), self.playSimulation)
 
         # copy to here
 
@@ -214,6 +250,12 @@ class Ui_MainWindow(object):
         self.actionSave.setText(_translate("MainWindow", "Save", None))
         self.actionSave_As.setText(_translate("MainWindow", "Save As...", None))
         self.actionExit.setText(_translate("MainWindow", "Exit", None))
+        self.btnStart.setText(_translate("MainWindow", "Start", None))
+        self.btnNext.setText(_translate("MainWindow", "Next", None))
+        self.btnPlay.setText(_translate("MainWindow", "Play", None))
+        self.btnPause.setText(_translate("MainWindow", "Pause", None))
+        self.lblUpdateInterval.setText(_translate("MainWindow", "Update Interval (ms)", None))
+        self.dockSimulationControls.setWindowTitle(_translate("MainWindow", "Simulation Controls", None))
 
     # I cannot figure out how to put these calls elsewhere yet so will need to copy each time .ui file is recreated
 
@@ -424,6 +466,23 @@ class Ui_MainWindow(object):
         self.linConnection.setObjectName(_fromUtf8(connectionName + "V"))
         self.linConnection.lower()
         self.linConnection.show()
+
+    def startSimulation(self):
+        if not self.simulation_started:
+            Network.tick()
+            self.simulation_started = True
+
+    def stepSimulation(self):
+        Network.tick();
+
+    def playSimulation(self):
+        self.simulation_paused = False
+        while True and not self.simulation_paused:
+            Network.tick()
+            time.sleep(self.updateIntervalSpinner.value()/1000)
+
+    def pauseSimulation(self):
+        self.simulation_paused = True
 
 
 class NodeLabel(QtGui.QLabel):
