@@ -14,6 +14,7 @@ from GUI.MacroGUI.Connection import *
 from Node import *
 from src.Connection import *
 from src.Node import *
+from src.SimulationLoop import *
 import sip
 import time
 
@@ -469,16 +470,16 @@ class Ui_MainWindow(object):
 
     def startSimulation(self):
         if not self.simulation_started:
-            Network.tick()
+            SimulationLoop.tick()
             self.simulation_started = True
 
     def stepSimulation(self):
-        Network.tick();
+        SimulationLoop.tick();
 
     def playSimulation(self):
         self.simulation_paused = False
         while True and not self.simulation_paused:
-            Network.tick()
+            SimulationLoop.tick()
             time.sleep(self.updateIntervalSpinner.value()/1000)
 
     def pauseSimulation(self):
