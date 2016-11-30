@@ -2,12 +2,11 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-from Segments import *
 from Segments.Header import *
 from Segments import IPDatagram
 from Segments import EthernetFrame
-from NetworkObjects.Node import *
-from NetworkObjects.Connection import Connection
+from Node import *
+from Connection import Connection
 from SimulationLoop import *
 
 from Network import network
