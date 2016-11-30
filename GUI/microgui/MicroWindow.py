@@ -3,12 +3,10 @@
 # Author: Lukas Pihl
 
 import os
-
-from Node import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
-from GUI.MacroGUI.Connection import *
+from src.Connection import *
+from src.Node import *
 from MessageInfoWindow import MessageInfo_Window
 
 try:
@@ -117,7 +115,8 @@ class MicroMainWindow(QMainWindow):
                 i.show()
             self.setCentralWidget(self.central_widget)
             self.retranslateUi(self)
-
+            # TODO enable first update
+            #self.updateState()
         else:
             None  # Do nothing
 
@@ -215,9 +214,11 @@ class MicroMainWindow(QMainWindow):
         label = MicroGraphicsLabel(self.central_widget, connection, pos_x, pos_y)
         return label
 
-    def update(self):
+    def updateState(self):
         for gfx in self.lineList:
-            gfx.update();
+            gfx.update()
+        for div in self.deviceList:
+            div.updateState()
 
 
 
@@ -288,43 +289,48 @@ class MicroHostFrame(QFrame):
     #########################
 
     def clickedButton_Application(self):
+        # TODO comment out test code
         print "Application"
-        # TODO Open Application message window
-        # MessageInfoInterface.openMessageInfoWindow(???)
-        # TODO remove test code
-        MainWindow = QMainWindow(self)
+        PopupWindow = QMainWindow(self)
         qqq = EthernetFrame("relevant info",
                             IPDatagram("relevant data", UDPSegment(UDPHeader(80, 80, 7777), "Hello World")))
-        ui = MessageInfo_Window(MainWindow, qqq, "Application")
+        #ui = MessageInfo_Window(PopupWindow, qqq, "Application")
+        self.btnHostA.setDisabled(True);
         self.myHolder.lineList[0].setActive(True)
         if self.myHolder.list_size > 2:
             self.myHolder.lineList[1].setActive(False)
         if self.myHolder.list_size > 3:
             self.myHolder.lineList[2].setActive(False)
-        #######################
+
+        # TODO uncomment good code
+        """packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            PopupWindow = QMainWindow(self)
+            ui = MessageInfo_Window(PopupWindow, packetList[0], "Application")"""
 
     def clickedButton_Transport(self):
+        # TODO comment out test code
         print "Transport"
-        # TODO Open Transport message window
-        # MessageInfoInterface.openMessageInfoWindow(???)
-        # TODO remove test code
         MainWindow = QMainWindow(self)
         qqq = EthernetFrame("relevant info",
                             IPDatagram("relevant data", UDPSegment(UDPHeader(80, 80, 7777), "Hello World")))
-        ui = MessageInfo_Window(MainWindow, qqq, "Transport")
+        self.btnHostA.setDisabled(False);
+        #ui = MessageInfo_Window(MainWindow, qqq, "Transport")
         self.myHolder.lineList[0].setActive(False)
         if self.myHolder.list_size > 2:
             self.myHolder.lineList[1].setActive(True)
         if self.myHolder.list_size > 3:
             self.myHolder.lineList[2].setActive(False)
-        #######################
+
+        # TODO uncomment good code
+        """packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            PopupWindow = QMainWindow(self)
+            ui = MessageInfo_Window(PopupWindow, packetList[0], "Transport")"""
 
     def clickedButton_Network(self):
+        # TODO comment out test code
         print "Network"
-
-        # TODO Open Network message window
-        # MessageInfoInterface.openMessageInfoWindow(???)
-        # TODO remove test code
         MainWindow = QMainWindow(self)
         qqq = EthernetFrame("relevant info",
                             IPDatagram("relevant data", UDPSegment(UDPHeader(80, 80, 7777), "Hello World")))
@@ -334,13 +340,16 @@ class MicroHostFrame(QFrame):
             self.myHolder.lineList[1].setActive(False)
         if self.myHolder.list_size > 3:
             self.myHolder.lineList[2].setActive(True)
-        ########################
+
+        # TODO uncomment good code
+        """packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            PopupWindow = QMainWindow(self)
+            ui = MessageInfo_Window(PopupWindow, packetList[0], "Network")"""
 
     def clickedButton_Link(self):
+        # TODO comment out test code
         print "Link"
-        # TODO Open Link message window
-        # MessageInfoInterface.openMessageInfoWindow(???)
-        # TODO remove test code
         MainWindow = QMainWindow(self)
         qqq = EthernetFrame("relevant info",
                             IPDatagram("relevant data", UDPSegment(UDPHeader(80, 80, 7777), "Hello World")))
@@ -350,7 +359,27 @@ class MicroHostFrame(QFrame):
             self.myHolder.lineList[1].setActive(False)
         if self.myHolder.list_size > 3:
             self.myHolder.lineList[2].setActive(False)
-        ########################
+
+        # TODO uncomment good code
+        """packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            PopupWindow = QMainWindow(self)
+            ui = MessageInfo_Window(PopupWindow, packetList[0], "Link")"""
+
+    def updateState(self):
+        packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            self.btnHostA.setDisabled(False)
+            self.btnHostT.setDisabled(False)
+            self.btnHostN.setDisabled(False)
+            self.btnHostL.setDisabled(False)
+            self.btnHostP.setDisabled(False)
+        else:
+            self.btnHostA.setDisabled(True)
+            self.btnHostT.setDisabled(True)
+            self.btnHostN.setDisabled(True)
+            self.btnHostL.setDisabled(True)
+            self.btnHostP.setDisabled(True)
 
 
 class MicroRouterFrame(QFrame):
@@ -403,14 +432,29 @@ class MicroRouterFrame(QFrame):
         return MicroHostFrame.myWidth
 
     def clickedButton_Network(self):
-        print "Network"
-        # TODO Open Network message window
-        # MessageInfoInterface.openMessageInfoWindow(???)
+        # TODO uncomment good code
+        """packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            PopupWindow = QMainWindow(self)
+            ui = MessageInfo_Window(PopupWindow, packetList[0], "Network")"""
 
     def clickedButton_Link(self):
-        print "Link"
-        # TODO Open Link message window
-        # MessageInfoInterface.openMessageInfoWindow(???)
+        # TODO uncomment good code
+        """packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            PopupWindow = QMainWindow(self)
+            ui = MessageInfo_Window(PopupWindow, packetList[0], "Link")"""
+
+    def updateState(self):
+        packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            self.btnHostN.setDisabled(False)
+            self.btnHostL.setDisabled(False)
+            self.btnHostP.setDisabled(False)
+        else:
+            self.btnHostN.setDisabled(True)
+            self.btnHostL.setDisabled(True)
+            self.btnHostP.setDisabled(True)
 
 
 class MicroSwitchFrame(QFrame):
@@ -456,9 +500,20 @@ class MicroSwitchFrame(QFrame):
         return MicroHostFrame.myWidth
 
     def clickedButton_Link(self):
-        print "Link"
-        # TODO Open Link message window
-        # MessageInfoInterface.openMessageInfoWindow(???)
+        # TODO uncomment good code
+        """packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            PopupWindow = QMainWindow(self)
+            ui = MessageInfo_Window(PopupWindow, packetList[0], "Link")"""
+
+    def updateState(self):
+        packetList = self.myDevice.get_packets()
+        if len(packetList) > 0:
+            self.btnHostL.setDisabled(False)
+            self.btnHostP.setDisabled(False)
+        else:
+            self.btnHostL.setDisabled(True)
+            self.btnHostP.setDisabled(True)
 
 
 class MicroGraphicsLabel(QLabel):
@@ -584,7 +639,7 @@ class MicroGraphicsLabel(QLabel):
             else:
                 self.setPixmap(self.myMaps[12])
 
-    def update(self):
+    def updateState(self):
         if self.myConnection.inUse():
             self.active = True
         else:
