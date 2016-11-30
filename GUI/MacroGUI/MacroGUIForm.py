@@ -404,7 +404,7 @@ class Ui_MainWindow(object):
         else:  # x direction from node 1 to node 2 is negative
             if (y2 - y1) > 0:  # y direction from node 1 to node 2 is positive
                 if (x1 - x2) > (y2 - y1):  # line in x is longer than y
-                    self.drawHorizontalLine(x2, y1, (x1 - x2), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x2, y1, (x1 - x2 + 6), connectionColor, uniqueName)
                     self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
                 else:  # line in y is longer than x
                     self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
