@@ -10,7 +10,7 @@ import sip
 
 from PyQt4 import QtCore, QtGui
 
-from GUI.MacroGUI.Connection import *
+from Connection import *
 from Node import *
 
 try:
