@@ -365,9 +365,6 @@ class Ui_MainWindow(object):
         for x in range(len(self.nodes)):
             self.placeNodeGraphic(self.nodes[x])
 
-        print self.nodes
-        print ""
-
         for x in range(len(self.connections)):
             connectionNodes = self.connections[x].getConnectionNodes()
             source = connectionNodes[0]
@@ -395,18 +392,15 @@ class Ui_MainWindow(object):
         self.lblNode.setGeometry(x1, y1, 41, 31)
         self.lblNode.setText(_fromUtf8(""))
         self.lblNode.nodeObject = aNode
-        if self.cboNodeType.currentText() == "Host":
+        if aNode.getType() == "Host":
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
-        elif self.cboNodeType.currentText() == "Router":
+        elif aNode.getType() == "Router":
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/router.png")))
         else:
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch.png")))
 
         self.lblNode.setObjectName(_fromUtf8(aNode.getUniqueID()))
         self.lblNode.show()
-
-        print self.nodes
-        print ""
 
     def placeConnectionGraphic(self, uniqueName, connectionType, firstNode, secondNode):
 
