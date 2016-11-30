@@ -10,7 +10,7 @@ import sip
 
 from PyQt4 import QtCore, QtGui
 
-from GUI.MacroGUI.Connection import *
+from Connection import *
 from Node import *
 
 try:
@@ -174,8 +174,8 @@ class Ui_MainWindow(object):
         self.initializeWidgets();
 
         self.retranslateUi(MainWindow)
-        self.cboNodeType.setCurrentIndex(-1)
-        self.cboConnectionType.setCurrentIndex(-1)
+        self.cboNodeType.setCurrentIndex(0)
+        self.cboConnectionType.setCurrentIndex(0)
         # calling functions from buttons here
         QtCore.QObject.connect(self.cboConnectionType, QtCore.SIGNAL(_fromUtf8("activated(int)")), self.decideBandwidth)
         QtCore.QObject.connect(self.btnAddConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addConnection)
@@ -220,10 +220,10 @@ class Ui_MainWindow(object):
     def initializeWidgets(self):
         self.decideBandwidth()
         self.cboConnectionType.addItems(['Coax', 'Fibre', 'Custom'])
-        self.cboConnectionType.setCurrentIndex(0)   # set default connection type Why don't you work??????
-                                                    # the index is set but does not display the value
         self.cboNodeType.addItems(['Host', 'Router', 'Switch'])
-        self.cboNodeType.setCurrentIndex(0)   # set default node type
+
+        self.txtConnectionBandwidth.setPlainText(`200`)
+        self.txtConnectionLength.setPlainText(`200`)
 
     def decideBandwidth(self):
         if self.cboConnectionType.currentText() == "Custom":
@@ -245,7 +245,7 @@ class Ui_MainWindow(object):
         while fullPass == False:
             if not self.nodes:
                 break
-            for x in xrange(len(self.nodes)):
+            for x in range(len(self.nodes)):
                 if self.nodes[x].isSelected:
                     fullPass = False
                     self.nodes.pop(x)
@@ -260,7 +260,7 @@ class Ui_MainWindow(object):
     def modifyNode(self):
         tooMany = False
         foundOne = False
-        for x in xrange(len(self.nodes)):
+        for x in range(len(self.nodes)):
             if self.nodes[x].isSelected and not foundOne:
                 foundOne = True
                 nodeToModifyIndex = x
@@ -279,7 +279,7 @@ class Ui_MainWindow(object):
         tooMany = False
         numNodes = 0
 
-        for x in xrange(len(self.nodes)):
+        for x in range(len(self.nodes)):
             if self.nodes[x].isSelected and numNodes == 0:
                 node1 = self.nodes[x]
                 numNodes = numNodes + 1
@@ -303,24 +303,37 @@ class Ui_MainWindow(object):
         else:
             print "Must select 2 nodes before attempting to create a connection"
 
-    def deleteConnection(self):
-        print "delete: " + self
+    def deleteConnection(self, connection):
+        for x in range(len(self.connections)):
+            if self.connections[x].getUniqueID == connection.getUniqueID:
+                self.connections.pop(x)
 
-        # call repaint
+            self.clearAndRepaint()
+
+            # call repaint
 
     def clearAndRepaint(self):
-
-#        sip.delete(self.lblNode)
-        for x in xrange(len(self.frameMain.children())):
+        for x in range(len(self.frameMain.children())):
             sip.delete(self.frameMain.children()[0])
 
-        self.frameMain.repaint()
+        self.rebuildFrameMainGraphics()
 
-        self.repaintFrameMain()
+    def rebuildFrameMainGraphics(self):
 
-    def repaintFrameMain(self):
-        for x in xrange(len(self.nodes)):
+        for x in range(len(self.nodes)):
             self.placeNodeGraphic(self.nodes[x])
+
+        print self.nodes
+        print ""
+
+        for x in range(len(self.connections)):
+            connectionNodes = self.connections[x].getConnectionNodes()
+            source = connectionNodes[0]
+            dest = connectionNodes[1]
+            if source == None or dest == None:
+                self.deleteConnection(self.connections[x])
+            else:
+                self.placeConnectionGraphic(self.connections[x].getUniqueID(), self.connections[x].getConnectionType(), source, dest)
 
         self.frameMain.repaint()
 
@@ -349,6 +362,9 @@ class Ui_MainWindow(object):
 
         self.lblNode.setObjectName(_fromUtf8(aNode.getUniqueID()))
         self.lblNode.show()
+
+        print self.nodes
+        print ""
 
     def placeConnectionGraphic(self, uniqueName, connectionType, firstNode, secondNode):
 

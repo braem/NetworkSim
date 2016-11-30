@@ -40,11 +40,8 @@ class Connection:
     def getConnectionType(self):
         return self.connectionType
 
-#    def setConnectionNodes(self, source, dest):
-#        self.connectionNodes = [source, dest]
-
     def getConnectionNodes(self):
-        return self.connectionNodes
+        return [self.__connectionSourceNode, self.__connectionDestinationNode]
 
     def setConnectionLength(self, cLength):
         self.setConnectionLength(cLength)
