@@ -13,7 +13,6 @@ from PyQt4 import QtCore, QtGui
 from Connection import *
 from Node import *
 from src.Connection import *
-from src.Node import *
 from src.SimulationLoop import *
 import sip
 import time
