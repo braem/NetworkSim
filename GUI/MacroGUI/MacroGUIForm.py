@@ -10,7 +10,6 @@ __version__ = "1.0.1"
 
 from PyQt4 import QtCore, QtGui
 
-from Connection import *
 from Node import *
 from src.Connection import *
 # from src.Node import *
