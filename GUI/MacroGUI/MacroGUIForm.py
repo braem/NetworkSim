@@ -16,8 +16,8 @@ from src.Connection import *
 from src.SimulationLoop import *
 from SendMessageWindow import SendMessage_Window
 from src.SimulationLoop import tick
+from src.UpdateThread import UpdateThread
 import sip
-import time
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -190,8 +190,9 @@ class Ui_MainWindow(object):
         self.lblUpdateInterval.setObjectName(_fromUtf8("lblUpdateInterval"))
         self.updateIntervalSpinner.setGeometry(QtCore.QRect(170, 30, 50, 20))
         self.updateIntervalSpinner.setObjectName(_fromUtf8("spinnerUpdateInterval"))
-        self.updateIntervalSpinner.setRange(0, 1000)
+        self.updateIntervalSpinner.setRange(100, 1000)
         self.updateIntervalSpinner.setSingleStep(100)
+        self.updateIntervalSpinner.setValue(500)
         self.dockSimulationControls.setWidget(self.dockSCContents)
         # some temp stuff
 
@@ -492,29 +493,24 @@ class Ui_MainWindow(object):
         self.linConnection.lower()
         self.linConnection.show()
 
-
     def startSimulation(self):
         if not self.simulation_started:
             self.simulation_started = True
+            self.simulation_thread = UpdateThread(self.stepSimulation)
+            self.simulation_thread.start()
 
     def stepSimulation(self):
+        self.simulation_thread.setUpdateInterval(float(self.updateIntervalSpinner.value()) / 1000)
         if self.simulation_started:
             tick()
 
     def playSimulation(self):
-        self.simulation_paused = False
-
-        while True and not self.simulation_paused:
-            SimulationLoop.tick()
-            time.sleep(self.updateIntervalSpinner.value() / 1000)
-
-        while True and not self.simulation_paused and self.simulation_started:
-            tick()
-            time.sleep(self.updateIntervalSpinner.value()/1000)
-
+        if self.simulation_started:
+            self.simulation_thread.setActive(True)
 
     def pauseSimulation(self):
-        self.simulation_paused = True
+        if self.simulation_started:
+            self.simulation_thread.setActive(False)
 
     def openMsgWindow(self):  # Method to open button window
         SendMessage_Window(self.MsgWindow)
