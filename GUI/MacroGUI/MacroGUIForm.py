@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 from PyQt4 import QtCore, QtGui
 
@@ -517,7 +517,7 @@ class Ui_MainWindow(object):
         self.simulation_paused = True
 
     def openMsgWindow(self):  # Method to open button window
-        SendMessage_Window(self.MsgWindow)
+        SendMessage_Window(self.MsgWindow,self.nodes)
 
 
 class NodeLabel(QtGui.QLabel):
