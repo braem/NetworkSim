@@ -505,7 +505,7 @@ class Ui_MainWindow(object):
         self.simulation_paused = False
 
         while True and not self.simulation_paused:
-            SimulationLoop.tick()
+            tick()
             time.sleep(self.updateIntervalSpinner.value() / 1000)
 
         while True and not self.simulation_paused and self.simulation_started:
