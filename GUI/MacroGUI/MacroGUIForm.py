@@ -13,14 +13,11 @@ from PyQt4 import QtCore, QtGui
 from Connection import *
 from Node import *
 from src.Connection import *
-<<<<<<< HEAD
 # from src.Node import *
 from src.SimulationLoop import *
 from SendMessageWindow import SendMessage_Window
-=======
 from src.SimulationLoop import tick
 import sip
->>>>>>> refs/remotes/origin/development
 import time
 
 try:
@@ -492,15 +489,15 @@ class Ui_MainWindow(object):
 
     def playSimulation(self):
         self.simulation_paused = False
-<<<<<<< HEAD
+
         while True and not self.simulation_paused:
             SimulationLoop.tick()
             time.sleep(self.updateIntervalSpinner.value() / 1000)
-=======
+
         while True and not self.simulation_paused and self.simulation_started:
             tick()
             time.sleep(self.updateIntervalSpinner.value()/1000)
->>>>>>> refs/remotes/origin/development
+
 
     def pauseSimulation(self):
         self.simulation_paused = True
