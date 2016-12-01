@@ -6,6 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+__version__ = "1.0.2"
+
 from PyQt4 import QtCore, QtGui
 import src
 from src.Node import Host
@@ -30,11 +32,15 @@ except AttributeError:
 
 
 class SendMessage_Window(object):
-    def __init__(self, MainWindow):
+    def __init__(self, MainWindow,current_nodes):
+        self.cnodes = current_nodes
+        print self.cnodes
         self.MainWindow = MainWindow
-        self.setupUi()
+        self.setupUi(self.cnodes)
+        #self.cnodes = current_nodes #current node list
 
-    def setupUi(self):
+
+    def setupUi(self, current_nodes):
         self.MainWindow.setObjectName(_fromUtf8("MainWindow"))
         self.MainWindow.resize(200, 200)
         self.centralwidget = QtGui.QWidget(self.MainWindow)
@@ -73,7 +79,7 @@ class SendMessage_Window(object):
         font.setPointSize(10)
         self.sendButton.setFont(font)
         self.sendButton.setObjectName(_fromUtf8("sendButton"))
-        self.sendButton.clicked.connect(self.send_message)
+        self.sendButton.clicked.connect(self.send_message)          #SEND MSG AFTER CLICK
         self.gridLayout.addWidget(self.sendButton, 6, 2, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 1, 1, 1)
@@ -102,7 +108,7 @@ class SendMessage_Window(object):
         self.retranslateUi(self.MainWindow)
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-        self.refreshDropdowns()
+        self.refreshDropdowns(current_nodes)
         self.MainWindow.show()
 
     def retranslateUi(self, MainWindow):
@@ -111,18 +117,20 @@ class SendMessage_Window(object):
         self.sendButton.setText(_translate("MainWindow", "Send Message", None))
         self.toLabel.setText(_translate("MainWindow", "To:", None))
 
-    def refreshDropdowns(self):
+    def refreshDropdowns(self,current_nodes):
         # Clear the current dropdown information.
         self.toComboBox.clear()
         self.toComboBox.clearEditText()
         self.fromComboBox.clear()
         self.fromComboBox.clearEditText()
-        array = [1, 2, 3]
+        array = current_nodes #[1, 2, 3]
         # Repopulate the dropdowns with updated info from the network.
         for index in range(len(array)):
-            if isinstance(array[index], Host):
-                self.toComboBox.addItem(QtCore.QString(array[index]))
-                self.fromComboBox.addItem(QtCore.QString(array[index]))
+            #if isinstance(array[index], Host):
+            if (array[index].type == "Host"):  #Only includes hosts in the options
+                self.toComboBox.addItem(QtCore.QString(array[index].id))
+                self.fromComboBox.addItem(QtCore.QString(array[index].id))
+
 
     def send_message(self):
         # Use this for sending the standard string to the network/nodes.
@@ -131,10 +139,10 @@ class SendMessage_Window(object):
         # Send message to the toNode.
         if self.TCPradioButton.isChecked():
             print str("TCP Message")
-            src.Network.create_messageTCP(self.toComboBox.currentText(), self.fromComboBox.currentText())
+            src.Network.create_messageTCP(self.toComboBox.currentText(), self.fromComboBox.currentText(), "TCP Message")
         else:
             print str("UDP Message")
-            src.Network.create_messageUDP(self.toComboBox.currentText(), self.fromComboBox.currentText())
+            src.Network.create_messageUDP(self.toComboBox.currentText(), self.fromComboBox.currentText(), "UDP Message")
 
         self.refreshDropdowns()
 
