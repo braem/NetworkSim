@@ -12,7 +12,7 @@ def routing_tables(network):
     tables = {}
     if isinstance(network, Network):
 
-        graph= {network.get_as_graph()}
+        graph= network.get_as_graph()
 
         paths = shortest_paths(graph)
         for node in graph.keys():

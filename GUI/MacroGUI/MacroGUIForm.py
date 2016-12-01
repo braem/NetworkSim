@@ -6,14 +6,17 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import sip
+__version__ = "1.0.1"
 
 from PyQt4 import QtCore, QtGui
 
 from Connection import *
 from Node import *
 from src.Connection import *
+# from src.Node import *
 from src.SimulationLoop import *
+from SendMessageWindow import SendMessage_Window
+from src.SimulationLoop import tick
 import sip
 import time
 
@@ -35,6 +38,7 @@ except AttributeError:
 
 
 class Ui_MainWindow(object):
+    simulation_thread = None
     simulation_started = False
     simulation_paused = False
     connections = []
@@ -43,6 +47,8 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(805, 585)
+
+        self.MsgWindow = QtGui.QMainWindow(MainWindow)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.thisMainWindow = MainWindow
@@ -158,9 +164,9 @@ class Ui_MainWindow(object):
         self.btnDeleteConnection.setGeometry(QtCore.QRect(120, 140, 75, 23))
         self.btnDeleteConnection.setObjectName(_fromUtf8("btnDeleteConnection"))
         self.dockConnectionProperties.setWidget(self.dockCPContents)
-        #Simulation Controls
+        # Simulation Controls
         self.dockSimulationControls = QtGui.QDockWidget(self.centralwidget)
-        self.dockSimulationControls.setGeometry(QtCore.QRect(550, 500, 225, 65))
+        self.dockSimulationControls.setGeometry(QtCore.QRect(550, 500, 225, 96))
         self.dockSimulationControls.setObjectName(_fromUtf8("dockSimulationControls"))
         self.dockSCContents = QtGui.QWidget()
         self.dockSCContents.setObjectName(_fromUtf8("dockSCContents"))
@@ -176,11 +182,14 @@ class Ui_MainWindow(object):
         self.btnPause = QtGui.QPushButton(self.dockSCContents)
         self.btnPause.setGeometry(QtCore.QRect(165, 0, 50, 23))
         self.btnPause.setObjectName(_fromUtf8("btnPauseButton"))
+        self.btnMsg = QtGui.QPushButton(self.dockSCContents)
+        self.btnMsg.setGeometry(QtCore.QRect(0, 30, 60, 23))
+        self.btnMsg.setObjectName(_fromUtf8("btnMsgButton"))
         self.updateIntervalSpinner = QtGui.QSpinBox(self.dockSCContents)
         self.lblUpdateInterval = QtGui.QLabel(self.dockSCContents)
-        self.lblUpdateInterval.setGeometry(QtCore.QRect(30, 25, 100, 20))
+        self.lblUpdateInterval.setGeometry(QtCore.QRect(65, 30, 100, 20))
         self.lblUpdateInterval.setObjectName(_fromUtf8("lblUpdateInterval"))
-        self.updateIntervalSpinner.setGeometry(QtCore.QRect(135, 25, 50, 20))
+        self.updateIntervalSpinner.setGeometry(QtCore.QRect(170, 30, 50, 20))
         self.updateIntervalSpinner.setObjectName(_fromUtf8("spinnerUpdateInterval"))
         self.updateIntervalSpinner.setRange(0, 1000)
         self.updateIntervalSpinner.setSingleStep(100)
@@ -220,8 +229,11 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.btnNext, QtCore.SIGNAL(_fromUtf8("clicked()")), self.stepSimulation)
         QtCore.QObject.connect(self.btnPause, QtCore.SIGNAL(_fromUtf8("clicked()")), self.pauseSimulation)
         QtCore.QObject.connect(self.btnPlay, QtCore.SIGNAL(_fromUtf8("clicked()")), self.playSimulation)
-
+        QtCore.QObject.connect(self.btnMsg, QtCore.SIGNAL(_fromUtf8("clicked()")),
+                               self.openMsgWindow)  # Button to Open MSG window
         # copy to here
+
+
 
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -256,6 +268,7 @@ class Ui_MainWindow(object):
         self.btnPause.setText(_translate("MainWindow", "Pause", None))
         self.lblUpdateInterval.setText(_translate("MainWindow", "Update Interval (ms)", None))
         self.dockSimulationControls.setWindowTitle(_translate("MainWindow", "Simulation Controls", None))
+        self.btnMsg.setText(_translate("MainWindow", "Messages", None))
 
     # I cannot figure out how to put these calls elsewhere yet so will need to copy each time .ui file is recreated
 
@@ -274,7 +287,6 @@ class Ui_MainWindow(object):
         else:
             self.lblConnectionBandwidth.hide()
             self.txtConnectionBandwidth.hide()
-
 
     def addNode(self):
         thisNode = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
@@ -313,7 +325,8 @@ class Ui_MainWindow(object):
         if tooMany:
             print "Can only modify one node at a time"
         else:
-            self.nodes[nodeToModifyIndex] = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
+            self.nodes[nodeToModifyIndex] = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(),
+                                                 self.txtYPos.toPlainText())
         # call repaint
         self.clearAndRepaint()
 
@@ -378,7 +391,6 @@ class Ui_MainWindow(object):
                 self.placeConnectionGraphic(self.connections[x].getUniqueID(), self.connections[x].getConnectionType(), source, dest)
 
         self.frameMain.repaint()
-
 
     # difficult to implement. Worry about add/delete working properly
     def modifyConnection(self):
@@ -485,20 +497,29 @@ class Ui_MainWindow(object):
 
     def startSimulation(self):
         if not self.simulation_started:
-            SimulationLoop.tick()
             self.simulation_started = True
 
     def stepSimulation(self):
-        SimulationLoop.tick();
+        if self.simulation_started:
+            tick()
 
     def playSimulation(self):
         self.simulation_paused = False
+
         while True and not self.simulation_paused:
             SimulationLoop.tick()
+            time.sleep(self.updateIntervalSpinner.value() / 1000)
+
+        while True and not self.simulation_paused and self.simulation_started:
+            tick()
             time.sleep(self.updateIntervalSpinner.value()/1000)
+
 
     def pauseSimulation(self):
         self.simulation_paused = True
+
+    def openMsgWindow(self):  # Method to open button window
+        SendMessage_Window(self.MsgWindow)
 
 
 class NodeLabel(QtGui.QLabel):
@@ -534,7 +555,8 @@ class NodeLabel(QtGui.QLabel):
             else:
                 self.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch.png")))
 
-#    def setGeometry(self, ax, ay, aw, ah):
+
+# def setGeometry(self, ax, ay, aw, ah):
 #        super(NodeLabel, self).setGeometry(ax, ay, aw, ah)
 #        self.myX = ax
 #       self.myY = ay

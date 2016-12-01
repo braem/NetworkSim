@@ -5,7 +5,7 @@ __version__ = "1.0.0"
 import routing_table_algo
 import threading
 from src.Network import Network
-
+from src.Network import network
 
 class SimThread(threading.Thread):
 
@@ -108,7 +108,7 @@ def sim_step(network):
         else: packet.update_location(packet)
 
 def tick():
-    start_simulation(Network.network, 1)
+    start_simulation(network, 1)
 
     '''
     Rhys's Notes - Rough Outline
