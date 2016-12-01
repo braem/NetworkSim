@@ -13,7 +13,7 @@ from PyQt4 import QtCore, QtGui
 from Connection import *
 from Node import *
 from src.Connection import *
-from src.SimulationLoop import *
+from src.SimulationLoop import tick
 import sip
 import time
 
@@ -35,6 +35,7 @@ except AttributeError:
 
 
 class Ui_MainWindow(object):
+    simulation_thread = None
     simulation_started = False
     simulation_paused = False
     connections = []
@@ -469,16 +470,16 @@ class Ui_MainWindow(object):
 
     def startSimulation(self):
         if not self.simulation_started:
-            SimThread.tick()
             self.simulation_started = True
 
     def stepSimulation(self):
-        SimThread.tick()
+        if self.simulation_started:
+            tick()
 
     def playSimulation(self):
         self.simulation_paused = False
-        while True and not self.simulation_paused:
-            SimThread.tick()
+        while True and not self.simulation_paused and self.simulation_started:
+            tick()
             time.sleep(self.updateIntervalSpinner.value()/1000)
 
     def pauseSimulation(self):
