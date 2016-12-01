@@ -29,8 +29,8 @@ class Values():
     buttonWidth = 121
     labelHeight = 31
     graphicWidth = 111
-    windHeight = 600
-    windWidth = 1000
+    windHeight = 400
+    windWidth = 900
 
 
 class MicroMainWindow(QMainWindow):
