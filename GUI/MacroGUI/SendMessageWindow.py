@@ -7,9 +7,10 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-from src import Network
-from networkobjects.Node import Host
-from src.Network import *
+import src
+from src.Node import Host
+
+# from src.Network import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -19,6 +20,8 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
@@ -27,7 +30,6 @@ except AttributeError:
 
 
 class SendMessage_Window(object):
-
     def __init__(self, MainWindow):
         self.MainWindow = MainWindow
         self.setupUi()
@@ -129,16 +131,16 @@ class SendMessage_Window(object):
         # Send message to the toNode.
         if self.TCPradioButton.isChecked():
             print str("TCP Message")
-            Network.create_messageTCP(self.toComboBox.currentText(), self.fromComboBox.currentText())
+            src.Network.create_messageTCP(self.toComboBox.currentText(), self.fromComboBox.currentText())
         else:
             print str("UDP Message")
-            Network.create_messageUDP(self.toComboBox.currentText(), self.fromComboBox.currentText())
+            src.Network.create_messageUDP(self.toComboBox.currentText(), self.fromComboBox.currentText())
 
         self.refreshDropdowns()
 
     def getHosts(self):
         array = []
-        for index in range(len(Network.nodes)):
-            if isinstance(Network.nodes[index], Host):
-                array.append(Network.nodes[index])
+        for index in range(len(src.Network.nodes)):
+            if isinstance(src.Network.nodes[index], Host):
+                array.append(src.Network.nodes[index])
         return array

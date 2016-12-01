@@ -2,7 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-import SimulationLoop
+#import SimulationLoop
 
 class Packet:
 
