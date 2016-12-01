@@ -10,7 +10,6 @@ __version__ = "1.0.1"
 
 from PyQt4 import QtCore, QtGui
 
-from Connection import *
 from Node import *
 from src.Connection import *
 # from src.Node import *
@@ -215,8 +214,8 @@ class Ui_MainWindow(object):
         self.initializeWidgets();
 
         self.retranslateUi(MainWindow)
-        self.cboNodeType.setCurrentIndex(-1)
-        self.cboConnectionType.setCurrentIndex(-1)
+        self.cboNodeType.setCurrentIndex(0)
+        self.cboConnectionType.setCurrentIndex(0)
         # calling functions from buttons here
         QtCore.QObject.connect(self.cboConnectionType, QtCore.SIGNAL(_fromUtf8("activated(int)")), self.decideBandwidth)
         QtCore.QObject.connect(self.btnAddConnection, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addConnection)
@@ -275,10 +274,10 @@ class Ui_MainWindow(object):
     def initializeWidgets(self):
         self.decideBandwidth()
         self.cboConnectionType.addItems(['Coax', 'Fibre', 'Custom'])
-        self.cboConnectionType.setCurrentIndex(0)  # set default connection type Why don't you work??????
-        # the index is set but does not display the value
         self.cboNodeType.addItems(['Host', 'Router', 'Switch'])
-        self.cboNodeType.setCurrentIndex(0)  # set default node type
+
+        self.txtConnectionBandwidth.setPlainText(`200`)
+        self.txtConnectionLength.setPlainText(`200`)
 
     def decideBandwidth(self):
         if self.cboConnectionType.currentText() == "Custom":
@@ -287,6 +286,7 @@ class Ui_MainWindow(object):
         else:
             self.lblConnectionBandwidth.hide()
             self.txtConnectionBandwidth.hide()
+
 
     def addNode(self):
         thisNode = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
@@ -299,7 +299,7 @@ class Ui_MainWindow(object):
         while fullPass == False:
             if not self.nodes:
                 break
-            for x in xrange(len(self.nodes)):
+            for x in range(len(self.nodes)):
                 if self.nodes[x].isSelected:
                     fullPass = False
                     self.nodes.pop(x)
@@ -314,7 +314,7 @@ class Ui_MainWindow(object):
     def modifyNode(self):
         tooMany = False
         foundOne = False
-        for x in xrange(len(self.nodes)):
+        for x in range(len(self.nodes)):
             if self.nodes[x].isSelected and not foundOne:
                 foundOne = True
                 nodeToModifyIndex = x
@@ -325,8 +325,7 @@ class Ui_MainWindow(object):
         if tooMany:
             print "Can only modify one node at a time"
         else:
-            self.nodes[nodeToModifyIndex] = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(),
-                                                 self.txtYPos.toPlainText())
+            self.nodes[nodeToModifyIndex] = Node(self.cboNodeType.currentText(), self.txtXPos.toPlainText(), self.txtYPos.toPlainText())
         # call repaint
         self.clearAndRepaint()
 
@@ -334,7 +333,7 @@ class Ui_MainWindow(object):
         tooMany = False
         numNodes = 0
 
-        for x in xrange(len(self.nodes)):
+        for x in range(len(self.nodes)):
             if self.nodes[x].isSelected and numNodes == 0:
                 node1 = self.nodes[x]
                 numNodes = numNodes + 1
@@ -346,38 +345,49 @@ class Ui_MainWindow(object):
             x = x + 1
 
         if not tooMany and numNodes == 2:
-            connection = Connection(node1, node2)
+            connection = Connection(node1, node2, self.txtConnectionBandwidth.toPlainText())
             connection.connectionType = self.cboConnectionType.currentText()
             connection.connectionLength = self.txtConnectionLength.toPlainText()
             connection.connectionBandWidth = self.txtConnectionBandwidth.toPlainText()
             self.connections.append(connection)
 
-            self.placeConnectionGraphic(connection.getUniqueID(), connection.getConnectionType(), node1, node2)
+            self.placeConnectionGraphic(connection.connection_id, connection.connectionType, node1, node2)
         elif tooMany:
             print "Cant select more than 2 nodes before attempting to create a connection"
         else:
             print "Must select 2 nodes before attempting to create a connection"
 
-    def deleteConnection(self):
-        print "delete: " + self
+    def deleteConnection(self, connection):
+        for x in range(len(self.connections)):
+            if self.connections[x].getUniqueID == connection.getUniqueID:
+                self.connections.pop(x)
 
-        # call repaint
+            self.clearAndRepaint()
+
+            # call repaint
 
     def clearAndRepaint(self):
-
-        #        sip.delete(self.lblNode)
-        for x in xrange(len(self.frameMain.children())):
+        for x in range(len(self.frameMain.children())):
             sip.delete(self.frameMain.children()[0])
 
-        self.frameMain.repaint()
+        self.rebuildFrameMainGraphics()
 
-        self.repaintFrameMain()
+    def rebuildFrameMainGraphics(self):
 
-    def repaintFrameMain(self):
-        for x in xrange(len(self.nodes)):
+        for x in range(len(self.nodes)):
             self.placeNodeGraphic(self.nodes[x])
 
+        for x in range(len(self.connections)):
+            connectionNodes = self.connections[x].getConnectionNodes()
+            source = connectionNodes[0]
+            dest = connectionNodes[1]
+            if source == None or dest == None:
+                self.deleteConnection(self.connections[x])
+            else:
+                self.placeConnectionGraphic(self.connections[x].getUniqueID(), self.connections[x].getConnectionType(), source, dest)
+
         self.frameMain.repaint()
+
 
     # difficult to implement. Worry about add/delete working properly
     def modifyConnection(self):
@@ -394,9 +404,9 @@ class Ui_MainWindow(object):
         self.lblNode.setGeometry(x1, y1, 41, 31)
         self.lblNode.setText(_fromUtf8(""))
         self.lblNode.nodeObject = aNode
-        if self.cboNodeType.currentText() == "Host":
+        if aNode.getType() == "Host":
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/pc.png")))
-        elif self.cboNodeType.currentText() == "Router":
+        elif aNode.getType() == "Router":
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/router.png")))
         else:
             self.lblNode.setPixmap(QtGui.QPixmap(_fromUtf8("../Resources/switch.png")))
@@ -424,38 +434,41 @@ class Ui_MainWindow(object):
         else:
             connectionColor = "green"
 
+        connectionID = str(uniqueName)
+
         if (x2 - x1) > 0:  # x direction from node 1 to node 2 is positive
             if (y2 - y1) > 0:  # y direction from node 1 to node 2 is positive
                 if (x2 - x1) > (y2 - y1):  # line in x direction is longer than y
-                    self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, uniqueName)
-                    self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x1, y1, (x2 - x1), connectionColor, connectionID)
+                    self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, connectionID)
                 else:  # line in y is longer than x
-                    self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
-                    self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
+                    self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, connectionID)
+                    self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, connectionID)
             else:  # y direction from node 1 to node 2 is negative
                 if (x2 - x1) > (y1 - y2):  # line in x direction is longer than y
-                    self.drawHorizontalLine(x1, y1, (x2 - x1 + 6), connectionColor, uniqueName)
-                    self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x1, y1, (x2 - x1 + 6), connectionColor, connectionID)
+                    self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, connectionID)
                 else:  # line in y is longer than x
-                    self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, uniqueName)
-                    self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, uniqueName)
+                    self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, connectionID)
+                    self.drawHorizontalLine(x1, y2, (x2 - x1), connectionColor, connectionID)
         else:  # x direction from node 1 to node 2 is negative
             if (y2 - y1) > 0:  # y direction from node 1 to node 2 is positive
                 if (x1 - x2) > (y2 - y1):  # line in x is longer than y
-                    self.drawHorizontalLine(x2, y1, (x1 - x2), connectionColor, uniqueName)
-                    self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x2, y1, (x1 - x2 + 6), connectionColor, connectionID)
+                    self.drawVerticalLine(x2, y1, (y2 - y1), connectionColor, connectionID)
                 else:  # line in y is longer than x
-                    self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, uniqueName)
-                    self.drawHorizontalLine(x2, y2, (x1 - x2), connectionColor, uniqueName)
+                    self.drawVerticalLine(x1, y1, (y2 - y1), connectionColor, connectionID)
+                    self.drawHorizontalLine(x2, y2, (x1 - x2), connectionColor, connectionID)
             else:  # y direction from node 1 to node 2 is negative
                 if (x1 - x2) > (y1 - y2):  # line in x is longer than y
-                    self.drawHorizontalLine(x2, y1, (x1 - x2), connectionColor, uniqueName)
-                    self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, uniqueName)
+                    self.drawHorizontalLine(x2, y1, (x1 - x2), connectionColor, connectionID)
+                    self.drawVerticalLine(x2, y2, (y1 - y2), connectionColor, connectionID)
                 else:  # line in y is longer than x
-                    self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, uniqueName)
-                    self.drawHorizontalLine(x2, y2, (x1 - x2), connectionColor, uniqueName)
+                    self.drawVerticalLine(x1, y2, (y1 - y2), connectionColor, connectionID)
+                    self.drawHorizontalLine(x2, y2, (x1 - x2), connectionColor, connectionID)
 
     def drawHorizontalLine(self, xPos, yPos, lineLength, lineColor, connectionName):
+
         self.linConnection = NetworkConnection(self.frameMain)
         self.linConnection.setGeometry(QtCore.QRect(xPos, yPos, lineLength, 6))
         self.linConnection.setStyleSheet(_fromUtf8("color:" + lineColor))
@@ -478,6 +491,7 @@ class Ui_MainWindow(object):
         self.linConnection.setObjectName(_fromUtf8(connectionName + "V"))
         self.linConnection.lower()
         self.linConnection.show()
+
 
     def startSimulation(self):
         if not self.simulation_started:
