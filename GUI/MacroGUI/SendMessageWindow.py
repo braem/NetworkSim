@@ -36,9 +36,7 @@ class SendMessage_Window(QtGui.QMainWindow):
     def __init__(self, current_nodes):
         super(SendMessage_Window, self).__init__()
         self.cnodes = current_nodes
-        print self.cnodes
         self.setupUi(self.cnodes)
-        #self.cnodes = current_nodes #current node list
 
 
     def setupUi(self, current_nodes):
@@ -75,13 +73,7 @@ class SendMessage_Window(QtGui.QMainWindow):
         self.UDPradioButton.setObjectName(_fromUtf8("UDPradioButton"))
         self.gridLayout.addWidget(self.UDPradioButton, 5, 3, 1, 1)
         # Prep the send button.
-        self.sendButton = QtGui.QPushButton(self.centralwidget)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.sendButton.setFont(font)
-        self.sendButton.setObjectName(_fromUtf8("sendButton"))
-        self.sendButton.clicked.connect(self.send_message)
-        self.gridLayout.addWidget(self.sendButton, 6, 2, 1, 1)
+
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 1, 1, 1)
         self.fromComboBox = QtGui.QComboBox(self.centralwidget)
@@ -105,6 +97,14 @@ class SendMessage_Window(QtGui.QMainWindow):
         self.statusbar = QtGui.QStatusBar()
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         self.setStatusBar(self.statusbar)
+
+        self.sendButton = QtGui.QPushButton(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.sendButton.setFont(font)
+        self.sendButton.setObjectName(_fromUtf8("sendButton"))
+        self.sendButton.clicked.connect(self.send_message)
+        self.gridLayout.addWidget(self.sendButton, 6, 2, 1, 1)
 
         self.retranslateUi()
 
@@ -133,8 +133,8 @@ class SendMessage_Window(QtGui.QMainWindow):
 
     def send_message(self):
         # Use this for sending the standard string to the network/nodes.
-        print str(self.toComboBox.currentText())
-        print str(self.fromComboBox.currentText())
+        #print str(self.toComboBox.currentText())
+        #print str(self.fromComboBox.currentText())
         # Send message to the toNode.
         if self.TCPradioButton.isChecked():
             print str("TCP Message")
@@ -143,7 +143,7 @@ class SendMessage_Window(QtGui.QMainWindow):
             print str("UDP Message")
             network.create_messageUDP(self.toComboBox.currentText(), self.fromComboBox.currentText(), "UDP Message")
 
-        self.refreshDropdowns()
+        self.refreshDropdowns(self.cnodes)
 
     def getHosts(self):
         array = []

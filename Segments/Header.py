@@ -21,18 +21,18 @@ class Header:
 class UDPHeader(Header):
     def __init__(self, source_port, destination_port, header_length):
         Header.__init__(self, source_port, destination_port, header_length)
-        self.checksum = (~(self.src_port + self.dest_port + self.length) + 1) % 65535
+        self.checksum = (~(int(self.src_port) + int(self.dest_port) + self.length) + 1) % 65535
 
     # Calculates the checksum value for the header
     # Call after any changes to the ports or length are made
     def updateChecksum(self):
-        self.checksum = (~(self.src_port + self.dest_port + self.length) + 1) % 65535
+        self.checksum = (~(int(self.src_port) + int(self.dest_port) + self.length) + 1) % 65535
         return
 
     # Returns true if packet is deemed undamaged (checksum succeeds)
     # For this to work correctly ports & length should be ints between [0,65535]
     def checkChecksum(self):
-        if (self.checksum + (self.src_port + self.dest_port + self.length) % 65535) == 65535:
+        if (self.checksum + (int(self.src_port) + int(self.dest_port) + self.length) % 65535) == 65535:
             return True
         else:
             return False
@@ -50,14 +50,14 @@ class TCPHeader(Header):
             self.receive_window = 0
             self.urgent_data_pointer = 0
             self.checksum = (~(
-                self.src_port + self.dest_port + self.receive_window + self.urgent_data_pointer) + 1) % 65535
+                int(self.src_port) + int(self.dest_port) + int(self.receive_window) + int(self.urgent_data_pointer)) + 1) % 65535
         else:
             self.sequence_num = sequence_number
             self.ack_num = acknowledgement_number
             self.receive_window = window
             self.urgent_data_pointer = urgent_data_ptr
             self.checksum = (~(
-                self.src_port + self.dest_port + self.receive_window + self.urgent_data_pointer) + 1) % 65535
+                int(self.src_port) + int(self.dest_port) + int(self.receive_window) + int(self.urgent_data_pointer)) + 1) % 65535
 
         # flag field
         self.urg = None
@@ -80,14 +80,14 @@ class TCPHeader(Header):
     # Calculates the checksum value for the header
     # Call after any changes to the ports or length are made
     def updateChecksum(self):
-        self.checksum = (~(self.src_port + self.dest_port + self.receive_window + self.urgent_data_pointer) + 1) % 65535
+        self.checksum = (~(int(self.src_port) + int(self.dest_port) + int(self.receive_window) + int(self.urgent_data_pointer)) + 1) % 65535
         return
 
     # Returns true if packet is deemed undamaged (checksum succeeds)
     # For this to work correctly variables should be ints between [0,65535]
     def checkChecksum(self):
         if (self.checksum + (
-                            self.src_port + self.dest_port + self.receive_window + self.urgent_data_pointer) % 65535) == 65535:
+                            int(self.src_port) + int(self.dest_port) + int(self.receive_window) + int(self.urgent_data_pointer)) % 65535) == 65535:
             return True
         else:
             return False

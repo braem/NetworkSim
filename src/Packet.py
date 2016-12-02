@@ -55,8 +55,9 @@ class Packet:
             del(network.packets[self.packet_id])
 
     def deliver(self):
-        self.current_node = self.connection.other_node(self.current_node)
-        del(self.connection)
+        if self.connection is not None:
+            self.current_node = self.connection.other_node(self.current_node) #"other_node" is not implemented anywhere
+            del(self.connection)
 
     def get_destination(self):
         return self.payload.ip_datagram.segment.header.dest_port
