@@ -65,9 +65,12 @@ def n_node_demo(n):
             teh_matrix.add_connection(previous_node, this_node, Connection(previous_node, this_node, 2))
 
 
-    for a,b in teh_matrix.connections.iteritems():
-        print (a[0].node_id, a[1].node_id), b.pop().connection_id
+    # for a,b in teh_matrix.connections.iteritems():
+    #     print (a[0].node_id, a[1].node_id), b.pop().connection_id
 
+    for node in teh_matrix.nodes.values():
+        for dict in teh_matrix.get_connected_nodes(node):
+            print node.node_id, dict["node"].node_id, dict["connection"]
 
     print teh_matrix.get_as_graph()
 
@@ -81,21 +84,21 @@ def n_node_demo(n):
     #     node.routing_table=tables[node.node_id]
 
     #Create one message to start off
-    network.create_messageUDP(0, n)
-
-    # Create a SimThread that will run a little longer than the total connection and processing latency.
-    simulation = SimThread(test_step, teh_matrix, n * 3 + 5)
-
-
-    print "nodes"
-    print teh_matrix.nodes
-    print "connections"
-    print teh_matrix.connections
-
-    print "Starting simulation"
-    simulation.start()
-    simulation.join()
-    print "Simulation all done now =)"
+    # network.create_messageUDP(0, n)
+    #
+    # # Create a SimThread that will run a little longer than the total connection and processing latency.
+    # simulation = SimThread(test_step, teh_matrix, n * 3 + 5)
+    #
+    #
+    # print "nodes"
+    # print teh_matrix.nodes
+    # print "connections"
+    # print teh_matrix.connections
+    #
+    # print "Starting simulation"
+    # simulation.start()
+    # simulation.join()
+    # print "Simulation all done now =)"
 
 n_node_demo(5)
 

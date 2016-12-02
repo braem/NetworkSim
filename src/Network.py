@@ -88,16 +88,11 @@ class Network:
 
     def get_as_graph(self):
         graph = {}
-        print "called get_as_graph"
-        for node in self.nodes:
-            print node, self.get_connected_nodes(node)
+        for node in self.nodes.values():
             graph_node = {}
-
             for connection in self.get_connected_nodes(node):
-                print connection["connection"]
-                graph_node[connection["node"]] = connection["connection"].latency
-
-            graph[node] = graph_node
+                graph_node[connection["node"]] = list(connection["connection"])[0].latency
+            graph[node.node_id] = graph_node
         return graph
 
 
