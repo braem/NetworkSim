@@ -2,7 +2,7 @@ from Segments.Segment import *
 from Segments.Header import *
 from Segments.IPDatagram import IPDatagram
 from Segments.EthernetFrame import EthernetFrame
-import Packet
+from Packet import Packet
 
 class Network:
     def __init__(self):
@@ -32,7 +32,6 @@ class Network:
 
 
     def create_message(self, startID, endID, UDP_TCP_segment):
-
         ip_datagram = IPDatagram(Header(startID,endID,0), UDP_TCP_segment)
         eth_frame = EthernetFrame(Header(startID, endID, 0), ip_datagram)
         self.add_packet(Packet(self.nodes[startID], eth_frame))

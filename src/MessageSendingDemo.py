@@ -73,7 +73,7 @@ def n_node_demo(n):
 
     print "Node0", teh_matrix.nodes[0]
     #Create one message to start off
-    network.create_messageUDP(0, n, "Message")
+    teh_matrix.create_messageUDP(0, n, "Message")
 
     # Create a SimThread that will run a little longer than the total connection and processing latency.
     simulation = SimThread(test_step, teh_matrix, n * 3 + 5)
