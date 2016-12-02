@@ -54,22 +54,29 @@ def n_node_demo(n):
         if previous >= 0:
             previous_node = network.nodes[previous]
             this_node = network.nodes[this]
-            network.add_connection(previous_node, this_node, Connection(previous_node, this_node, 2))
+            network.add_connection(previous_node.node_id, this_node.node_id, Connection(previous_node, this_node, 2))
 
     tables = routing_tables(network)
 
+    print network.connections
+
+    print "graph"
     print network.get_as_graph()
 
-    print isinstance(network, Network)
+    print "routing tables"
+    print tables
 
     for node in network.nodes.values():
         node.routing_table=tables[node.node_id]
+        print node.node_id, node.routing_table
 
     #Create one message to start off
-    network.create_messageUDP(0, n, "Message")
+    network.create_messageUDP(0, n-1, "Message")
 
     # Create a SimThread that will run a little longer than the total connection and processing latency.
     simulation = SimThread(test_step, network, n * 3 + 5)
+
+
 
     print "Starting simulation"
     simulation.start()

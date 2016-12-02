@@ -47,8 +47,8 @@ class Packet:
             if self.timer == -1:
                 #This means this packet has just been created and doesn't know where to go yet.
                 self.set_connection(network.connections\
-                                        [network.get_node_pair_id(self.current_node,\
-                                                                  self.current_node.next_hop(self.get_destination()))])
+                                        [(network.get_node_pair_id(self.current_node.node_id,\
+                                                                  self.current_node.next_hop(self.get_destination()).node_id))])
             elif self.timer==0:
                 # Updates what node the packet thinks it's at
                 self.deliver()

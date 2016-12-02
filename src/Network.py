@@ -42,7 +42,7 @@ class Network:
         add a connection between two nodes (by id)
         """
         pair_id = self.get_node_pair_id(n1_id, n2_id)
-        self.connections[pair_id] = {connection}
+        self.connections[pair_id] = connection
 
     def add_packet(self, packet):
         self.packets[packet.packet_id] = packet
@@ -87,11 +87,11 @@ class Network:
 
     def get_as_graph(self):
         graph = {}
-        for node in self.nodes.values():
+        for node in self.nodes:
             graph_node = {}
             for connection in self.get_connected_nodes(node):
-                graph_node[connection["node"].node_id] = list(connection["connection"])[0].latency
-            graph[node.node_id] = graph_node
+                graph_node[connection["node"]] = connection["connection"].latency
+            graph[node] = graph_node
         return graph
 
 
