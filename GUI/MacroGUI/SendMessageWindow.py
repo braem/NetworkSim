@@ -11,6 +11,7 @@ __version__ = "1.0.2"
 from PyQt4 import QtCore, QtGui
 import src
 from src.Node import Host
+from src.Network import network
 
 # from src.Network import *
 
@@ -31,19 +32,19 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 
-class SendMessage_Window(object):
-    def __init__(self, MainWindow,current_nodes):
+class SendMessage_Window(QtGui.QMainWindow):
+    def __init__(self, current_nodes):
+        super(SendMessage_Window, self).__init__()
         self.cnodes = current_nodes
         print self.cnodes
-        self.MainWindow = MainWindow
         self.setupUi(self.cnodes)
         #self.cnodes = current_nodes #current node list
 
 
     def setupUi(self, current_nodes):
-        self.MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        self.MainWindow.resize(200, 200)
-        self.centralwidget = QtGui.QWidget(self.MainWindow)
+        self.setObjectName(_fromUtf8("MainWindow"))
+        self.resize(200, 200)
+        self.centralwidget = QtGui.QWidget()
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -79,7 +80,7 @@ class SendMessage_Window(object):
         font.setPointSize(10)
         self.sendButton.setFont(font)
         self.sendButton.setObjectName(_fromUtf8("sendButton"))
-        self.sendButton.clicked.connect(self.send_message)          #SEND MSG AFTER CLICK
+        self.sendButton.clicked.connect(self.send_message)
         self.gridLayout.addWidget(self.sendButton, 6, 2, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 1, 1, 1)
@@ -96,23 +97,22 @@ class SendMessage_Window(object):
         self.gridLayout.addWidget(self.fromLabel, 2, 2, 1, 1)
         spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem2, 4, 2, 1, 1)
-        self.MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(self.MainWindow)
+        self.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar()
         self.menubar.setGeometry(QtCore.QRect(0, 0, 200, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
-        self.MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(self.MainWindow)
+        self.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar()
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        self.MainWindow.setStatusBar(self.statusbar)
+        self.setStatusBar(self.statusbar)
 
-        self.retranslateUi(self.MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
+        self.retranslateUi()
 
         self.refreshDropdowns(current_nodes)
-        self.MainWindow.show()
+        self.show()
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "Send Message", None))
+    def retranslateUi(self):
+        self.setWindowTitle(_translate("MainWindow", "Send Message", None))
         self.fromLabel.setText(_translate("MainWindow", "From:", None))
         self.sendButton.setText(_translate("MainWindow", "Send Message", None))
         self.toLabel.setText(_translate("MainWindow", "To:", None))
@@ -126,11 +126,10 @@ class SendMessage_Window(object):
         array = current_nodes #[1, 2, 3]
         # Repopulate the dropdowns with updated info from the network.
         for index in range(len(array)):
-            #if isinstance(array[index], Host):
-            if (array[index].type == "Host"):  #Only includes hosts in the options
+            # if isinstance(array[index], Host):
+            if (array[index].type == "Host"):  # Only includes hosts in the options
                 self.toComboBox.addItem(QtCore.QString(array[index].id))
                 self.fromComboBox.addItem(QtCore.QString(array[index].id))
-
 
     def send_message(self):
         # Use this for sending the standard string to the network/nodes.
@@ -139,10 +138,10 @@ class SendMessage_Window(object):
         # Send message to the toNode.
         if self.TCPradioButton.isChecked():
             print str("TCP Message")
-            src.Network.create_messageTCP(self.toComboBox.currentText(), self.fromComboBox.currentText(), "TCP Message")
+            network.create_messageTCP(self.toComboBox.currentText(), self.fromComboBox.currentText(), "TCP Message")
         else:
             print str("UDP Message")
-            src.Network.create_messageUDP(self.toComboBox.currentText(), self.fromComboBox.currentText(), "UDP Message")
+            network.create_messageUDP(self.toComboBox.currentText(), self.fromComboBox.currentText(), "UDP Message")
 
         self.refreshDropdowns()
 
