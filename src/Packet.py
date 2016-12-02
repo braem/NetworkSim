@@ -2,7 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-from Network import network
+from Network import *
 
 class Packet:
 
