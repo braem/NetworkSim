@@ -94,5 +94,6 @@ class Network:
             graph[node] = graph_node
         return graph
 
-
-network = Network()
+def network_init():
+    global network
+    network = Network()

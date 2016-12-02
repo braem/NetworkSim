@@ -7,7 +7,7 @@ from Node import *
 from Connection import Connection
 from SimulationLoop import *
 
-from Network import network
+import Network
 from routing_table_algo import routing_tables
 
 
@@ -24,13 +24,15 @@ def test_step(network):
             print "Time steps to completion: " + str(packet.timer)
             packet.decrement_timer()
         elif packet.timer == 0:
-            packet.decrement_timer()
             packet.update_location()
 
-            print "packet", packet.packet_id, "has been forwarded onto connection", packet.connection.connection_id,\
-                "latency:", packet.connection.latency, "."
+            try:
+                print "packet", packet.packet_id, "has been forwarded onto connection", packet.connection.connection_id,\
+                    "latency:", packet.connection.latency, "."
+            except(AttributeError):
+                print"packet has not been forwarded"
 
-            if(packet.get_destination() == packet.current_node):
+            if(packet.get_destination() == packet.current_node.node_id):
                 del(network.packets[packet.packet_id])
                 print "packet", packet.packet_id, "has arrived at node", packet.current_node.node_id, "and been deleted."
         else:
@@ -41,7 +43,10 @@ def test_step(network):
 
 def n_node_demo(n):
     """Creates a linear network of n Hosts, and sends a single Packet along the network."""
-    global network
+
+    #initialize global network variable
+    Network.network_init()
+    network = Network.network
     #Already have a global network instance, but it's empty.
     #Now we need a few host nodes.  Create a few linear networks and stitch them together
     #TODO add more network branches
@@ -70,10 +75,7 @@ def n_node_demo(n):
     network.create_messageUDP(0, n-1, "Message")
 
     # Create a SimThread that will run a little longer than the total connection and processing latency.
-    simulation = SimThread(test_step, network, n * 3 + 5)
-
-
-
+    simulation = SimThread(test_step, network, 50)
     print "Starting simulation"
     simulation.start()
     simulation.join()

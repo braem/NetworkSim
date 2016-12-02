@@ -2,8 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-from Network import network
-
+import Network
 class Packet:
 
     """This class is intended to wrap Ryan's Segment/Datagram/Frame for convenience in advancing the simulation."""
@@ -29,9 +28,9 @@ class Packet:
         Packet.static_packet_id += 1
 
     def set_connection(self, connection):
+        self.connection = connection
         if self.connection is not None:
             self.connection.removeTraffic()
-        self.connection = connection
         self.connection.addTraffic()
         self.set_timer(connection.latency)
 
@@ -42,12 +41,11 @@ class Packet:
         self.timer -= 1
 
     def update_location(self):
-
-        if self.current_node != self.get_destination():
+        network=Network.network
+        if self.current_node.node_id != self.get_destination():
+            print "Not there yet"
             if self.timer == -1:
                 #This means this packet has just been created and doesn't know where to go yet.
-                print "Test print in Packet.update_location()"
-                print network.connections
                 self.set_connection(network.connections\
                     [\
                         (\
@@ -60,11 +58,15 @@ class Packet:
                 # Updates what node the packet thinks it's at
                 self.deliver()
                 #get the next node and set this packet's connection to the one between current_node and next_node
-                next_node = self.current_node.next_hop(self.get_destination())
-                self.set_connection(network.connections(self.current_node, next_node))
+                if self.current_node.node_id != self.get_destination():
+                    next_node = self.current_node.next_hop(self.get_destination())
+                    self.set_connection(network.connections[network.get_node_pair_id(self.current_node.node_id, next_node.node_id)])
+                else: print "Packet.update made it 1"
         else:
+            print "Packet.update -- made it 2"
             #If the packet has reached its destination, delete it.
-            self.connection.removeTraffic()
+            try: self.connection.removeTraffic()
+            except: pass
             del(network.packets[self.packet_id])
 
     def deliver(self):

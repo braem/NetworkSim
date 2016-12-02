@@ -2,7 +2,7 @@ from Segments.EthernetFrame import EthernetFrame
 from Segments.IPDatagram import IPDatagram
 from Segments.Segment import *
 from src.Network import Network
-from Network import network
+import Network
 
 class Node:
     node_id = 0
@@ -16,8 +16,10 @@ class Node:
 
     '''returns the packets who's current location is this node'''
     def get_packets(self):
+        global network
+
         my_packets = []
-        for packet in Network.network.packets:
+        for packet in network.packets:
             if packet.current_node == self.node_id:
                 my_packets.append(packet)
         return my_packets
@@ -43,7 +45,7 @@ class Switch (Node):
         return EthernetFrame(Header(self.node_id, destination_id, 0), message)
 
     def next_hop(self, dest_id):
-        return network.nodes[self.routing_table[dest_id]]
+        return Network.network.nodes[self.routing_table[dest_id]]
 
 
 class Router (Switch):

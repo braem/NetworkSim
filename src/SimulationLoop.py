@@ -5,7 +5,6 @@ __version__ = "1.0.0"
 import routing_table_algo
 import threading
 from src.Network import Network
-from src.Network import network
 
 class SimThread(threading.Thread):
 
