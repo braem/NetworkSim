@@ -11,27 +11,25 @@ from src.Network import *
 def routing_tables(network):
     tables = {}
     print "routing_tables"
-    if isinstance(network, Network):
+    #if isinstance(network, Network):
 
-        graph= network.get_as_graph()
-        print "graph in routing_tables"
-        print graph
+    graph= network.get_as_graph()
 
-        paths = shortest_paths(graph)
-        for node in graph.keys():
-            table = {}
+    paths = shortest_paths(graph)
+    for node in graph.keys():
+        table = {}
 
-            for path in paths:
-                if(path.__contains__(node)):
-                    index = path.index(node)
+        for path in paths:
+            if(path.__contains__(node)):
+                index = path.index(node)
 
-                    for i in range(0, len(path)):
-                        if i < index:
-                            table[path[i]] = path[index - 1]
-                        elif i > index:
-                            table[path[i]] = path[index + 1]
+                for i in range(0, len(path)):
+                    if i < index:
+                        table[path[i]] = path[index - 1]
+                    elif i > index:
+                        table[path[i]] = path[index + 1]
 
-                tables[node] = table
+            tables[node] = table
 
     return tables
 
