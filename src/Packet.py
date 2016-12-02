@@ -2,7 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-#import SimulationLoop
+from Network import network
 
 class Packet:
 
@@ -25,6 +25,7 @@ class Packet:
         self.payload = payload
         self.current_node = node
         self.packet_id = Packet.static_packet_id
+        self.timer=0
         Packet.static_packet_id += 1
 
     def set_connection(self, connection):
@@ -41,18 +42,17 @@ class Packet:
         self.timer -= 1
 
     def update_location(self):
-        global the_network
 
         if self.current_node != self.get_destination():
             # Updates what node the packet thinks it's at
             self.deliver()
             #get the next node and set this packet's connection to that between current_node and next_node
             next_node = self.current_node.next_hop(self.get_destination())
-            self.set_connection(the_network.connections(self.current_node, next_node))
+            self.set_connection(network.connections(self.current_node, next_node))
         else:
             #If the packet has reached its destination, delete it.
             self.connection.removeTraffic()
-            del(the_network.packets[self.packet_id])
+            del(network.packets[self.packet_id])
 
     def deliver(self):
         self.current_node = self.connection.other_node(self.current_node)
