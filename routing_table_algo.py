@@ -10,7 +10,6 @@ from src.Network import *
 
 def routing_tables(network):
     tables = {}
-    print "routing_tables"
     #if isinstance(network, Network):
 
     graph= network.get_as_graph()

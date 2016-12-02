@@ -43,10 +43,7 @@ class Switch (Node):
         return EthernetFrame(Header(self.node_id, destination_id, 0), message)
 
     def next_hop(self, dest_id):
-        print "node", self.node_id, "routing table"
-        print self.routing_table
-        return network.nodes[self.routing_table[\
-            dest_id]]
+        return network.nodes[self.routing_table[dest_id]]
 
 
 class Router (Switch):

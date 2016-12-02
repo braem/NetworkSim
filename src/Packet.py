@@ -2,7 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-from src.Network import *
+from Network import network
 
 class Packet:
 
@@ -46,9 +46,16 @@ class Packet:
         if self.current_node != self.get_destination():
             if self.timer == -1:
                 #This means this packet has just been created and doesn't know where to go yet.
+                print "Test print in Packet.update_location()"
+                print network.connections
                 self.set_connection(network.connections\
-                                        [(network.get_node_pair_id(self.current_node.node_id,\
-                                                                  self.current_node.next_hop(self.get_destination()).node_id))])
+                    [\
+                        (\
+                            network.get_node_pair_id(\
+                                self.current_node.node_id,\
+                                self.current_node.next_hop(self.get_destination()).node_id)\
+                        )\
+                    ])
             elif self.timer==0:
                 # Updates what node the packet thinks it's at
                 self.deliver()
