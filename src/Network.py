@@ -42,7 +42,7 @@ class Network:
         """
         add a connection between two nodes (by id)
         """
-        pair_id = get_node_pair_id(n1_id, n2_id)
+        pair_id = self.get_node_pair_id(n1_id, n2_id)
         self.connections[pair_id] = {connection}
 
     def add_packet(self, packet):
@@ -69,7 +69,7 @@ class Network:
         remove a connection by ids of nodes
         """
         try:
-            del self.connections[get_node_pair_id(n1_id, n2_id)]
+            del self.connections[self.get_node_pair_id(n1_id, n2_id)]
             return True
         except:
             return False
@@ -88,10 +88,15 @@ class Network:
 
     def get_as_graph(self):
         graph = {}
+        print "called get_as_graph"
         for node in self.nodes:
+            print node, self.get_connected_nodes(node)
             graph_node = {}
+
             for connection in self.get_connected_nodes(node):
+                print connection["connection"]
                 graph_node[connection["node"]] = connection["connection"].latency
+
             graph[node] = graph_node
         return graph
 

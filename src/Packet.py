@@ -2,7 +2,7 @@
 __author__ = "Rhys Beck"
 __version__ = "1.0.0"
 
-from Network import network
+from src.Network import *
 
 class Packet:
 
@@ -25,7 +25,7 @@ class Packet:
         self.payload = payload
         self.current_node = node
         self.packet_id = Packet.static_packet_id
-        self.timer=0
+        self.timer=-1
         Packet.static_packet_id += 1
 
     def set_connection(self, connection):
@@ -44,11 +44,17 @@ class Packet:
     def update_location(self):
 
         if self.current_node != self.get_destination():
-            # Updates what node the packet thinks it's at
-            self.deliver()
-            #get the next node and set this packet's connection to that between current_node and next_node
-            next_node = self.current_node.next_hop(self.get_destination())
-            self.set_connection(network.connections(self.current_node, next_node))
+            if self.timer == -1:
+                #This means this packet has just been created and doesn't know where to go yet.
+                self.set_connection(network.connections\
+                                        [network.get_node_pair_id(self.current_node,\
+                                                                  self.current_node.next_hop(self.get_destination()))])
+            elif self.timer==0:
+                # Updates what node the packet thinks it's at
+                self.deliver()
+                #get the next node and set this packet's connection to the one between current_node and next_node
+                next_node = self.current_node.next_hop(self.get_destination())
+                self.set_connection(network.connections(self.current_node, next_node))
         else:
             #If the packet has reached its destination, delete it.
             self.connection.removeTraffic()

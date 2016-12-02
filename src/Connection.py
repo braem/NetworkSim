@@ -1,8 +1,8 @@
 class Connection:
-    next_connection = 0;
+    static_id = 0;
     def __init__(self, node1, node2, latency):
-        self.connection_id = self.next_connection
-        self.next_connection += 1
+        self.connection_id = Connection.static_id
+        Connection.static_id += 1
         self.nodes = [node1, node2]
         self.latency = latency
         self.trafficCount = 0

@@ -64,10 +64,21 @@ def n_node_demo(n):
             this_node = teh_matrix.nodes[this]
             teh_matrix.add_connection(previous_node, this_node, Connection(previous_node, this_node, 2))
 
-    tables = routing_table_algo.routing_tables(teh_matrix)
 
-    for node in teh_matrix.nodes:
-        node.routing_table=tables[node.node_id]
+    for a,b in teh_matrix.connections.iteritems():
+        print (a[0].node_id, a[1].node_id), b.pop().connection_id
+
+
+    print teh_matrix.get_as_graph()
+
+    # tables = routing_table_algo.routing_tables(teh_matrix)
+    #
+    # print teh_matrix.nodes
+    #print "connections", teh_matrix.connections
+    # print tables
+
+    # for node in teh_matrix.nodes.values():
+    #     node.routing_table=tables[node.node_id]
 
     #Create one message to start off
     network.create_messageUDP(0, n)
