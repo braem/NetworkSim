@@ -1,7 +1,7 @@
 from Segments.Segment import *
 from Segments.Header import *
-from Segments import IPDatagram
-from Segments import EthernetFrame
+from Segments.IPDatagram import IPDatagram
+from Segments.EthernetFrame import EthernetFrame
 import Packet
 
 class Network:
@@ -35,7 +35,7 @@ class Network:
 
         ip_datagram = IPDatagram(Header(startID,endID,0), UDP_TCP_segment)
         eth_frame = EthernetFrame(Header(startID, endID, 0), ip_datagram)
-        network.add_packet(Packet(network.nodes[startID], eth_frame))
+        self.add_packet(Packet(self.nodes[startID], eth_frame))
 
         
     def add_connection(self, n1_id, n2_id, connection):
@@ -91,7 +91,7 @@ class Network:
         for node in self.nodes.values():
             graph_node = {}
             for connection in self.get_connected_nodes(node):
-                graph_node[connection["node"]] = list(connection["connection"])[0].latency
+                graph_node[connection["node"].node_id] = list(connection["connection"])[0].latency
             graph[node.node_id] = graph_node
         return graph
 
