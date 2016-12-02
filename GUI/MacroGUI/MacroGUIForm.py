@@ -194,6 +194,18 @@ class Ui_MainWindow(object):
         self.updateIntervalSpinner.setSingleStep(100)
         self.updateIntervalSpinner.setValue(500)
         self.dockSimulationControls.setWidget(self.dockSCContents)
+        #test layout
+        """
+        self.testSend = QtGui.QDockWidget(self.centralwidget)
+        self.testSend.setGeometry(QtCore.QRect(550, 500, 225, 96))
+        self.testSend.setObjectName(_fromUtf8("dockTestSend"))
+        self.testDock = QtGui.QWidget()
+        self.testDock.setObjectName(_fromUtf8("dockTest"))
+        self.btnTest = QtGui.QPushButton(self.dockSCContents)
+        self.btnTest.setGeometry(QtCore.QRect(0, 0, 50, 23))
+        self.btnTest.setObjectName(_fromUtf8("btnTest"))
+        """
+
         # some temp stuff
 
 
@@ -229,8 +241,7 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.btnNext, QtCore.SIGNAL(_fromUtf8("clicked()")), self.stepSimulation)
         QtCore.QObject.connect(self.btnPause, QtCore.SIGNAL(_fromUtf8("clicked()")), self.pauseSimulation)
         QtCore.QObject.connect(self.btnPlay, QtCore.SIGNAL(_fromUtf8("clicked()")), self.playSimulation)
-        QtCore.QObject.connect(self.btnMsg, QtCore.SIGNAL(_fromUtf8("clicked()")),
-                               self.openMsgWindow)  # Button to Open MSG window
+        QtCore.QObject.connect(self.btnMsg, QtCore.SIGNAL(_fromUtf8("clicked()")), self.openMsgWindow)  # Button to Open MSG window
         # copy to here
 
 
@@ -513,7 +524,8 @@ class Ui_MainWindow(object):
             self.simulation_thread.setActive(False)
 
     def openMsgWindow(self):  # Method to open button window
-        SendMessage_Window(self.MsgWindow,self.nodes)
+        self.send_window = SendMessage_Window(self.nodes)
+        self.send_window.show()
 
 
 class NodeLabel(QtGui.QLabel):
