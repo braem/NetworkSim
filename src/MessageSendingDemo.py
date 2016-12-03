@@ -185,10 +185,6 @@ def send_message(src_id, dest_id, msg):
 def add_node(connected_node_id, latency):
     #User may only add a node which is connected to another node
     network = Network.network
-
-
-    print network.nodes.keys()
-
     connected_node = network.nodes[connected_node_id]
     new_node = Host()
     network.add_node(new_node)

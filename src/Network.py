@@ -55,10 +55,7 @@ class Network:
         """
         try:
             del self.nodes[node_id]
-            print("network remove node")
-            print self.connections.keys()
             for c_id in self.connections.keys():
-                print c_id
                 if node_id in c_id:
                     del self.connections[c_id]
             for p_id, packet in self.packets.iteritems():
