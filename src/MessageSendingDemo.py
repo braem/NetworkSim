@@ -150,13 +150,17 @@ def start_demo():
     Network.network_init()
     network = Network.network
     build_network()
-    send_message(0, 7, "Message")
+    send_message(0,7,"First Message")
     # Create a global SimThread
     global simulation
     print "Starting simulation"
-    simulation = start_simulation(network,table_step,5)
+    simulation = start_simulation(network,table_step)
     #simulation.join()#At this point, we want to go back to the UI code, so we don't want this anymore.
-    print "Simulation all done now =)"
+
+def resume_demo():
+    global simulation
+
+    simulation=start_simulation(Network.network, table_step(Network.network))
 
 def stop_demo():
     simulation.end()
@@ -174,6 +178,7 @@ def send_message(src_id, dest_id, msg):
 def add_node(connected_node_id, latency):
     #User may only add a node which is connected to another node
     network = Network.network
+
 
     print network.nodes.keys()
 

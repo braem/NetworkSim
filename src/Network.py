@@ -101,3 +101,4 @@ def network_init():
     network = Network()
     Node.Node.node_id=0
     Connection.static_id=0
+    Packet.static_packet_id = 0
