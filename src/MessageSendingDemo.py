@@ -10,6 +10,19 @@ from SimulationLoop import *
 import Network
 from routing_table_algo import routing_tables
 
+def start_demo():
+    #initialize global network variable
+    Network.network_init()
+    network = Network.network
+    build_network()
+
+    # Create a SimThread that will run a little longer than the total connection and processing latency.
+    simulation = SimThread(test_step, network)
+    print "Starting simulation"
+    simulation.start()
+    simulation.join()
+    print "Simulation all done now =)"
+
 
 def test_step(network):
     """Step function for use in the simulation"""
@@ -52,16 +65,41 @@ def add_n_host_line(n):
             this_node = network.nodes[this]
             network.add_connection(previous_node.node_id, this_node.node_id, Connection(previous_node, this_node, 2))
 
+def build_network():
+    #Can think of this network as shaped like a boxy number eight.
+    network = Network.network
+    add_n_host_line(5)
+    add_n_host_line(5)
+    first = network.nodes[0]
+    sixth = network.nodes[5]
+    network.add_connection(0, 5,Connection(first, sixth, 1))
+    third = network.nodes[2]
+    eighth = network.nodes[7]
+    network.add_connection(3, 7, Connection(third, eighth, 2))
+    fifth = network.nodes[4]
+    tenth = network.nodes[9]
+    network.add_connection(4, 9, Connection(fifth, tenth), 3)
+
+def send_message(src_id, dest_id, msg):
+
+    Network.network.create_messageUDP(src_id, dest_id, msg)
+
+def add_node(connected_node_id):
+    #User may only add a node which is connected to another node
+    network = Network.network
+    connected_node = network.nodes[connected_node_id]
+    new_node = Host()
+    network.add_node(new_node)
+    network.add_connection(new_node.node_id, connected_node_id, Connection(new_node, connected_node))
+
+def remove_node(node_id):
+    Network.network.remove_node(node_id)
 
 def n_node_demo(n):
     """Creates a linear network of n Hosts, and sends a single Packet along the network."""
-
-    #initialize global network variable
-    Network.network_init()
-    network = Network.network
     #Already have a global network instance, but it's empty.
-    #Now we need a few host nodes.  Create a few linear networks and stitch them together
-
+    #Now we need a few host nodes.
+    network = Network.network
     add_n_host_line(n)
 
     tables = routing_tables(network)
@@ -74,12 +112,12 @@ def n_node_demo(n):
     network.create_messageUDP(0, n-1, "Message")
 
     # Create a SimThread that will run a little longer than the total connection and processing latency.
-    simulation = SimThread(test_step, network, 50)
+    simulation = SimThread(test_step, network)
     print "Starting simulation"
     simulation.start()
     simulation.join()
     print "Simulation all done now =)"
 
-n_node_demo(5)
+start_demo()
 
 
