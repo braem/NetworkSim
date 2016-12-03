@@ -66,9 +66,21 @@ class SimThread(threading.Thread):
         self.access_flag(write=True, value=False)
 
 
+def sim_step(network):
+    """This is the "step function" that will run the simulation ahead one tick.
+
+    The idea is that a SimThread will loop through this either a specified number of times, or until
+    it is told to stop. Each pass through the loop updates every network entity in sequence, decrementing wait counters
+    and moving messages around as appropriate.
+
+    :type network Network"""
 
 
-def start_simulation(network, num=-1):
+    for packet in network.packets.values():
+        if packet.timer > 0: packet.decrement_timer()
+        else: packet.update_location(packet)
+
+def start_simulation(network, function=sim_step, num=-1):
     """Starts a new thread to run the simulation with the given global network object
 
     returns a reference to the SimThread running the simulation so that the GUI thread
@@ -86,28 +98,14 @@ def start_simulation(network, num=-1):
         node.routing_table = tables[node.node_id]
 
 
-    thread = SimThread(sim_step, network, num)
+    thread = SimThread(function, network, num)
     thread.start()
 
     return thread
 
 
-def sim_step(network):
-    """This is the "step function" that will run the simulation ahead one tick.
-
-    The idea is that a SimThread will loop through this either a specified number of times, or until
-    it is told to stop. Each pass through the loop updates every network entity in sequence, decrementing wait counters
-    and moving messages around as appropriate.
-
-    :type network Network"""
-
-
-    for packet in network.packets.values():
-        if packet.timer > 0: packet.decrement_timer()
-        else: packet.update_location(packet)
-
 def tick():
-    start_simulation(network, 1)
+    start_simulation(Network.network, 1)
 
     '''
     Rhys's Notes - Rough Outline

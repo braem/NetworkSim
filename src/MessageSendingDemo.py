@@ -43,11 +43,13 @@ def test_step(network):
 
 def add_n_host_line(n):
     network = Network.network
-    for j in range(0,n):
+    start = len(network.nodes)
+    stop = start + n
+    for j in range(start,stop):
         previous = j - 1
         this = j
         network.add_node(Host())
-        if previous >= 0:
+        if previous >= start:
             previous_node = network.nodes[previous]
             this_node = network.nodes[this]
             network.add_connection(previous_node.node_id, this_node.node_id, Connection(previous_node, this_node, 2))
@@ -56,16 +58,23 @@ def build_network():
     #Can think of this network as shaped like a boxy number eight.
     network = Network.network
     add_n_host_line(5)
+
+    print network.get_as_graph()
+
     add_n_host_line(5)
     first = network.nodes[0]
     sixth = network.nodes[5]
     network.add_connection(0, 5,Connection(first, sixth, 1))
     third = network.nodes[2]
     eighth = network.nodes[7]
-    network.add_connection(3, 7, Connection(third, eighth, 2))
+    network.add_connection(2, 7, Connection(third, eighth, 2))
     fifth = network.nodes[4]
     tenth = network.nodes[9]
-    network.add_connection(4, 9, Connection(fifth, tenth), 3)
+    network.add_connection(4, 9, Connection(fifth, tenth, 3))
+
+def table_step():
+    for node in Network.network.nodes.values():
+        get_routing_table(node.node_id)
 
 def start_demo():
     #initialize global network variable
@@ -73,18 +82,24 @@ def start_demo():
     network = Network.network
 
     build_network()
+    print "graph"
+    print network.get_as_graph()
 
     # Create a global SimThread
     global simulation
     simulation = SimThread(test_step, network)
     print "Starting simulation"
-    start_simulation(network)
+    start_simulation(network,table_step,1)
     simulation.start()
     simulation.join()#At this point, we want to go back to the UI code.
     print "Simulation all done now =)"
 
 def stop_demo():
     simulation.end()
+
+def get_routing_table(node_id):
+    for node,next in Network.network.nodes[node_id].routing_table.itervalues():
+        print node, ": ", next
 
 def send_message(src_id, dest_id, msg):
     #Wrapped Network function for convenience.
