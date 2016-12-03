@@ -10,20 +10,6 @@ from SimulationLoop import *
 import Network
 from routing_table_algo import routing_tables
 
-def start_demo():
-    #initialize global network variable
-    Network.network_init()
-    network = Network.network
-    build_network()
-
-    # Create a SimThread that will run a little longer than the total connection and processing latency.
-    simulation = SimThread(test_step, network)
-    print "Starting simulation"
-    simulation.start()
-    simulation.join()
-    print "Simulation all done now =)"
-
-
 def test_step(network):
     """Step function for use in the simulation"""
 
@@ -80,8 +66,25 @@ def build_network():
     tenth = network.nodes[9]
     network.add_connection(4, 9, Connection(fifth, tenth), 3)
 
-def send_message(src_id, dest_id, msg):
+def start_demo():
+    #initialize global network variable
+    Network.network_init()
+    network = Network.network
+    build_network()
 
+    # Create a global SimThread
+    global simulation
+    simulation = SimThread(test_step, network)
+    print "Starting simulation"
+    simulation.start()
+    simulation.join()#At this point, we want to go back to the UI code.
+    print "Simulation all done now =)"
+
+def stop_demo():
+    simulation.end()
+
+def send_message(src_id, dest_id, msg):
+    #Wrapped Network function for convenience.
     Network.network.create_messageUDP(src_id, dest_id, msg)
 
 def add_node(connected_node_id):
@@ -93,6 +96,7 @@ def add_node(connected_node_id):
     network.add_connection(new_node.node_id, connected_node_id, Connection(new_node, connected_node))
 
 def remove_node(node_id):
+    #Wrapped Network function for convenience
     Network.network.remove_node(node_id)
 
 def n_node_demo(n):
