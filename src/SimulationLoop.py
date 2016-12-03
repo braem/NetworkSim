@@ -105,7 +105,7 @@ def sim_step(network):
 
     for packet in network.packets.values():
         if packet.timer > 0: packet.decrement_timer()
-        else: packet.update_location(packet)
+        else: packet.update_location()
 
 def tick():
     start_simulation(network, 1)

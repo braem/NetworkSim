@@ -18,8 +18,8 @@ class Node(object):
         self.__Y = y                        # position y value
         self.__NetworkInfo = object         # object that holds addressing info etc
         self.isSelected = False
-        self.id = self.__Node_ID            # (needed for simplicity/msg sending)
-        self.clean_id = "%s id: %s" % (Node.counter,self.__Node_ID) # node num in order created + unique id (cleaner print, was going to use for menus)
+        self.id = "%s" % (Node.counter - 1)      # (needed for simplicity/msg sending)
+        self.clean_id = "%s id: %s" % (Node.counter, self.__Node_ID) # node num in order created + unique id (cleaner print, was going to use for menus)
         self.type = nodeType                #needed for msg sending
 
     def __del__(self):

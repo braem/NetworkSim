@@ -1,8 +1,9 @@
 from Segments.Segment import *
 from Segments.Header import *
-from Segments import IPDatagram
-from Segments import EthernetFrame
-import Packet
+from Segments.IPDatagram import IPDatagram
+from Segments.EthernetFrame import EthernetFrame
+from src.Packet import Packet
+from PyQt4.QtCore import QString
 
 class Network:
     def __init__(self):
@@ -35,7 +36,7 @@ class Network:
 
         ip_datagram = IPDatagram(Header(startID,endID,0), UDP_TCP_segment)
         eth_frame = EthernetFrame(Header(startID, endID, 0), ip_datagram)
-        network.add_packet(Packet(network.nodes[startID], eth_frame))
+        network.add_packet(Packet(startID, eth_frame))  #network.nodes[startID]
 
         
     def add_connection(self, n1_id, n2_id, connection):
