@@ -70,7 +70,13 @@ def start_demo():
     #initialize global network variable
     Network.network_init()
     network = Network.network
+
     build_network()
+
+    tables = routing_tables(network)
+    #Set the routing tables in all the nodes
+    for node in network.nodes.values():
+        node.routing_table=tables[node.node_id]
 
     # Create a global SimThread
     global simulation
