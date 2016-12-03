@@ -160,7 +160,9 @@ def start_demo():
 def resume_demo():
     global simulation
 
-    simulation=start_simulation(Network.network, table_step(Network.network))
+    print"packets"
+    print Network.network.packets.keys()
+    simulation=start_simulation(Network.network, table_step)
 
 def stop_demo():
     simulation.end()
