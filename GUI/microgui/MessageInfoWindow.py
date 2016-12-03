@@ -51,7 +51,6 @@ class MessageInfo_Window(QMainWindow):
                             "metals often conform to a duodectet (12)."]
         self.tcpSourceList = ["231456", "5521", "231456"]
         self.tcpDestList = ["5521", "231456", "5521"]
-        self.tcp
 
         # Store the layer designator with first letter capitalized
         self.layer = layer_designator.lower().capitalize()
@@ -76,6 +75,7 @@ class MessageInfo_Window(QMainWindow):
             self.messageTextBrowser = QTextBrowser(self.centralwidget)
             self.messageTextBrowser.setGeometry(QRect(0, 20, 300, 330))
             self.messageTextBrowser.setObjectName(_fromUtf8("messageTextBrowser"))
+            self.messageTextBrowser.setText(self.messageList[2] + " " + self.messageList[2])
         elif self.layer == MessageInfo_Window.protocol_stack[1]:
             self.resize(500, 400)
             self.frame_11 = QFrame(self.centralwidget)
@@ -452,7 +452,7 @@ class MessageInfo_Window(QMainWindow):
             self.ipDestLabel.setText(_translate("MainWindow", "Destination Address", None))
             self.ipPayloadLabel.setText(_translate("MainWindow", "Payload", None))
 
-    def setupMessages(self):
+    def setupMessage(self):
         None
 
 class TCPHeader(object):
