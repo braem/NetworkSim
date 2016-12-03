@@ -41,6 +41,18 @@ def test_step(network):
 
         print "packet is at node " + str(packet.current_node.node_id)
 
+def add_n_host_line(n):
+    network = Network.network
+    for j in range(0,n):
+        previous = j - 1
+        this = j
+        network.add_node(Host())
+        if previous >= 0:
+            previous_node = network.nodes[previous]
+            this_node = network.nodes[this]
+            network.add_connection(previous_node.node_id, this_node.node_id, Connection(previous_node, this_node, 2))
+
+
 def n_node_demo(n):
     """Creates a linear network of n Hosts, and sends a single Packet along the network."""
 
@@ -49,17 +61,8 @@ def n_node_demo(n):
     network = Network.network
     #Already have a global network instance, but it's empty.
     #Now we need a few host nodes.  Create a few linear networks and stitch them together
-    #TODO add more network branches
-    for j in range(0,n):
 
-        previous = j - 1
-        this = j
-        network.add_node(Host())
-
-        if previous >= 0:
-            previous_node = network.nodes[previous]
-            this_node = network.nodes[this]
-            network.add_connection(previous_node.node_id, this_node.node_id, Connection(previous_node, this_node, 2))
+    add_n_host_line(n)
 
     tables = routing_tables(network)
 
