@@ -66,10 +66,6 @@ def n_node_demo(n):
     #Set the routing tables in all the nodes
     for node in network.nodes.values():
         node.routing_table=tables[node.node_id]
-        print node.node_id, node.routing_table
-
-    for key in network.connections:
-        print key, network.connections[key].connection_id
 
     #Create one message to start off
     network.create_messageUDP(0, n-1, "Message")

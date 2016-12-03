@@ -43,7 +43,6 @@ class Packet:
     def update_location(self):
         network=Network.network
         if self.current_node.node_id != self.get_destination():
-            print "Not there yet"
             if self.timer == -1:
                 #This means this packet has just been created and doesn't know where to go yet.
                 self.set_connection(network.connections\
@@ -61,9 +60,8 @@ class Packet:
                 if self.current_node.node_id != self.get_destination():
                     next_node = self.current_node.next_hop(self.get_destination())
                     self.set_connection(network.connections[network.get_node_pair_id(self.current_node.node_id, next_node.node_id)])
-                else: print "Packet.update made it 1"
+
         else:
-            print "Packet.update -- made it 2"
             #If the packet has reached its destination, delete it.
             try: self.connection.removeTraffic()
             except: pass
