@@ -6,6 +6,9 @@ import os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from MessageInfoWindow import MessageInfo_Window
+import random
+import time
+import thread
 
 try:
     _fromUtf8 = QString.fromUtf8
@@ -33,6 +36,8 @@ class Values():
 
 class MicroMainWindow(QMainWindow):
 
+    working = False
+
     def __init__(self):
         super(MicroMainWindow, self).__init__()
 
@@ -46,6 +51,7 @@ class MicroMainWindow(QMainWindow):
         self.central_widget.setObjectName(_fromUtf8("central_widget"))
 
         self.btnProgress = QPushButton(self.central_widget)
+        self.btnLoop = QPushButton(self.central_widget)
 
         self.forward = True
         self.stepCount = 0
@@ -59,9 +65,14 @@ class MicroMainWindow(QMainWindow):
 
         # Setup window
         self.resize(Values.windWidth, Values.windHeight)
+
         self.btnProgress.setGeometry(QRect(0, 0, 100, 30))
         self.btnProgress.setObjectName(_fromUtf8("btnProgress"))
         self.btnProgress.clicked.connect(self.clickedButton_Progress)
+
+        self.btnLoop.setGeometry(QRect(Values.windWidth-100, 0, 100, 30))
+        self.btnLoop.setObjectName(_fromUtf8("btnLoop"))
+        self.btnLoop.clicked.connect(self.clickedButton_Loop)
 
         # Setup Window
         total_width = (4 + MicroGraphicsLabel.myWidth) * (self.list_size - 1)
@@ -82,6 +93,7 @@ class MicroMainWindow(QMainWindow):
             self.deviceList.append(self.makeDevicePanel(temp_device_list[i], pos_x, pos_y))
 
         # Setup graphic labels
+        lineListLength = 0
         for i in range(0, self.list_size - 1):
             temp_offset = 0
             for j in range(i, self.list_size - 1):
@@ -89,13 +101,66 @@ class MicroMainWindow(QMainWindow):
                 pos_x = Values.windWidth / 2 + total_width / 2 - temp_offset
                 pos_y = Values.windHeight / 2 - MicroHostFrame.myHeight / 2 + (MicroHostFrame.myHeight -
                                                                                MicroGraphicsLabel.getHeight())
-            self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+            if (temp_device_list[i] == 1 and temp_device_list[i+1] == 2):
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList[1].updateState(1)
+                self.lineList[2].updateState(2)
+                self.lineList[3].updateState(3)
+                self.lineList[4].updateState(4)
+                self.lineList[5].updateState(5)
+                self.lineList[6].updateState(6)
+                self.lineList[7].updateState(7)
+                self.lineList[8].updateState(8)
+                lineListLength += 9
+            if (temp_device_list[i] == 2 and temp_device_list[i+1] == 3):
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList[1+lineListLength].updateState(1)
+                self.lineList[2+lineListLength].updateState(2)
+                self.lineList[3+lineListLength].updateState(3)
+                self.lineList[4+lineListLength].updateState(4)
+                self.lineList[5+lineListLength].updateState(5)
+                lineListLength += 6
+            if (temp_device_list[i] == 3 and temp_device_list[i+1] == 1):
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList.append(self.makeLine(temp_device_list[i], temp_device_list[i + 1], pos_x, pos_y))
+                self.lineList[1 + lineListLength].updateState(1)
+                self.lineList[2 + lineListLength].updateState(2)
+                self.lineList[3 + lineListLength].updateState(3)
+                self.lineList[4 + lineListLength].updateState(4)
+                self.lineList[5 + lineListLength].updateState(5)
+                self.lineList[6 + lineListLength].updateState(6)
+                self.lineList[7 + lineListLength].updateState(7)
+                lineListLength += 8
 
         # Show components
         for i in self.deviceList:
             i.show()
         for i in self.lineList:
             i.show()
+            i.setVisible(False)
+        self.lineList[0].setVisible(True)
+        self.lineList[9].setVisible(True)
+        self.lineList[15].setVisible(True)
+
         self.setCentralWidget(self.central_widget)
         self.retranslateUi(self)
 
@@ -139,6 +204,7 @@ class MicroMainWindow(QMainWindow):
             div.updateState()
 
     def increment(self):
+        MicroMainWindow.working = True
         if self.forward:
             self.stepCount += 1
         else:
@@ -147,108 +213,179 @@ class MicroMainWindow(QMainWindow):
         if self.stepCount == 0:
             MessageInfo_Window.nextMessage()
             self.forward = True
-            self.lineList[0].updateState(0)
+            self.lineList[0].setVisible(True)
+            self.lineList[1].setVisible(False)
             self.deviceList[0].updateState(0)
             # disable
             # setup next message
         elif self.stepCount == 1:
-            self.lineList[0].updateState(1)
+            self.lineList[0].setVisible(False)
+            self.lineList[1].setVisible(True)
+            self.lineList[2].setVisible(False)
             self.deviceList[0].updateState(1)
             # enable App button and line segment of host1
         elif self.stepCount == 2:
-            self.lineList[0].updateState(2)
+            self.lineList[1].setVisible(False)
+            self.lineList[2].setVisible(True)
+            self.lineList[3].setVisible(False)
             self.deviceList[0].updateState(2)
             # go to Trans button and line segment of host1
         elif self.stepCount == 3:
-            self.lineList[0].updateState(3)
+            self.lineList[2].setVisible(False)
+            self.lineList[3].setVisible(True)
+            self.lineList[4].setVisible(False)
             self.deviceList[0].updateState(3)
             # go to Net button and line segment of host1
         elif self.stepCount == 4:
-            self.lineList[0].updateState(4)
+            self.lineList[3].setVisible(False)
+            self.lineList[4].setVisible(True)
+            self.lineList[5].setVisible(False)
             self.deviceList[0].updateState(4)
             # go to Link button and line segment of host1
         elif self.stepCount == 5:
-            self.lineList[0].updateState(5)
+            self.lineList[4].setVisible(False)
+            self.lineList[5].setVisible(True)
+            self.lineList[6].setVisible(False)
             self.deviceList[0].updateState(5)
             self.deviceList[1].updateState(0)
             # go to Phys button and line segment of host1
         elif self.stepCount == 6:
-            self.lineList[0].updateState(6)
+            self.lineList[5].setVisible(False)
+            self.lineList[6].setVisible(True)
+            self.lineList[7].setVisible(False)
             self.deviceList[0].updateState(0)
             self.deviceList[1].updateState(3)
             # go to Phys button and line segment of router
         elif self.stepCount == 7:
-            self.lineList[0].updateState(7)
+            self.lineList[6].setVisible(False)
+            self.lineList[7].setVisible(True)
+            self.lineList[8].setVisible(False)
             self.deviceList[1].updateState(2)
             # go to Link button and line segment of router
         elif self.stepCount == 8:
-            self.lineList[0].updateState(8)
-            self.lineList[1].updateState(0)
+            self.lineList[7].setVisible(False)
+            self.lineList[8].setVisible(True)
+            self.lineList[10].setVisible(False)
+            self.lineList[9].setVisible(True)
             self.deviceList[1].updateState(1)
             # go to Net button and line segment of router
         elif self.stepCount == 9:
-            self.lineList[0].updateState(0)
-            self.lineList[1].updateState(1)
+            self.lineList[8].setVisible(False)
+            self.lineList[0].setVisible(True)
+            self.lineList[11].setVisible(False)
+            self.lineList[10].setVisible(True)
+            self.deviceList[1].updateState(1)
             # change sides
         elif self.stepCount == 10:
-            self.lineList[1].updateState(2)
+            self.lineList[10].setVisible(False)
+            self.lineList[11].setVisible(True)
+            self.lineList[12].setVisible(False)
             self.deviceList[1].updateState(2)
             # go to router Link button and line segment
         elif self.stepCount == 11:
-            self.lineList[1].updateState(3)
+            self.lineList[11].setVisible(False)
+            self.lineList[12].setVisible(True)
+            self.lineList[13].setVisible(False)
             self.deviceList[1].updateState(3)
             self.deviceList[2].updateState(0)
             # go to router Phys button and line segment
         elif self.stepCount == 12:
-            self.lineList[1].updateState(4)
+            self.lineList[12].setVisible(False)
+            self.lineList[13].setVisible(True)
+            self.lineList[14].setVisible(False)
             self.deviceList[1].updateState(0)
             self.deviceList[2].updateState(2)
             # go to switch Phys button and line segment
         elif self.stepCount == 13:
-            self.lineList[1].updateState(5)
-            self.lineList[2].updateState(0)
+            self.lineList[13].setVisible(False)
+            self.lineList[14].setVisible(True)
+            self.lineList[15].setVisible(True)
+            self.lineList[16].setVisible(False)
             self.deviceList[2].updateState(1)
             # go to switch Link button and line segment
         elif self.stepCount == 14:
-            self.lineList[1].updateState(0)
-            self.lineList[2].updateState(1)
+            self.lineList[14].setVisible(False)
+            self.lineList[9].setVisible(True)
+            self.lineList[16].setVisible(True)
+            self.lineList[17].setVisible(False)
+            self.deviceList[2].updateState(1)
             # change sides
         elif self.stepCount == 15:
-            self.lineList[2].updateState(2)
+            self.lineList[16].setVisible(False)
+            self.lineList[17].setVisible(True)
+            self.lineList[18].setVisible(False)
             self.deviceList[2].updateState(2)
             self.deviceList[3].updateState(0)
             # go to switch Phys button and line segment
         elif self.stepCount == 16:
-            self.lineList[2].updateState(3)
+            self.lineList[17].setVisible(False)
+            self.lineList[18].setVisible(True)
+            self.lineList[19].setVisible(False)
             self.deviceList[2].updateState(0)
             self.deviceList[3].updateState(5)
             # go to host2 Phys button and line segment
         elif self.stepCount == 17:
-            self.lineList[2].updateState(4)
+            self.lineList[18].setVisible(False)
+            self.lineList[19].setVisible(True)
+            self.lineList[20].setVisible(False)
             self.deviceList[3].updateState(4)
             # go to host2 Link button and line segment
         elif self.stepCount == 18:
-            self.lineList[2].updateState(5)
+            self.lineList[19].setVisible(False)
+            self.lineList[20].setVisible(True)
+            self.lineList[21].setVisible(False)
             self.deviceList[3].updateState(3)
             # go to host2 Net button and line segment
         elif self.stepCount == 19:
-            self.lineList[2].updateState(6)
+            self.lineList[20].setVisible(False)
+            self.lineList[21].setVisible(True)
+            self.lineList[22].setVisible(False)
             self.deviceList[3].updateState(2)
             # go to host2 Trans button and line segment
         elif self.stepCount == 20:
-            self.lineList[2].updateState(7)
+            self.lineList[21].setVisible(False)
+            self.lineList[22].setVisible(True)
+            self.lineList[15].setVisible(False)
             self.deviceList[3].updateState(1)
             # go to host2 App button and line segment
         elif self.stepCount == 21:
             self.forward = False
-            self.lineList[2].updateState(0)
+            self.lineList[22].setVisible(False)
+            self.lineList[15].setVisible(True)
             self.deviceList[3].updateState(0)
             MessageInfo_Window.nextMessage()
             # disable
             # setup nest message
+        MicroMainWindow.working = False
 
     def clickedButton_Progress(self):
         self.increment()
+
+    def clickedButton_Loop(self):
+        if self.stepCount == 0 or self.stepCount == 21:
+            thread.start_new_thread(self.looper, ())
+
+    def looper(self):
+        i = 0
+        while i < 10:
+            ran = random.randrange(0, 2)
+            if ran == 0:
+                self.stepCount = 0
+                self.forward = True
+                while self.stepCount != 21:
+                    while MicroMainWindow.working:
+                        time.sleep(0.01)
+                    self.increment()
+                    time.sleep(0.200)
+            elif ran == 1:
+                self.stepCount = 21
+                self.forward = False
+                while self.stepCount != 0:
+                    while MicroMainWindow.working:
+                        time.sleep(0.01)
+                    self.increment()
+                    time.sleep(0.200)
+            i += 1
 
 
 class MicroHostFrame(QFrame):
@@ -352,7 +489,6 @@ class MicroHostFrame(QFrame):
             self.btnHostP.setDisabled(False)
 
 
-
 class MicroRouterFrame(QFrame):
     myHeight = Values.buttonHeight*3+Values.labelHeight-3
     myWidth = Values.buttonWidth
@@ -426,6 +562,7 @@ class MicroRouterFrame(QFrame):
             self.btnRouterL.setDisabled(False)
         elif point == 3:
             self.btnRouterP.setDisabled(False)
+
 
 class MicroSwitchFrame(QFrame):
     myHeight = Values.buttonHeight*2+Values.labelHeight-2
