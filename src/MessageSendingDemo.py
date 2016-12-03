@@ -168,10 +168,15 @@ def stop_demo():
     simulation.end()
 
 def get_routing_table(node_id):
+    string =""
+
     table = Network.network.nodes[node_id].routing_table
-    print"Node #" + str(node_id)
+    string += "Node #" + str(node_id) + " Routing Table:\n"
+    string += "Dest_id : Next_id\n"
     for node in table:
-        print node, ": ", table[node]
+        string += str(node) + " : " + str(table[node]) + "\n"
+
+    return string
 
 def send_message(src_id, dest_id, msg):
     #Wrapped Network function for convenience.

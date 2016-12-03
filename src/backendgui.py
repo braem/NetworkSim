@@ -64,6 +64,15 @@ class Backgui:
         self.dest_id_entry.pack(side=LEFT)
         self.dest_id_entry.insert(0,"To (ID)")
 
+        self.slogan = Button(self.frame,
+                             text="Show Routing Table",
+                             command=self.showroutingtable)
+        self.slogan.pack(side=LEFT)
+
+        self.rt_id_text = StringVar()
+        self.rt_id_entry = Entry(self.frame, textvariable=self.rt_id_text)
+        self.rt_id_entry.pack(side=LEFT)
+        self.rt_id_entry.insert(0,"Node ID")
 
         self.slogan = Button(self.frame,
                              text="Show Network",
@@ -100,9 +109,17 @@ class Backgui:
 
     def removenodes(self):
 
-        try:
-            MessageSendingDemo.add_node(int(self.add_node_text))
-        except: print "Node remove error"
+        #try:
+        MessageSendingDemo.remove_node((int(self.rem_node_text.get().strip())))
+        #except: print "Node remove error"
+
+    def showroutingtable(self):
+        rt_id = int(self.rt_id_text.get().strip())
+        table = MessageSendingDemo.get_routing_table(rt_id)
+
+        table_window = Toplevel()
+        label = Label(table_window, text=table, justify=LEFT)
+        label.pack()
 
     def shownetwork(self):
         window = Toplevel()
