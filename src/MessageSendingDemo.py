@@ -63,15 +63,17 @@ def test_step(network):
 def table_step(network):
     print "New Step~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     print get_packet_table()
+
     for packet in network.packets.values():
+        if (packet.get_destination() == packet.current_node.node_id):
+            print "Packet #" + str(packet.packet_id) + "delivered: " + packet.payload.ip_datagram.segment.message
         if packet.timer > 0:
             packet.decrement_timer()
         elif packet.timer == 0:
             packet.update_location()
-            if(packet.get_destination() == packet.current_node.node_id):
-                print packet.payload.ip_datagram.segment.message
         else:
             packet.update_location()
+
     time.sleep(1)
 
 
@@ -159,9 +161,6 @@ def start_demo():
 
 def resume_demo():
     global simulation
-
-    print"packets"
-    print Network.network.packets.keys()
     simulation=start_simulation(Network.network, table_step)
 
 def stop_demo():
