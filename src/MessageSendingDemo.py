@@ -101,9 +101,6 @@ def print_packet_table():
 def table_print():
     print_packet_table()
 
-
-
-
 def add_n_host_line(n):
     network = Network.network
     start = len(network.nodes)

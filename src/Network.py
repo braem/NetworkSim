@@ -3,6 +3,8 @@ from Segments.Header import *
 from Segments.IPDatagram import IPDatagram
 from Segments.EthernetFrame import EthernetFrame
 from Packet import Packet
+from Connection import Connection
+import Node
 
 class Network:
     def __init__(self):
@@ -97,3 +99,5 @@ class Network:
 def network_init():
     global network
     network = Network()
+    Node.Node.node_id=0
+    Connection.static_id=0
