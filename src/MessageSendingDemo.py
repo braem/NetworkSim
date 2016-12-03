@@ -61,6 +61,7 @@ def test_step(network):
 
 def table_step(network):
     print "New Step~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    table_print()
     for packet in network.packets.values():
         if packet.timer > 0:
             packet.decrement_timer()
@@ -68,10 +69,9 @@ def table_step(network):
             packet.update_location()
             if(packet.get_destination() == packet.current_node.node_id):
                 print packet.payload.ip_datagram.segment.message
-                del(network.packets[packet.packet_id])
         else:
             packet.update_location()
-    table_print()
+
 
 def print_graph():
     network = Network.network
@@ -85,18 +85,24 @@ def print_packet_table():
     for packet in Network.network.packets.values():
 
         conn_id = "NA"
-
+        next = "NA"
         try:
             conn_id = packet.connection.connection_id
+            next = packet.connection.other_node(packet.current_node).node_id
         except:
             pass
+        #The +1 takes into account the implicit one-step processing time for each packet on arrival
+        ETA = packet.timer + 1
+        if packet.timer == -1:
+            ETA = "NA"
 
         print "Pkt #" + str(packet.packet_id) + ":", \
             "Loc", packet.current_node.node_id, \
+            "Nxt", next,\
             "Src", packet.get_source(), \
             "Dst", packet.get_destination(), \
             "Conn", conn_id, \
-            "ETA", packet.timer
+            "ETA", ETA
 
 def table_print():
     print_packet_table()
