@@ -7,6 +7,7 @@ from Node import *
 from Connection import Connection
 from SimulationLoop import start_simulation
 from SimulationLoop import SimThread
+import time
 
 import Network
 from routing_table_algo import routing_tables
@@ -61,7 +62,7 @@ def test_step(network):
 
 def table_step(network):
     print "New Step~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    table_print()
+    print get_packet_table()
     for packet in network.packets.values():
         if packet.timer > 0:
             packet.decrement_timer()
@@ -71,17 +72,20 @@ def table_step(network):
                 print packet.payload.ip_datagram.segment.message
         else:
             packet.update_location()
+    time.sleep(1)
 
 
-def print_graph():
+
+def get_graph():
     network = Network.network
     graph = network.get_as_graph()
-    print "Network Connectivity Table"
+    string = "Network Connectivity Table\n"
     for node in network.nodes.keys():
-        print node, graph[node]
+        string += str(node) + " " + str(graph[node]) + "\n"
+    return string
 
-def print_packet_table():
-    print "Packet Table"
+def get_packet_table():
+    string = "Packet Table\n"
     for packet in Network.network.packets.values():
 
         conn_id = "NA"
@@ -96,16 +100,20 @@ def print_packet_table():
         if packet.timer == -1:
             ETA = "NA"
 
-        print "Pkt #" + str(packet.packet_id) + ":", \
-            "Loc", packet.current_node.node_id, \
-            "Nxt", next,\
-            "Src", packet.get_source(), \
-            "Dst", packet.get_destination(), \
-            "Conn", conn_id, \
-            "ETA", ETA
+        string += "Pkt #" + str(packet.packet_id) + ":" + \
+            " Loc " + str(packet.current_node.node_id) + \
+            " Nxt " + str(next) +\
+            " Src " + str(packet.get_source()) + \
+            " Dst " + str(packet.get_destination()) + \
+            " Conn " + str(conn_id) + \
+            " ETA " + str(ETA)
+        string += "\n"
+        return string
 
-def table_print():
-    print_packet_table()
+
+
+def get_table():
+    return get_packet_table()
 
 def add_n_host_line(n):
     network = Network.network
@@ -137,6 +145,7 @@ def build_network():
 
 
 def start_demo():
+    print"start_demo"
     #initialize global network variable
     Network.network_init()
     network = Network.network
@@ -145,8 +154,8 @@ def start_demo():
     # Create a global SimThread
     global simulation
     print "Starting simulation"
-    simulation = start_simulation(network,table_step,15)
-    simulation.join()#At this point, we want to go back to the UI code.
+    simulation = start_simulation(network,table_step,5)
+    #simulation.join()#At this point, we want to go back to the UI code, so we don't want this anymore.
     print "Simulation all done now =)"
 
 def stop_demo():
@@ -165,6 +174,9 @@ def send_message(src_id, dest_id, msg):
 def add_node(connected_node_id, latency):
     #User may only add a node which is connected to another node
     network = Network.network
+
+    print network.nodes.keys()
+
     connected_node = network.nodes[connected_node_id]
     new_node = Host()
     network.add_node(new_node)
@@ -195,8 +207,8 @@ def n_node_demo(n):
     print "Starting simulation"
     simulation.start()
     simulation.join()
-    print "Simulation all done now =)"
+    print "Stopping simulation"
 
-start_demo()
+#start_demo()
 
 

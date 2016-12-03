@@ -1,7 +1,6 @@
 from Segments.EthernetFrame import EthernetFrame
 from Segments.IPDatagram import IPDatagram
 from Segments.Segment import *
-from src.Network import Network
 import Network
 
 class Node:
