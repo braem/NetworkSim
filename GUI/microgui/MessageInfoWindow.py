@@ -29,8 +29,6 @@ class MessageInfo_Window(QMainWindow):
 
     def __init__(self, holder, layer_designator):
         super(MessageInfo_Window, self).__init__(holder)
-        MessageInfo_Window.messageNum += 1
-        self.message = MessageInfo_Window.messageNum
 
         self.messageList = ["Hello, how are you?", "I am doing fine. Did you need something?",
                             "Lewis structures (also known as Lewis dot diagrams, Lewis dot formulas, Lewis dot "
@@ -51,6 +49,31 @@ class MessageInfo_Window(QMainWindow):
                             "metals often conform to a duodectet (12)."]
         self.tcpSourceList = ["231456", "5521", "231456"]
         self.tcpDestList = ["5521", "231456", "5521"]
+        self.tcpSeqnumList = ["154020", "21546", "35489"]
+        self.tcpAcknumList = ["57742", "9825", "316547"]
+        self.tcpDataList = ["5", "5", "5"]
+        self.tcpReservedList = ["000", "000", "000"]
+        self.tcpNSList = ["0", "0", "1"]
+        self.tcpCWRList = ["0", "1", "0"]
+        self.tcpECEList = ["0", "0", "0"]
+        self.tcpURGList = ["1", "1", "1"]
+        self.tcpACKList = ["0", "1", "0"]
+        self.tcpPSHList = ["0", "0", "0"]
+        self.tcpRSTList = ["0", "0", "1"]
+        self.tcpSYNList = ["0", "1", "1"]
+        self.tcpFINList = ["1", "0", "0"]
+        self.tcpWindowList = ["65501", "124", "3578"]
+        self.tcpChecksumList = ["2551", "2567", "742"]
+        self.tcpUrgentList = ["1120", "35687", "12563"]
+        self.ipVersionList = ["6", "6", "6"]
+        self.ipTrafficList = ["125", "34", "250"]
+        self.ipFlowList = ["11245", "32564", "75663"]
+        self.ipPaylengthList = ["2435", "1125", "45378"]
+        self.ipNextList = ["6", "6", "6"]
+        self.ipHopList = ["21", "203", "35"]
+        self.ipSourceList = ["2001:0db8:85a3:0000:0000:8a2e:0370:7334", "1560:0adb:0bad:aff9:0123:dead:0101:c1d4", "2001:0db8:85a3:0000:0000:8a2e:0370:7334"]
+        self.ipDestList = ["1560:0adb:0bad:aff9:0123:dead:0101:c1d4", "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "1560:0adb:0bad:aff9:0123:dead:0101:c1d4"]
+
 
         # Store the layer designator with first letter capitalized
         self.layer = layer_designator.lower().capitalize()
@@ -421,8 +444,8 @@ class MessageInfo_Window(QMainWindow):
             self.messageLabel.setText(_translate("MainWindow", "Message:", None))
         elif self.layer == MessageInfo_Window.protocol_stack[1]:
             self.label_11.setText(_translate("MainWindow", "TCP Header", None))
-            self.label_26.setText(_translate("MainWindow", "Source Pointer", None))
-            self.label_27.setText(_translate("MainWindow", "Destination Pointer", None))
+            self.label_26.setText(_translate("MainWindow", "Source Port", None))
+            self.label_27.setText(_translate("MainWindow", "Destination Port", None))
             self.label_28.setText(_translate("MainWindow", "Sequence Number", None))
             self.label_22.setText(_translate("MainWindow", "Data Offset", None))
             self.label_21.setText(_translate("MainWindow", "Reserved", None))
@@ -453,40 +476,49 @@ class MessageInfo_Window(QMainWindow):
             self.ipPayloadLabel.setText(_translate("MainWindow", "Payload", None))
 
     def setupMessage(self):
-        None
+        i = MessageInfo_Window.messageNum
+        if i > 2:
+            i = 2
+        if self.layer == MessageInfo_Window.protocol_stack[0]:
+            self.messageTextBrowser.setText(self.messageList[i])
+        elif self.layer == MessageInfo_Window.protocol_stack[1]:
+            self.tcpSourceTextBrowser.setText(self.tcpSourceList[i])
+            self.tcpDestTextBrowser.setText(self.tcpDestList[i])
+            self.tcpSequenceTextBrowser.setText(self.tcpSeqnumList[i])
+            self.tcpAcknumTextBrowser.setText(self.tcpAcknumList[i])
+            self.tcpDataTextBrowser.setText(self.tcpDataList[i])
+            self.tcpReservedTextBrowser.setText(self.tcpReservedList[i])
+            self.tcpNSTextBrowser.setText(self.tcpNSList[i])
+            self.tcpCWRTextBrowser.setText(self.tcpCWRList[i])
+            self.tcpECETextBrowser.setText(self.tcpECEList[i])
+            self.tcpURGTextBrowser.setText(self.tcpURGList[i])
+            self.tcpACKTextBrowser.setText(self.tcpACKList[i])
+            self.tcpPSHTextBrowser.setText(self.tcpPSHList[i])
+            self.tcpRSTTextBrowser.setText(self.tcpRSTList[i])
+            self.tcpSYNTextBrowser.setText(self.tcpSYNList[i])
+            self.tcpFINTextBrowser.setText(self.tcpFINList[i])
+            self.tcpWindowTextBrowser.setText(self.tcpWindowList[i])
+            self.tcpChecksumTextBrowser.setText(self.tcpChecksumList[i])
+            self.tcpUrgentTextBrowser.setText(self.tcpUrgentList[i])
+            self.tcpPayloadTextBrowser.setText(self.messageList[i])
+        elif self.layer == MessageInfo_Window.protocol_stack[2]:
+            self.ipVersionTextBrowser.setText(self.ipVersionList[i])
+            self.ipTrafficTextBrowser.setText(self.ipTrafficList[i])
+            self.ipFlowTextBrowser.setText(self.ipFlowList[i])
+            self.ipPaylengthTextBrowser.setText(self.ipPaylengthList[i])
+            self.ipNextTextBrowser.setText(self.ipNextList[i])
+            self.ipHopTextBrowser.setText(self.ipHopList[i])
+            self.ipSourceTextBrowser.setText(self.ipSourceList[i])
+            self.ipDestTextBrowser.setText(self.ipDestList[i])
+            self.ipPayloadTextBrowser.setText(self.tcpSourceList[i]+","+self.tcpDestList[i]+","+self.tcpSeqnumList[i]+
+                                              ","+self.tcpAcknumList[i]+","+self.tcpDataList[i]+","+
+                                              self.tcpReservedList[i]+","+self.tcpNSList[i]+","+self.tcpCWRList[i]+
+                                              ","+self.tcpECEList[i]+","+self.tcpURGList[i]+","+self.tcpACKList[i]+
+                                              ","+self.tcpPSHList[i]+","+self.tcpRSTList[i]+","+self.tcpSYNList[i]+
+                                              ","+self.tcpFINList[i]+","+self.tcpWindowList[i]+","+
+                                              self.tcpChecksumList[i]+","+self.tcpUrgentList[i]+","+self.messageList[i])
 
-class TCPHeader(object):
-
-    def __init__(self, sour, dest, seqN, ackN, head, res, cwr, ece, urg, ack, psh, rst, syn, fin, rec, check, urgP):
-        self.sourcePort = sour
-        self.destPort = dest
-        self.seqNumber = seqN
-        self.ackNumber = ackN
-        self.headLength = head
-        self.reserved = res
-        self.cwr = cwr
-        self.ece = ece
-        self.urg = urg
-        self.ack = ack
-        self.psh = psh
-        self.rst = rst
-        self.syn = syn
-        self.fin = fin
-        self.recWindow = rec
-        self.checksum = check
-        self.urgentPointer = urgP
-
-
-class IPv6(object):
-
-    def __init__(self, traffic, flow, payload, next, hop, source, destination):
-        self.version = 6
-        self.trafficClass = traffic
-        self.flowLabel = flow
-        self.payloadLength = payload
-        self.nextHeader = next
-        self.hopLimit = hop
-        self.sourceAddress = source
-        self.destinationAddress = destination
-
+    @staticmethod
+    def nextMessage():
+        MessageInfo_Window.messageNum += 1
 
