@@ -6,6 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+import os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -24,12 +25,12 @@ except AttributeError:
         return QApplication.translate(context, text, disambig)
 
 class MessageInfo_Window(QMainWindow):
-    protocol_stack = ["Application", "Transport", "Network", "Link"]
+    protocol_stack = ["Application", "Transport", "Network", "Link", "Physical"]
     messageNum = 0
 
     def __init__(self, holder, layer_designator):
         super(MessageInfo_Window, self).__init__(holder)
-
+        self.binaryBlock = "1001101001101011101000010111101000101001010111010110010101010010101010101010101010110"
         self.messageList = ["Hello, how are you?", "I am doing fine. Did you need something?",
                             "Lewis structures (also known as Lewis dot diagrams, Lewis dot formulas, Lewis dot "
                             "structures, and electron dot structures) are diagrams that show the bonding between "
@@ -432,6 +433,42 @@ class MessageInfo_Window(QMainWindow):
             self.ipPayloadTextBrowser = QTextBrowser(self.ipFrame)
             self.ipPayloadTextBrowser.setGeometry(QRect(0, 240, 411, 161))
             self.ipPayloadTextBrowser.setObjectName(_fromUtf8("textBrowser_9"))
+        elif self.layer == MessageInfo_Window.protocol_stack[3]:
+            self.resize(300, 350)
+            self.linkFrame = QFrame(self.centralwidget)
+            self.linkFrame.setGeometry(QRect(0, 0, 300, 20))
+            self.linkFrame.setFrameShape(QFrame.StyledPanel)
+            self.linkFrame.setFrameShadow(QFrame.Plain)
+            self.linkFrame.setLineWidth(2)
+            self.linkFrame.setObjectName(_fromUtf8("messageFrame"))
+            self.linkTextBrowser = QTextBrowser(self.centralwidget)
+            self.linkTextBrowser.setGeometry(QRect(0, 0, 300, 350))
+            self.linkTextBrowser.setObjectName(_fromUtf8("messageTextBrowser"))
+            stnr = ""
+            stnr = stnr+self.binaryBlock+self.binaryBlock+self.binaryBlock+self.binaryBlock+self.binaryBlock
+            self.linkTextBrowser.setText(stnr+stnr+stnr+stnr+stnr+stnr+stnr+stnr+stnr+stnr)
+        elif self.layer == MessageInfo_Window.protocol_stack[4]:
+            self.resize(500, 80)
+            self.scrollFrame = QFrame(self.centralwidget)
+            self.scrollFrame.setGeometry(QRect(0, 0, 500, 80))
+            self.scrollFrame.setFrameShape(QFrame.StyledPanel)
+            self.scrollFrame.setFrameShadow(QFrame.Plain)
+            self.scrollFrame.setLineWidth(2)
+            self.scrollFrame.setObjectName(_fromUtf8("scrollFrame"))
+            self.scrollArea = QScrollArea(self.scrollFrame)
+            self.scrollArea.setGeometry(QRect(0, 0, 500, 80))
+            self.scrollArea.setWidgetResizable(True)
+            self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
+            self.scrollAreaWidgetContents = QWidget()
+            self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 500, 80))
+            self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
+            self.gfxLabel = QLabel(self.scrollAreaWidgetContents)
+            self.gfxLabel.setGeometry(QRect(0, 0, 10000, 60))
+            self.gfxLabel.setObjectName(_fromUtf8("label"))
+            self.scrollArea.setWidget(self.gfxLabel)
+            cwd = os.getcwd()
+            cwd = cwd.replace("\\", "/")
+            self.gfxLabel.setPixmap(QPixmap(cwd + "/gfx/phys.png"))
 
         self.setCentralWidget(self.centralwidget)
         self.retranslateUi(self)
@@ -521,4 +558,6 @@ class MessageInfo_Window(QMainWindow):
     @staticmethod
     def nextMessage():
         MessageInfo_Window.messageNum += 1
+        if (MessageInfo_Window.messageNum > 2):
+            MessageInfo_Window.messageNum = 2
 

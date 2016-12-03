@@ -26,7 +26,7 @@ class Values():
     buttonHeight = 51
     buttonWidth = 121
     labelHeight = 31
-    graphicWidth = 111
+    graphicWidth = 110
     windHeight = 400
     windWidth = 900
 
@@ -145,6 +145,7 @@ class MicroMainWindow(QMainWindow):
             self.stepCount -= 1
 
         if self.stepCount == 0:
+            MessageInfo_Window.nextMessage()
             self.forward = True
             self.lineList[0].updateState(0)
             self.deviceList[0].updateState(0)
@@ -182,6 +183,7 @@ class MicroMainWindow(QMainWindow):
             # go to Link button and line segment of router
         elif self.stepCount == 8:
             self.lineList[0].updateState(8)
+            self.lineList[1].updateState(0)
             self.deviceList[1].updateState(1)
             # go to Net button and line segment of router
         elif self.stepCount == 9:
@@ -204,6 +206,7 @@ class MicroMainWindow(QMainWindow):
             # go to switch Phys button and line segment
         elif self.stepCount == 13:
             self.lineList[1].updateState(5)
+            self.lineList[2].updateState(0)
             self.deviceList[2].updateState(1)
             # go to switch Link button and line segment
         elif self.stepCount == 14:
@@ -240,6 +243,7 @@ class MicroMainWindow(QMainWindow):
             self.forward = False
             self.lineList[2].updateState(0)
             self.deviceList[3].updateState(0)
+            MessageInfo_Window.nextMessage()
             # disable
             # setup nest message
 
@@ -300,7 +304,7 @@ class MicroHostFrame(QFrame):
         self.btnHostN.setText(_translate("HostFrame", "Network", None))
         self.btnHostL.setText(_translate("HostFrame", "Link", None))
         self.btnHostP.setText(_translate("HostFrame", "Physical", None))
-        self.lblHost.setText(_translate("HostFrame", "Host Name", None))
+        self.lblHost.setText(_translate("HostFrame", "Host", None))
 
     @staticmethod
     def getHeight():
@@ -356,6 +360,7 @@ class MicroRouterFrame(QFrame):
     def __init__(self, holder, pos_x, pos_y):
         super(MicroRouterFrame, self).__init__(holder)
 
+        self.myHolder = holder
         self.btnRouterN = QPushButton(self)
         self.btnRouterL = QPushButton(self)
         self.btnRouterP = QPushButton(self)
@@ -389,7 +394,7 @@ class MicroRouterFrame(QFrame):
         self.btnRouterN.setText(_translate("RouterFrame", "Network", None))
         self.btnRouterL.setText(_translate("RouterFrame", "Link", None))
         self.btnRouterP.setText(_translate("RouterFrame", "Physical", None))
-        self.lblRouter.setText(_translate("RouterFrame", "Router Name", None))
+        self.lblRouter.setText(_translate("RouterFrame", "Router", None))
 
     @staticmethod
     def getHeight():
@@ -400,16 +405,16 @@ class MicroRouterFrame(QFrame):
         return MicroHostFrame.myWidth
 
     def clickedButton_Network(self):
-        None
-        # open message window with code "Network"
+        ui = MessageInfo_Window(self.myHolder, "Network")
+        ui.show()
 
     def clickedButton_Link(self):
-        None
-        # open message window with code "Link"
+        ui = MessageInfo_Window(self.myHolder, "Link")
+        ui.show()
 
     def clickedButton_Physical(self):
-        None
-        # open message window with code "Physical"
+        ui = MessageInfo_Window(self.myHolder, "Physical")
+        ui.show()
 
     def updateState(self, point):
         self.btnRouterN.setDisabled(True)
@@ -428,7 +433,7 @@ class MicroSwitchFrame(QFrame):
 
     def __init__(self, holder, pos_x, pos_y):
         super(MicroSwitchFrame, self).__init__(holder)
-
+        self.myHolder = holder
         self.btnSwitchL = QPushButton(self)
         self.btnSwitchP = QPushButton(self)
         self.lblSwitch = QLabel(self)
@@ -455,7 +460,7 @@ class MicroSwitchFrame(QFrame):
     def retranslateUi(self):
         self.btnSwitchL.setText(_translate("SwitchFrame", "Link", None))
         self.btnSwitchP.setText(_translate("SwitchFrame", "Physical", None))
-        self.lblSwitch.setText(_translate("SwitchFrame", "Switch Name", None))
+        self.lblSwitch.setText(_translate("SwitchFrame", "Switch", None))
 
     @staticmethod
     def getHeight():
@@ -466,12 +471,12 @@ class MicroSwitchFrame(QFrame):
         return MicroHostFrame.myWidth
 
     def clickedButton_Link(self):
-        None
-        # open message window with code "Link"
+        ui = MessageInfo_Window(self.myHolder, "Link")
+        ui.show()
 
     def clickedButton_Physical(self):
-        None
-        # open message window with code "Physical"
+        ui = MessageInfo_Window(self.myHolder, "Physical")
+        ui.show()
 
     def updateState(self, point):
         self.btnSwitchL.setDisabled(True)
@@ -515,15 +520,15 @@ class MicroGraphicsLabel(QLabel):
             self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
             self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
         elif self.myType == 12:
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR0.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR1.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR2.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR3.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR4.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR5.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR6.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR7.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/HR8.png"))
         elif self.myType == 13:
             self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
             self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
@@ -544,21 +549,21 @@ class MicroGraphicsLabel(QLabel):
             self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
             self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
         elif self.myType == 23:
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/RS0.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/RS1.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/RS2.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/RS3.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/RS4.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/RS5.png"))
         elif self.myType == 31:
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
-            self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/SH0.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/SH1.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/SH2.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/SH3.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/SH4.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/SH5.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/SH6.png"))
+            self.myMaps.append(self.buildMap(cwd + "/gfx/SH7.png"))
         elif self.myType == 32:
             self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
             self.myMaps.append(self.buildMap(cwd + "/gfx/HH.png"))
@@ -571,6 +576,7 @@ class MicroGraphicsLabel(QLabel):
         self.myLabel = self
 
     def buildMap(self, path):
+        self.listSize += 1
         this_map = QPixmap(path)
         return this_map
 
