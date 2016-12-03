@@ -108,6 +108,7 @@ def sim_step(network):
         else: packet.update_location()
 
 def tick():
+    print("Simulation stepping...")
     start_simulation(network, 1)
 
     '''
