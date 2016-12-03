@@ -11,7 +11,7 @@ from SimulationLoop import SimThread
 import Network
 from routing_table_algo import routing_tables
 
-#step functino template
+#step function template
 # print "New Step~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 # for packet in network.packets.values():
 #     if packet.timer > 0:
@@ -22,7 +22,6 @@ from routing_table_algo import routing_tables
 #             print packet.payload.ip_datagram.segment.message
 #             del(network.packets[packet.packet_id])
 #     else:
-#         print "packet", packet.packet_id, "has neg timer, so it's just starting."
 #         packet.update_location()
 def test_step(network):
     """Step function for use in the simulation"""
@@ -60,6 +59,51 @@ def test_step(network):
 
         print "packet is at node " + str(packet.current_node.node_id)
 
+def table_step(network):
+    print "New Step~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    for packet in network.packets.values():
+        if packet.timer > 0:
+            packet.decrement_timer()
+        elif packet.timer == 0:
+            packet.update_location()
+            if(packet.get_destination() == packet.current_node.node_id):
+                print packet.payload.ip_datagram.segment.message
+                del(network.packets[packet.packet_id])
+        else:
+            packet.update_location()
+    table_print()
+
+def print_graph():
+    network = Network.network
+    graph = network.get_as_graph()
+    print "Network Connectivity Table"
+    for node in network.nodes.keys():
+        print node, graph[node]
+
+def print_packet_table():
+    print "Packet Table"
+    for packet in Network.network.packets.values():
+
+        conn_id = "NA"
+
+        try:
+            conn_id = packet.connection.connection_id
+        except:
+            pass
+
+        print "Pkt #" + str(packet.packet_id) + ":", \
+            "Loc", packet.current_node.node_id, \
+            "Src", packet.get_source(), \
+            "Dst", packet.get_destination(), \
+            "Conn", conn_id, \
+            "ETA", packet.timer
+
+def table_print():
+    print_packet_table()
+
+
+
+
 def add_n_host_line(n):
     network = Network.network
     start = len(network.nodes)
@@ -88,32 +132,6 @@ def build_network():
     tenth = network.nodes[9]
     network.add_connection(4, 9, Connection(fifth, tenth, 3))
 
-def table_print(arg):
-    network=Network.network
-    graph = network.get_as_graph()
-    print "Network Connectivity Table"
-    for node in network.nodes.keys():
-        print node, graph[node]
-
-    print ""
-
-    print "Packet Table"
-
-    for packet in network.packets.values():
-
-       conn_id = "NA"
-
-       try:
-           conn_id = packet.connection.connection_id
-       except: pass
-
-       print "Pkt #" + str(packet.packet_id) + ":",\
-             "Loc",   packet.current_node.node_id,\
-             "Src",   packet.get_source(),\
-             "Dst",   packet.get_destination(),\
-             "Conn",  conn_id,\
-             "ETA",   packet.timer
-
 
 def start_demo():
     #initialize global network variable
@@ -124,7 +142,7 @@ def start_demo():
     # Create a global SimThread
     global simulation
     print "Starting simulation"
-    simulation = start_simulation(network,test_step,30)
+    simulation = start_simulation(network,table_step,15)
     simulation.join()#At this point, we want to go back to the UI code.
     print "Simulation all done now =)"
 
