@@ -114,7 +114,6 @@ class Backgui:
         label2.pack(side=LEFT)
 
     def sendmessage(self):
-        print "gui sendmessage"
         to_id = int(self.dest_id_text.get().strip())
         from_id = int(self.src_id_text.get().strip())
 

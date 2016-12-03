@@ -88,29 +88,30 @@ def get_graph():
 
 def get_packet_table():
     string = "Packet Table\n"
-    for packet in Network.network.packets.values():
 
+    for packet in Network.network.packets.values():
         conn_id = "NA"
         next = "NA"
         try:
             conn_id = packet.connection.connection_id
             next = packet.connection.other_node(packet.current_node).node_id
-        except:
-            pass
-        #The +1 takes into account the implicit one-step processing time for each packet on arrival
-        ETA = packet.timer + 1
-        if packet.timer == -1:
-            ETA = "NA"
+        except: pass
+        finally:
 
-        string += "Pkt #" + str(packet.packet_id) + ":" + \
-            " Loc " + str(packet.current_node.node_id) + \
-            " Nxt " + str(next) +\
-            " Src " + str(packet.get_source()) + \
-            " Dst " + str(packet.get_destination()) + \
-            " Conn " + str(conn_id) + \
-            " ETA " + str(ETA)
-        string += "\n"
-        return string
+            #The +1 takes into account the implicit one-step processing time for each packet on arrival
+            ETA = packet.timer + 1
+            if packet.timer == -1:
+                ETA = "NA"
+
+            string += "Pkt #" + str(packet.packet_id) + ":" + \
+                " Loc " + str(packet.current_node.node_id) + \
+                " Nxt " + str(next) +\
+                " Src " + str(packet.get_source()) + \
+                " Dst " + str(packet.get_destination()) + \
+                " Conn " + str(conn_id) + \
+                " ETA " + str(ETA)
+            string += "\n"
+    return string
 
 
 
