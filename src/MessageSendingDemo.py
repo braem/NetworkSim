@@ -5,7 +5,8 @@ __version__ = "1.0.0"
 
 from Node import *
 from Connection import Connection
-from SimulationLoop import *
+from SimulationLoop import start_simulation
+from SimulationLoop import SimThread
 
 import Network
 from routing_table_algo import routing_tables
@@ -73,15 +74,11 @@ def start_demo():
 
     build_network()
 
-    tables = routing_tables(network)
-    #Set the routing tables in all the nodes
-    for node in network.nodes.values():
-        node.routing_table=tables[node.node_id]
-
     # Create a global SimThread
     global simulation
     simulation = SimThread(test_step, network)
     print "Starting simulation"
+    start_simulation(network)
     simulation.start()
     simulation.join()#At this point, we want to go back to the UI code.
     print "Simulation all done now =)"
@@ -93,13 +90,13 @@ def send_message(src_id, dest_id, msg):
     #Wrapped Network function for convenience.
     Network.network.create_messageUDP(src_id, dest_id, msg)
 
-def add_node(connected_node_id):
+def add_node(connected_node_id, latency):
     #User may only add a node which is connected to another node
     network = Network.network
     connected_node = network.nodes[connected_node_id]
     new_node = Host()
     network.add_node(new_node)
-    network.add_connection(new_node.node_id, connected_node_id, Connection(new_node, connected_node))
+    network.add_connection(new_node.node_id, connected_node_id, Connection(new_node, connected_node, latency))
 
 def remove_node(node_id):
     #Wrapped Network function for convenience
