@@ -11,14 +11,24 @@ from SimulationLoop import SimThread
 import Network
 from routing_table_algo import routing_tables
 
+#step functino template
+# print "New Step~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+# for packet in network.packets.values():
+#     if packet.timer > 0:
+#         packet.decrement_timer()
+#     elif packet.timer == 0:
+#         packet.update_location()
+#         if(packet.get_destination() == packet.current_node.node_id):
+#             print packet.payload.ip_datagram.segment.message
+#             del(network.packets[packet.packet_id])
+#     else:
+#         print "packet", packet.packet_id, "has neg timer, so it's just starting."
+#         packet.update_location()
 def test_step(network):
     """Step function for use in the simulation"""
-
     print "New Step~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     for packet in network.packets.values():
         print "packet #", packet.packet_id
-
-
         if packet.timer > 0:
             print "transmitting on connection", packet.connection.connection_id
             print "Time steps to completion: " + str(packet.timer)
@@ -27,15 +37,23 @@ def test_step(network):
             packet.update_location()
 
             try:
-                print "packet", packet.packet_id, "has been forwarded onto connection", packet.connection.connection_id,\
-                    "latency:", packet.connection.latency, "."
+                conn_id = packet.connection.connection_id
             except(AttributeError):
-                print"packet has not been forwarded"
+                conn_id = -1
+
+            if conn_id == -1:
+                print "packet", packet.packet_id, "has not been forwarded"
+            else:
+                print "packet", packet.packet_id, "has been forwarded onto connection", packet.connection.connection_id,\
+                    "latency:", str(packet.connection.latency) + "."
+
 
             if(packet.get_destination() == packet.current_node.node_id):
-                print packet.payload.IPDatagram.Segment.message
+
                 del(network.packets[packet.packet_id])
                 print "packet", packet.packet_id, "has arrived at node", packet.current_node.node_id, "and been deleted."
+                print "It was carrying the message:"
+                print packet.payload.ip_datagram.segment.message
         else:
             print "packet", packet.packet_id, "has neg timer, so it's just starting."
             packet.update_location()
@@ -106,7 +124,7 @@ def start_demo():
     # Create a global SimThread
     global simulation
     print "Starting simulation"
-    simulation = start_simulation(network,table_print,1)
+    simulation = start_simulation(network,test_step,30)
     simulation.join()#At this point, we want to go back to the UI code.
     print "Simulation all done now =)"
 
