@@ -74,3 +74,6 @@ class Packet:
     def get_destination(self):
         return self.payload.ip_datagram.segment.header.dest_port
 
+    def get_source(self):
+        return self.payload.ip_datagram.segment.header.src_port
+

@@ -94,11 +94,11 @@ def start_simulation(network, function=sim_step, num=-1):
     tables=routing_table_algo.routing_tables(network)
 
     #insert routing tables into the nodes
-    for node in network.nodes:
+    for node in network.nodes.values():
         node.routing_table = tables[node.node_id]
 
 
-    thread = SimThread(function, network, num)
+    thread = SimThread(function, args=network, the_end=num)
     thread.start()
 
     return thread

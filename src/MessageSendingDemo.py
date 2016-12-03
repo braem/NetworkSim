@@ -33,6 +33,7 @@ def test_step(network):
                 print"packet has not been forwarded"
 
             if(packet.get_destination() == packet.current_node.node_id):
+                print packet.payload.IPDatagram.Segment.message
                 del(network.packets[packet.packet_id])
                 print "packet", packet.packet_id, "has arrived at node", packet.current_node.node_id, "and been deleted."
         else:
@@ -58,9 +59,6 @@ def build_network():
     #Can think of this network as shaped like a boxy number eight.
     network = Network.network
     add_n_host_line(5)
-
-    print network.get_as_graph()
-
     add_n_host_line(5)
     first = network.nodes[0]
     sixth = network.nodes[5]
@@ -72,25 +70,43 @@ def build_network():
     tenth = network.nodes[9]
     network.add_connection(4, 9, Connection(fifth, tenth, 3))
 
-def table_step():
-    for node in Network.network.nodes.values():
-        get_routing_table(node.node_id)
+def table_print(arg):
+    network=Network.network
+    graph = network.get_as_graph()
+    print "Network Connectivity Table"
+    for node in network.nodes.keys():
+        print node, graph[node]
+
+    print ""
+
+    print "Packet Table"
+
+    for packet in network.packets.values():
+
+       conn_id = "NA"
+
+       try:
+           conn_id = packet.connection.connection_id
+       except: pass
+
+       print "Pkt #" + str(packet.packet_id) + ":",\
+             "Loc",   packet.current_node.node_id,\
+             "Src",   packet.get_source(),\
+             "Dst",   packet.get_destination(),\
+             "Conn",  conn_id,\
+             "ETA",   packet.timer
+
 
 def start_demo():
     #initialize global network variable
     Network.network_init()
     network = Network.network
-
     build_network()
-    print "graph"
-    print network.get_as_graph()
-
+    send_message(0, 7, "Message")
     # Create a global SimThread
     global simulation
-    simulation = SimThread(test_step, network)
     print "Starting simulation"
-    start_simulation(network,table_step,1)
-    simulation.start()
+    simulation = start_simulation(network,table_print,1)
     simulation.join()#At this point, we want to go back to the UI code.
     print "Simulation all done now =)"
 
@@ -98,8 +114,10 @@ def stop_demo():
     simulation.end()
 
 def get_routing_table(node_id):
-    for node,next in Network.network.nodes[node_id].routing_table.itervalues():
-        print node, ": ", next
+    table = Network.network.nodes[node_id].routing_table
+    print"Node #" + str(node_id)
+    for node in table:
+        print node, ": ", table[node]
 
 def send_message(src_id, dest_id, msg):
     #Wrapped Network function for convenience.
